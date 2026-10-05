@@ -733,6 +733,52 @@ body{overflow-x:clip}
 /* monogram for airlines without a logo */
 .al-ic:not(.has-img){background:linear-gradient(150deg,hsl(var(--h,210) 55% 52%),hsl(var(--h,210) 60% 36%));border:0}
 .al-ic:not(.has-img) b{color:#fff;font-family:var(--f-round);font-weight:800;letter-spacing:.02em}
+
+/* ===== Stats tab: cards ===== */
+#stats.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start;min-width:0;background:transparent;box-shadow:none;border:0}
+.stitle{grid-column:1 / -1;margin:2px 4px 0;font-family:var(--f-display);font-size:28px;font-weight:700;letter-spacing:-.02em}
+.stitle span{color:var(--muted);font-weight:600}
+.scard{background:var(--surface);border-radius:20px;box-shadow:var(--card-shadow);padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.scard.wide{grid-column:1 / -1}
+.scard h3{margin:0;font-family:var(--f-display);font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--ink);text-transform:none;display:flex;align-items:baseline;gap:8px}
+.scard h3 span{font-size:14px;font-weight:600;color:var(--muted)}
+.phone-only{display:none!important}
+@media (max-width:699px){.scard.phone-only{display:flex!important}.stitle{font-size:30px}}
+.tiles6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tiles6 div,.fun div{background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tiles6 b{font-family:var(--f-round);font-size:22px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.tiles6 b small{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:600;margin-left:2px}
+.tiles6 span,.fun span{font-size:12px;color:var(--muted)}
+.fun{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.fun b{font-size:22px}
+.ybars-wrap{overflow-x:auto;margin-inline:-18px;padding-inline:18px;scrollbar-width:none}
+.ybars-wrap::-webkit-scrollbar{display:none}
+.ybars{height:140px;gap:6px}
+.ybars .c{min-width:30px}
+.recs{gap:0}
+.rec{padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.rec:last-child{border-bottom:0}
+.rec b{display:flex;flex-direction:column;align-items:flex-end;font-weight:600}
+.rec b small{font-size:12px;color:var(--muted);font-weight:500}
+.scard .more{align-self:flex-start}
+.scard .hint{margin:0}
+
+/* ===== phone tab bar: steadier on iOS, lower in the installed web app ===== */
+@media (max-width:699px){
+  .tabbar,.tabbar *{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+  .tabgroup,.tabbar .tab-add{transform:translate3d(0,0,0);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+  .tabbar button:active{transform:none}
+  .tabgroup button:active,.tabbar .tab-add:active{opacity:.7}
+  html.standalone .tabbar{bottom:max(6px,calc(env(safe-area-inset-bottom,0px) - 16px))}
+  html.standalone .wrap{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px)}
+  html.standalone .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 74px)}
+}
+html.standalone,html.standalone body{overscroll-behavior-y:none}
+
+.clist li{display:block}
+.fun{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.tiles6 b small{white-space:nowrap}
+@media (max-width:699px){.fun{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles6 b,.fun b{font-size:20px}}
 </style>
 
 </head>
@@ -767,7 +813,7 @@ body{overflow-x:clip}
     <div class="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
   </div>
 
-  <div class="board" id="board" data-sec="mapa" aria-label="Resumen"></div>
+  <div class="board" id="board" data-sec="desk" aria-label="Resumen"></div>
 
   <div class="grid">
     <section class="panel" id="p-list" data-sec="vuelos">
@@ -781,7 +827,7 @@ body{overflow-x:clip}
       <div class="list" id="list"></div>
     </section>
 
-    <section class="panel stats" id="stats" data-sec="stats"></section>
+    <section class="stats" id="stats" data-sec="stats"></section>
   </div>
 
   <input type="file" id="imp-file" accept="application/json,.json" hidden>
@@ -792,7 +838,7 @@ body{overflow-x:clip}
   <div class="tabgroup">
     <button type="button" data-view="vuelos"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span>Vuelos</span></button>
     <button type="button" data-view="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Mapa</span></button>
-    <button type="button" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Datos</span></button>
+    <button type="button" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Stats</span></button>
     <button type="button" data-act="import" id="tab-import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5V3h6v1.5M9 11h6M9 15h4"/></svg><span>Pegar</span></button>
   </div>
   <button type="button" class="tab-add" data-act="add" aria-label="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -814,6 +860,10 @@ let regionNames; try { regionNames = new Intl.DisplayNames(["es"], { type:"regio
 const country = cc => { if (!cc) return ""; try { return regionNames ? regionNames.of(cc) : cc; } catch { return cc; } };
 const MONTHS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const CLASSES = { economy:"Turista", premium:"Turista premium", business:"Business", first:"Primera" };
+
+/* ---------- installed web app (home screen) ---------- */
+const IS_STANDALONE = !!(navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches));
+if (IS_STANDALONE) document.documentElement.classList.add("standalone");
 
 /* ---------- theme: auto / light / dark ---------- */
 const THEME_KEY = "flights-theme";
@@ -1212,7 +1262,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006001836";
+const BUILD = "20261006004325";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1455,60 +1505,66 @@ function count(arr) { const m = new Map(); for (const k of arr) if (k) m.set(k, 
 function renderStats() {
   const allF = all(), fl = filtered();
   const past = fl.filter(f => f.past), upAll = allF.filter(f => !f.past).sort((a, b) => a.depT - b.depT);
-  let html = "";
+  const card = (title, body, cls = "") => `<section class="scard ${cls}"><h3>${title}</h3>${body}</section>`;
+  let html = `<h2 class="stitle">Stats${S.year !== "all" ? ` <span>${esc(S.year)}</span>` : ""}</h2>`;
   const nx = upAll[0];
   if (nx) {
-    const r = relDays(nx.depT);
-    const d = new Date(nx.depT);
-    html += `<div class="sec"><h3>Próximo vuelo</h3><div class="next">
-      <div class="cd">${r <= 0 ? "HOY" : r}<small>${r <= 0 ? "" : r === 1 ? "día" : "días"}</small></div>
+    const r = relDays(nx.depT), d = new Date(nx.depT);
+    html += card("Próximo vuelo", `<div class="next"><div class="cd">${r <= 0 ? "HOY" : r}<small>${r <= 0 ? "" : r === 1 ? "día" : "días"}</small></div>
       <div><div class="rt">${esc(nx.from?.city || nx.from?.iata)} → ${esc(nx.to?.city || nx.to?.iata)}</div>
-      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div></div></div></div>`;
+      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div></div></div>`, "wide");
   }
   if (!past.length) {
-    html += `<div class="sec"><h3>Estadísticas</h3><p class="hint">Cuando tengas vuelos volados ${S.year === "all" ? "" : "en " + S.year + " "}vas a ver acá rankings de aeropuertos, rutas, aerolíneas y aviones.</p></div>`;
+    html += card("Todavía no hay datos", `<p class="hint">Cuando tengas vuelos volados ${S.year === "all" ? "" : "en " + esc(S.year) + " "}vas a ver acá el resumen, los rankings de aerolíneas, aeropuertos, rutas y aviones, y los países visitados.</p>`, "wide");
     $("#stats").innerHTML = html; return;
   }
-  const km = past.reduce((s, f) => s + f.km, 0);
-  const mins = past.reduce((s, f) => s + f.mins, 0);
-  html += `<div class="sec"><h3>En perspectiva</h3><div class="fun">
+  const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
+  const aptSet = new Set(), ccSet = new Set(), alSet = new Set();
+  for (const f of past) { for (const a of [f.from, f.to]) if (a) { aptSet.add(a.iata); if (a.cc) ccSet.add(a.cc); } if (f.airline) alSet.add(f.airline); }
+  const tile = (v, u, k) => `<div><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}</span></div>`;
+  html += card("Resumen", `<div class="tiles6">${tile(fmt(past.length), "", "vuelos")}${tile(km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "", "km recorridos")}${tile(fmt(Math.round(mins / 60)), "", "horas en el aire")}${tile(fmt(aptSet.size), "", "aeropuertos")}${tile(fmt(ccSet.size), "", "países")}${tile(fmt(alSet.size), "", "aerolíneas")}</div>`, "phone-only");
+  html += card("En perspectiva", `<div class="fun">
+    <div><b>${fmt(km / 40075, 1)}</b><span>vueltas al mundo</span></div>
     <div><b>${fmt(km / 384400 * 100, 1)}%</b><span>del camino a la Luna</span></div>
-    <div><b>${fmt(km / past.length)}</b><span>km por vuelo, en promedio</span></div>
-    <div><b>${(m => Math.floor(m/60) + "h " + String(m%60).padStart(2,"0"))(Math.round(mins / past.length))}</b><span>duración media</span></div></div></div>`;
-  // per-year (always over all flights; click to filter)
+    <div><b>${fmt(mins / 1440, 1)}</b><span>días en el aire</span></div>
+    <div><b>${fmt(km / past.length)}</b><span>km por vuelo</span></div>
+    <div><b>${(m => Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0"))(Math.round(mins / past.length))}</b><span>duración media</span></div>
+    <div><b>${fmt(past.filter(f => f.from?.cc && f.to?.cc && f.from.cc !== f.to.cc).length)}</b><span>internacionales</span></div></div>`, "wide");
   const years = [...new Set(allF.map(f => f.year).filter(Boolean))].sort();
   if (years.length) {
     const per = years.map(y => ({ y, p: allF.filter(f => f.year === y && f.past).length, u: allF.filter(f => f.year === y && !f.past).length }));
     const mx = Math.max(...per.map(x => x.p + x.u));
-    html += `<div class="sec"><h3>Vuelos por año</h3><div class="ybars">${per.slice(-10).map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.p} volados${x.u ? ", " + x.u + " próximos" : ""}">
-      <span class="vv">${x.p + x.u}</span><span class="stack" style="height:${((x.p + x.u) / mx * 80).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div>`;
+    html += card("Vuelos por año", `<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${per.map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.p} volados${x.u ? ", " + x.u + " próximos" : ""}">
+      <span class="vv">${x.p + x.u}</span><span class="stack" style="height:${((x.p + x.u) / mx * 90).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div><p class="hint">Tocá un año para filtrar toda la app.</p>`, "wide");
   }
+  const byKm = [...past].sort((a, b) => b.km - a.km), lg = byKm[0], sh = byKm[byKm.length - 1];
+  const byMin = [...past].sort((a, b) => b.mins - a.mins)[0];
+  const perYear = count(past.map(f => f.year))[0];
+  const nights = past.filter(f => +f.arrOffset > 0).length;
+  const rec = (k, v, sub) => `<div class="rec"><span>${k}</span><b>${v}${sub ? `<small>${sub}</small>` : ""}</b></div>`;
+  html += card("Récords", `<div class="recs">
+    ${rec("Vuelo más largo", `${esc(lg.from?.iata)} → ${esc(lg.to?.iata)}`, `${fmt(lg.km)} km · ${esc(lg.date)}`)}
+    ${byMin && byMin !== lg ? rec("Más tiempo en el aire", `${esc(byMin.from?.iata)} → ${esc(byMin.to?.iata)}`, hm(byMin.mins)) : ""}
+    ${past.length > 1 ? rec("Vuelo más corto", `${esc(sh.from?.iata)} → ${esc(sh.to?.iata)}`, `${fmt(sh.km)} km`) : ""}
+    ${perYear ? rec("Año con más vuelos", esc(perYear[0]), `${perYear[1]} vuelos`) : ""}
+    ${nights ? rec("Llegadas al día siguiente", fmt(nights)) : ""}
+  </div>`);
   const aptName = new Map(); for (const f of past) for (const a of [f.from, f.to]) if (a) aptName.set(a.iata, a);
   const topApt = count(past.flatMap(f => [f.from?.iata, f.to?.iata]));
   const topRoute = count(past.map(f => routeKey(f)));
-  html += `<div class="sec cols2"><div><h3>Aeropuertos · ${topApt.length}</h3>${rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`, "airport")}</div>
-    <div><h3>Rutas · ${topRoute.length}</h3>${rankList(topRoute, k => `<b>${esc(k)}</b>`, "route")}</div></div>`;
   const topAl = count(past.map(f => f.airline));
   const alOf = new Map(); for (const f of past) if (f.airline && !alOf.get(f.airline)) alOf.set(f.airline, alCode(f));
   const topAc = count(past.map(f => f.aircraft));
-  html += `<div class="sec cols2"><div><h3>Aerolíneas · ${topAl.length}</h3>${topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k), "airline") : `<p class="hint">Sin datos.</p>`}</div>
-    <div><h3>Aviones · ${topAc.length}</h3>${topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`}</div></div>`;
-  const byKm = [...past].sort((a, b) => b.km - a.km);
-  const lg = byKm[0], sh = byKm[byKm.length - 1];
-  const intl = past.filter(f => f.from?.cc && f.to?.cc && f.from.cc !== f.to.cc).length;
-  const nights = past.filter(f => +f.arrOffset > 0).length;
-  const rec = (k, v) => `<div class="rec"><span>${k}</span><b>${v}</b></div>`;
-  html += `<div class="sec"><h3>Récords</h3><div class="recs">
-    ${rec("Vuelo más largo", `${esc(lg.from?.iata)} → ${esc(lg.to?.iata)} · ${fmt(lg.km)} km`)}
-    ${past.length > 1 ? rec("Vuelo más corto", `${esc(sh.from?.iata)} → ${esc(sh.to?.iata)} · ${fmt(sh.km)} km`) : ""}
-    ${rec("Internacionales", `${intl} de ${past.length}`)}
-    ${nights ? rec("Llegadas al día siguiente", nights) : ""}
-  </div></div>`;
+  html += card(`Aerolíneas <span>${topAl.length}</span>`, topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k), "airline") : `<p class="hint">Sin datos.</p>`);
+  html += card(`Aeropuertos <span>${topApt.length}</span>`, rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`, "airport"));
+  html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
+  const noAc = past.filter(f => !f.aircraft).length;
+  html += card(`Aviones <span>${topAc.length}</span>`, (topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (noAc ? `<p class="hint">${noAc} ${noAc === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""));
   const ccs = count(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])]));
   const yrs = new Map();
   for (const f of past) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) { const y = yrs.get(c) || [f.year, f.year]; if (f.year < y[0]) y[0] = f.year; if (f.year > y[1]) y[1] = f.year; yrs.set(c, y); }
   const cmax = ccs.length ? ccs[0][1] : 1;
-  html += `<div class="sec sec-countries"><h3>Países visitados · ${ccs.length}</h3><ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><button type="button" class="rk crow" data-rk="country" data-key="${esc(c)}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></button></li>`; }).join("")}</ol></div>`;
+  html += card(`Países visitados <span>${ccs.length}</span>`, `<ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><button type="button" class="rk crow" data-rk="country" data-key="${esc(c)}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></button></li>`; }).join("")}</ol>`, "wide sec-countries");
   $("#stats").innerHTML = html;
 }
 
