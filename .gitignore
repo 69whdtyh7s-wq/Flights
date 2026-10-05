@@ -1,0 +1,5 @@
+# Nunca subir datos de vuelos: exportaciones, copias de seguridad ni archivos de App in the Air
+*.json
+*.txt
+*.csv
+datos/
