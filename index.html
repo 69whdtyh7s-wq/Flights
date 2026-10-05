@@ -88,7 +88,7 @@ button{cursor:pointer}
 .map .arc{fill:none;stroke-linecap:round}
 .map .arc.past{stroke:var(--route)}
 .map .arc.up{stroke:var(--sky);stroke-dasharray:5 5}
-.map .arc.dim{opacity:.12!important}
+.map .arc.dim{display:none}
 .map .apt{fill:var(--surface);stroke:var(--ink)}
 .map .apt.hub{fill:var(--ink)}
 .map .aptl{font-family:var(--f-mono);font-weight:500;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
@@ -623,7 +623,7 @@ body{overflow-x:clip}
 /* bigger map on iPhone */
 @media (max-width:699px){
   body[data-view="mapa"] .mapcard{margin-inline:-16px;width:calc(100% + 32px);max-width:none;align-self:auto;border-radius:0;box-shadow:none}
-  body[data-view="mapa"] .map{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 250px);min-height:360px;width:100%}
+  body[data-view="mapa"] .map{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 330px);min-height:360px;width:100%}
   body[data-view="mapa"] .legend{display:flex;left:10px;bottom:10px}
 }
 
@@ -852,6 +852,9 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 
 #s-airline .sg{grid-template-columns:auto minmax(0,1fr)}
 #s-airline .al-ic.sm{width:26px;height:26px;margin:0}
+
+.detail .acts .showmap{display:none}
+@media (max-width:699px){.detail .acts .showmap{display:inline-flex;flex-basis:100%;background:var(--accent);color:var(--accent-ink)}}
 </style>
 
 </head>
@@ -1367,8 +1370,13 @@ function initMap() {
 const ISO_N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","31":"AZ","32":"AR","36":"AU","40":"AT","44":"BS","50":"BD","51":"AM","56":"BE","64":"BT","68":"BO","70":"BA","72":"BW","76":"BR","84":"BZ","90":"SB","96":"BN","100":"BG","104":"MM","108":"BI","112":"BY","116":"KH","120":"CM","124":"CA","140":"CF","144":"LK","148":"TD","152":"CL","156":"CN","158":"TW","170":"CO","178":"CG","180":"CD","188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","204":"BJ","208":"DK","214":"DO","218":"EC","222":"SV","226":"GQ","231":"ET","232":"ER","233":"EE","238":"FK","242":"FJ","246":"FI","250":"FR","254":"GF","260":"TF","262":"DJ","266":"GA","268":"GE","270":"GM","275":"PS","276":"DE","288":"GH","300":"GR","304":"GL","320":"GT","324":"GN","328":"GY","332":"HT","340":"HN","348":"HU","352":"IS","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","384":"CI","388":"JM","392":"JP","398":"KZ","400":"JO","404":"KE","408":"KP","410":"KR","414":"KW","417":"KG","418":"LA","422":"LB","426":"LS","428":"LV","430":"LR","434":"LY","440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","466":"ML","478":"MR","484":"MX","496":"MN","498":"MD","499":"ME","504":"MA","508":"MZ","512":"OM","516":"NA","524":"NP","528":"NL","540":"NC","548":"VU","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","624":"GW","626":"TL","630":"PR","634":"QA","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","688":"RS","694":"SL","703":"SK","704":"VN","705":"SI","706":"SO","710":"ZA","716":"ZW","724":"ES","728":"SS","729":"SD","732":"EH","740":"SR","748":"SZ","752":"SE","756":"CH","760":"SY","762":"TJ","764":"TH","768":"TG","780":"TT","784":"AE","788":"TN","792":"TR","795":"TM","800":"UG","804":"UA","807":"MK","818":"EG","826":"GB","834":"TZ","840":"US","854":"BF","858":"UY","860":"UZ","862":"VE","887":"YE","894":"ZM"};
 function sizeApts() {
   if (!gApts) return;
-  gApts.selectAll("circle").attr("r", d => d.r / Math.sqrt(curK)).attr("stroke-width", 1.2 / curK);
-  gApts.selectAll("text").style("display", curK >= 3 ? null : "none").attr("font-size", 10 / Math.pow(curK, .75)).attr("x", d => d.p[0]).attr("y", d => d.p[1] - (d.r + 3) / Math.sqrt(curK));
+  // keep dots and codes the same size on screen at any zoom
+  const k = curK, r = d => d.r / k;
+  gApts.selectAll("circle").attr("r", r).style("stroke-width", (1.6 / k) + "px");
+  const showCodes = k >= 3 || !!(S.open || S.focusIds);
+  gApts.selectAll("text").style("display", showCodes ? null : "none")
+    .attr("font-size", 10.5 / k).style("stroke-width", (3 / k) + "px")
+    .attr("x", d => d.p[0]).attr("y", d => d.p[1] - (d.r + 3.5) / k);
 }
 function fitRoutes(animate) {
   if (!svgSel) return;
@@ -1389,6 +1397,22 @@ function fitRoutes(animate) {
     t = d3.zoomIdentity.translate(W/2 - k*cx, H/2 - k*cy).scale(k);
   }
   (animate ? svgSel.transition().duration(500) : svgSel).call(zoom.transform, t);
+}
+function focusSelection() {
+  if (!svgSel || !zoom) return;
+  const ids = S.open ? [S.open] : S.focusIds;
+  if (!ids) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
+  const fl = all().filter(f => ids.includes(f.id));
+  const pts = fl.flatMap(f => [f.from, f.to]).filter(validApt).map(a => [+a.lon, +a.lat]);
+  if (!pts.length) return;
+  if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
+  const lines = { type:"MultiLineString", coordinates:fl.filter(f => validApt(f.from) && validApt(f.to)).map(f => [[+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]]) };
+  const [[x0, y0], [x1, y1]] = geoPath.bounds(lines);
+  updateZoomExtent(); const ext = zoom.extent().call(svgSel.node()); const vw = ext[1][0] - ext[0][0], vh = ext[1][1] - ext[0][1];
+  const pad = 0.72, w = Math.max(x1 - x0, 30), h = Math.max(y1 - y0, 30);
+  const k = Math.max(1, Math.min(10, pad / Math.max(w / vw, h / vh)));
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, mx = (ext[0][0] + ext[1][0]) / 2, my = (ext[0][1] + ext[1][1]) / 2;
+  svgSel.transition().duration(550).call(zoom.transform, d3.zoomIdentity.translate(mx - k * cx, my - k * cy).scale(k));
 }
 function renderMap() {
   if (!S.mapReady) return;
@@ -1417,7 +1441,7 @@ function renderMap() {
     .attr("stroke-width", d => isSel(d) ? 3.4 : (d.past ? Math.min(1.3 + Math.log2(d.n) * 0.8, 4) : 1.6))
     .attr("opacity", d => d.past ? Math.min(0.55 + d.n * 0.1, 0.95) : 0.9)
     .attr("d", d => geoPath({ type:"LineString", coordinates:[[+d.a.lon, +d.a.lat], [+d.b.lon, +d.b.lat]] }));
-  const as = [...apts.values()].filter(a => isVisible(+a.lon, +a.lat)).map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 3.6 }));
+  const as = [...apts.values()].filter(a => isVisible(+a.lon, +a.lat) && (!selIds || selApts.has(a.iata))).map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: selIds ? 5 : 3.6 }));
   const showAll = as.length <= 24;
   const top = new Set([...as].sort((a, b) => b.n - a.n).slice(0, 16).map(a => a.iata));
   const hub = as.length ? Math.max(...as.map(a => a.n)) : 0;
@@ -1453,7 +1477,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006012958";
+const BUILD = "20261006013727";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1564,7 +1588,7 @@ function detail(f) {
   let acts;
   if (f.demo) acts = `<span class="q">Es un vuelo de ejemplo.</span>`;
   else if (S.confirmDel === f.id) acts = `<span class="q">¿Borrar ${esc(num || "este vuelo")} del ${esc(f.date)}?</span><button class="btn danger" type="button" data-del-yes="${esc(f.id)}">Sí, borrar</button><button class="btn" type="button" data-del-no>Cancelar</button>`;
-  else acts = `<button class="btn" type="button" data-edit="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button><button class="btn danger" type="button" data-del="${esc(f.id)}">Borrar</button>`;
+  else acts = `<button class="btn showmap" type="button" data-showmap="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/></svg>Ver en el mapa</button><button class="btn" type="button" data-edit="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button><button class="btn danger" type="button" data-del="${esc(f.id)}">Borrar</button>`;
   return `<div class="detail">
     <div class="dhead">${alIcon(code, f.airline, "xl")}<div class="dal"><b>${esc(f.airline || "Aerolínea desconocida")}</b><span>${esc([num, f.aircraft].filter(Boolean).join(" · ") || "Sin número de vuelo")}</span></div>
       <span class="pill ${f.past ? "ex" : "up"}">${f.past ? "Volado" : "Próximo"}</span></div>
@@ -2352,7 +2376,7 @@ document.addEventListener("change", e => { if (e.target && e.target.id === "set-
 function goHome() {
   closeSheet(); S.open = null; S.focusTrip = null; S.focusIds = null; S.tab = "up";
   const hasUp = all().some(f => !f.past); if (!hasUp) S.tab = "past";
-  setView("vuelos", false); render(); window.scrollTo({ top:0, behavior:"smooth" });
+  setView("vuelos", false); render(); focusSelection(); window.scrollTo({ top:0, behavior:"smooth" });
   const l = document.getElementById("p-list"); if (l) l.scrollTop = 0;
 }
 document.getElementById("brand").addEventListener("click", goHome);
@@ -2432,13 +2456,14 @@ document.addEventListener("click", e => {
     const id = t.dataset.trip;
     if (S.focusTrip === id) { S.focusTrip = null; S.focusIds = null; }
     else { const tr = buildTrips(all()).find(x => x.id === id); S.focusTrip = id; S.focusIds = tr ? tr.legs.map(l => l.id) : null; }
-    S.open = null; return render();
+    S.open = null; render(); focusSelection(); return;
   }
   if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
   if (t.dataset.list) { S.open = null; return openList(t.dataset.list); }
   if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
-  if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return render(); }
+  if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); focusSelection(); return; }
+  if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
   const inDrill = !!t.closest(".drill");
   if (t.dataset.del) { S.confirmDel = t.dataset.del; render(); return inDrill ? openDrill(S.drill.kind, S.drill.key) : undefined; }
