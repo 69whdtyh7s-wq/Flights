@@ -597,6 +597,35 @@ body{overflow-x:clip}
   .sheet{width:100%;max-width:100vw}
   .grid,.panel,.mapcard,.board{max-width:100%}
 }
+
+/* iPhone tab bar: floating glass capsule + separate add button */
+:root{--glass:rgba(255,255,255,.72);--glass-line:rgba(0,0,0,.06);--glass-sel:rgba(0,0,0,.07)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--glass:rgba(44,44,46,.66);--glass-line:rgba(255,255,255,.09);--glass-sel:rgba(255,255,255,.12)}}
+:root[data-theme="dark"]{--glass:rgba(44,44,46,.66);--glass-line:rgba(255,255,255,.09);--glass-sel:rgba(255,255,255,.12)}
+@media (max-width:699px){
+  .wrap{padding-block:12px calc(env(safe-area-inset-bottom,0px) + 112px)}
+  .tabbar{display:flex!important;align-items:center;gap:10px;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
+    padding:0;background:transparent!important;border:0!important;-webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}
+  .tabgroup,.tabbar .tab-add{pointer-events:auto;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+    border:1px solid var(--glass-line);box-shadow:0 10px 30px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.08)}
+  .tabgroup{flex:1;display:flex;gap:2px;padding:5px;border-radius:999px;min-width:0}
+  .tabgroup button{flex:1;min-width:0;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    height:54px;padding:0 4px;color:var(--ink);font-family:var(--f-body);font-size:10.5px;font-weight:600;letter-spacing:0;text-transform:none;transition:background .2s,color .2s}
+  .tabgroup button svg{width:23px;height:23px}
+  .tabgroup button[aria-current="page"]{background:var(--glass-sel);color:var(--accent)}
+  .tabbar .tab-add{flex:none;width:64px;height:64px;margin:0;border-radius:50%;display:grid;place-items:center;color:var(--ink);padding:0}
+  .tabbar .tab-add svg{width:26px;height:26px}
+  .tabbar button:active{transform:scale(.96)}
+  .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 92px)}
+}
+@media (max-width:699px) and (prefers-reduced-motion:no-preference){.tabbar button{transition:background .2s,color .2s,transform .12s}}
+
+/* bigger map on iPhone */
+@media (max-width:699px){
+  body[data-view="mapa"] .mapcard{margin-inline:-16px;width:calc(100% + 32px);max-width:none;align-self:auto;border-radius:0;box-shadow:none}
+  body[data-view="mapa"] .map{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 250px);min-height:360px;width:100%}
+  body[data-view="mapa"] .legend{display:flex;left:10px;bottom:10px}
+}
 </style>
 
 </head>
@@ -620,7 +649,7 @@ body{overflow-x:clip}
   <div class="filters" id="filters" data-sec="mapa stats" aria-label="Filtrar por año"></div>
 
   <div class="mapcard" id="mapcard" data-sec="mapa">
-    <svg class="map" id="map" viewBox="0 0 960 470" role="img" aria-label="Mapa de rutas"></svg>
+    <svg class="map" id="map" viewBox="0 0 960 470" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mapa de rutas"></svg>
     <div class="maphint" id="maphint">Cargando mapa…</div>
     <div class="mapctl">
       <button type="button" id="z-in" aria-label="Acercar">+</button>
@@ -653,11 +682,13 @@ body{overflow-x:clip}
 </div>
 
 <nav class="tabbar" id="tabbar" aria-label="Secciones">
-  <button type="button" data-view="vuelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Vuelos</span></button>
-  <button type="button" data-view="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Mapa</span></button>
-  <button type="button" class="tab-add" data-act="add" aria-label="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button type="button" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Datos</span></button>
-  <button type="button" data-act="import" id="tab-import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.5z"/><path d="M8 9h8M8 12h5"/></svg><span>Pegar</span></button>
+  <div class="tabgroup">
+    <button type="button" data-view="vuelos"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span>Vuelos</span></button>
+    <button type="button" data-view="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Mapa</span></button>
+    <button type="button" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Datos</span></button>
+    <button type="button" data-act="import" id="tab-import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5V3h6v1.5M9 11h6M9 15h4"/></svg><span>Pegar</span></button>
+  </div>
+  <button type="button" class="tab-add" data-act="add" aria-label="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </nav>
 <div id="sheet-root"></div>
 
@@ -896,7 +927,7 @@ const STANDALONE = !(window.claude && window.claude.use);
 function useLocal() {
   S.storage = "local"; S.real = lsRead(); S.loaded = true;
   if (STANDALONE) {
-    $("#b-import").hidden = true; $("#claudenote").hidden = true; $("#tab-import").hidden = true; $("#tabbar").style.gridTemplateColumns = "repeat(4,1fr)";
+    $("#b-import").hidden = true; $("#claudenote").hidden = true; $("#tab-import").hidden = true;
   }
   render();
 }
@@ -935,6 +966,8 @@ function initMap() {
     gLayer.attr("transform", e.transform); curK = e.transform.k; sizeApts();
   });
   svgSel.call(zoom).on("dblclick.zoom", null);
+  updateZoomExtent();
+  if (window.ResizeObserver) new ResizeObserver(() => updateZoomExtent()).observe(document.getElementById("map"));
   $("#z-in").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1.6);
   $("#z-out").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1/1.6);
   $("#z-fit").onclick = () => fitRoutes(true);
@@ -1644,11 +1677,19 @@ async function wipeAll(btn) {
 
 /* ---------- phone sections ---------- */
 let VIEW_KEY = "flights-view";
+function updateZoomExtent() {
+  if (!zoom) return;
+  const r = document.getElementById("map").getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const vw = Math.min(W, H * r.width / r.height), vh = Math.min(H, W * r.height / r.width);
+  zoom.extent([[(W - vw) / 2, (H - vh) / 2], [(W + vw) / 2, (H + vh) / 2]]);
+  svgSel.call(zoom.transform, d3.zoomTransform(svgSel.node()));
+}
 function setView(v, save) {
   document.body.dataset.view = v;
   document.querySelectorAll("#tabbar [data-view]").forEach(b => { if (b.dataset.view === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   if (save) { try { localStorage.setItem(VIEW_KEY, v); } catch {} }
-  if (v === "mapa" && S.mapReady) renderMap();
+  if (v === "mapa" && S.mapReady) { renderMap(); requestAnimationFrame(updateZoomExtent); }
   window.scrollTo(0, 0);
 }
 let startView = "vuelos"; try { startView = localStorage.getItem(VIEW_KEY) || "vuelos"; } catch {}
