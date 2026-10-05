@@ -668,6 +668,31 @@ body{overflow-x:clip}
 .dlg-btns .ok{font-weight:700}
 .dlg-btns button:disabled{opacity:.5}
 @media (prefers-reduced-motion:no-preference){.dlg{animation:dlgin .18s ease-out}@keyframes dlgin{from{transform:scale(1.08);opacity:0}}}
+
+/* clickable rankings + drill-down sheet */
+.rank li{display:block}
+.rk{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px;align-items:center;border:0;background:transparent;padding:4px 6px;margin:0 -6px;border-radius:10px;text-align:left;color:inherit;font:inherit}
+.rk:hover{background:var(--fill)}
+.rk.crow{grid-template-columns:30px minmax(0,1fr) auto;padding:6px;margin:0}
+.clist li{padding:0}
+.more{margin-top:8px;border:0;background:var(--fill);color:var(--accent-text);font-weight:600;font-size:13px;border-radius:999px;padding:6px 14px;align-self:flex-start}
+.sec > div{display:flex;flex-direction:column}
+.drill .hd{align-items:center;gap:12px}
+.drill .dtt{display:flex;flex-direction:column;margin-right:auto;min-width:0}
+.drill .dtt small{font-size:13px;font-weight:600;color:var(--muted)}
+.drill h2{font-size:26px!important;overflow-wrap:anywhere}
+.drill .al-ic.lg{width:48px;height:48px}
+.fl-ic.big{width:48px;height:36px;border-radius:5px}
+.dstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dstats div{background:var(--surface);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.dstats b{font-family:var(--f-round);font-size:20px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dstats span{font-size:12px;color:var(--muted)}
+.dlist{border-radius:18px;overflow:hidden}
+.dyr{font-family:var(--f-round);font-weight:800;font-size:20px;padding:14px 18px 4px}
+.drill .fl{padding-left:14px;padding-right:14px}
+.drill .detail{margin:0 10px 10px}
+
+@media (max-width:560px){.dstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 
 </head>
@@ -958,7 +983,7 @@ function enrich(f) {
 
 /* ---------- state ---------- */
 const S = {
-  real: [], loaded: false, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
+  real: [], loaded: false, rankOpen: new Set(), drill: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
   col: null, sample: null, downloads: null, mapReady: false,
 };
 const DEMO = buildDemo();
@@ -1147,7 +1172,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261005202702";
+const BUILD = "20261005202936";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1319,9 +1344,39 @@ function renderList() {
   el.innerHTML = html;
 }
 
-function rankList(entries, label) {
+const RANK_TOP = 6;
+function rankList(entries, label, kind) {
   const max = entries.length ? entries[0][1] : 1;
-  return `<ol class="rank">${entries.map(([k, n]) => `<li><div class="nm"><span>${label(k)}</span><div class="bar"><i style="width:${(n / max * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></li>`).join("")}</ol>`;
+  const open = S.rankOpen.has(kind);
+  const shown = open ? entries : entries.slice(0, RANK_TOP);
+  return `<ol class="rank">${shown.map(([k, n]) => `<li><button type="button" class="rk" data-rk="${kind}" data-key="${esc(k)}"><div class="nm"><span>${label(k)}</span><div class="bar"><i style="width:${(n / max * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></button></li>`).join("")}</ol>`
+    + (entries.length > RANK_TOP ? `<button type="button" class="more" data-more="${kind}">${open ? "Ver menos" : `Ver todos (${entries.length})`}</button>` : "");
+}
+const routeKey = f => f.from && f.to ? [f.from.iata, f.to.iata].sort().join(" ⇄ ") : null;
+const DRILL = {
+  airline:{ match:(f, k) => f.airline === k, title:k => k },
+  airport:{ match:(f, k) => f.from?.iata === k || f.to?.iata === k, title:k => { const a = knownApt(k); return a ? `${k} · ${a.city || a.name}` : k; } },
+  route:{ match:(f, k) => routeKey(f) === k, title:k => k },
+  aircraft:{ match:(f, k) => f.aircraft === k, title:k => k },
+  country:{ match:(f, k) => f.from?.cc === k || f.to?.cc === k, title:k => country(k) },
+};
+const DRILL_LABEL = { airline:"Aerolínea", airport:"Aeropuerto", route:"Ruta", aircraft:"Avión", country:"País" };
+function openDrill(kind, key) {
+  const d = DRILL[kind]; if (!d) return;
+  S.drill = { kind, key };
+  const list = filtered().filter(f => d.match(f, key)).sort((a, b) => b.depT - a.depT);
+  const past = list.filter(f => f.past);
+  const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
+  const yrs = [...new Set(list.map(f => f.year))].sort();
+  const icon = kind === "airline" ? alIcon(alCode(list[0] || {}), key, "lg") : kind === "country" ? `<span class="fl-ic big" aria-hidden="true">${flag(key)}</span>` : "";
+  let rows = "", yr = null;
+  for (const f of list) { if (f.year !== yr) { yr = f.year; rows += `<div class="dyr">${esc(yr)}</div>`; } rows += flightRow(f); }
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet drill" role="dialog" aria-modal="true" aria-labelledby="dr-t">
+    <div class="hd">${icon}<div class="dtt"><small>${DRILL_LABEL[kind]}${S.year !== "all" ? " · " + esc(S.year) : ""}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="dstats"><div><b>${list.length}</b><span>${list.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${fmt(km)}</b><span>km</span></div><div><b>${fmt(Math.round(mins / 60))}</b><span>horas</span></div><div><b>${yrs.length > 1 ? esc(yrs[0]) + "–" + esc(yrs[yrs.length - 1].slice(2)) : esc(yrs[0] || "—")}</b><span>${yrs.length > 1 ? "años" : "año"}</span></div></div>
+    <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
+  </div></div>`;
+  markLogos($("#sheet-root"));
 }
 function count(arr) { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m.entries()].sort((a, b) => b[1] - a[1]); }
 
@@ -1357,15 +1412,15 @@ function renderStats() {
       <span class="vv">${x.p + x.u}</span><span class="stack" style="height:${((x.p + x.u) / mx * 80).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div>`;
   }
   const aptName = new Map(); for (const f of past) for (const a of [f.from, f.to]) if (a) aptName.set(a.iata, a);
-  const topApt = count(past.flatMap(f => [f.from?.iata, f.to?.iata])).slice(0, 6);
-  const topRoute = count(past.map(f => f.from && f.to ? [f.from.iata, f.to.iata].sort().join(" ⇄ ") : null)).slice(0, 6);
-  html += `<div class="sec cols2"><div><h3>Aeropuertos</h3>${rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`)}</div>
-    <div><h3>Rutas</h3>${rankList(topRoute, k => `<b>${esc(k)}</b>`)}</div></div>`;
-  const topAl = count(past.map(f => f.airline)).slice(0, 6);
+  const topApt = count(past.flatMap(f => [f.from?.iata, f.to?.iata]));
+  const topRoute = count(past.map(f => routeKey(f)));
+  html += `<div class="sec cols2"><div><h3>Aeropuertos · ${topApt.length}</h3>${rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`, "airport")}</div>
+    <div><h3>Rutas · ${topRoute.length}</h3>${rankList(topRoute, k => `<b>${esc(k)}</b>`, "route")}</div></div>`;
+  const topAl = count(past.map(f => f.airline));
   const alOf = new Map(); for (const f of past) if (f.airline && !alOf.get(f.airline)) alOf.set(f.airline, alCode(f));
-  const topAc = count(past.map(f => f.aircraft)).slice(0, 6);
-  html += `<div class="sec cols2"><div><h3>Aerolíneas</h3>${topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k)) : `<p class="hint">Sin datos.</p>`}</div>
-    <div><h3>Aviones</h3>${topAc.length ? rankList(topAc, esc) : `<p class="hint">Sin datos.</p>`}</div></div>`;
+  const topAc = count(past.map(f => f.aircraft));
+  html += `<div class="sec cols2"><div><h3>Aerolíneas · ${topAl.length}</h3>${topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k), "airline") : `<p class="hint">Sin datos.</p>`}</div>
+    <div><h3>Aviones · ${topAc.length}</h3>${topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`}</div></div>`;
   const byKm = [...past].sort((a, b) => b.km - a.km);
   const lg = byKm[0], sh = byKm[byKm.length - 1];
   const intl = past.filter(f => f.from?.cc && f.to?.cc && f.from.cc !== f.to.cc).length;
@@ -1381,7 +1436,7 @@ function renderStats() {
   const yrs = new Map();
   for (const f of past) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) { const y = yrs.get(c) || [f.year, f.year]; if (f.year < y[0]) y[0] = f.year; if (f.year > y[1]) y[1] = f.year; yrs.set(c, y); }
   const cmax = ccs.length ? ccs[0][1] : 1;
-  html += `<div class="sec sec-countries"><h3>Países visitados · ${ccs.length}</h3><ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></li>`; }).join("")}</ol></div>`;
+  html += `<div class="sec sec-countries"><h3>Países visitados · ${ccs.length}</h3><ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><button type="button" class="rk crow" data-rk="country" data-key="${esc(c)}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></button></li>`; }).join("")}</ol></div>`;
   $("#stats").innerHTML = html;
 }
 
@@ -1862,13 +1917,17 @@ document.addEventListener("click", e => {
     else { const tr = buildTrips(all()).find(x => x.id === id); S.focusTrip = id; S.focusIds = tr ? tr.legs.map(l => l.id) : null; }
     S.open = null; return render();
   }
+  if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
+  if (t.dataset.rk) { S.open = null; return openDrill(t.dataset.rk, t.dataset.key); }
+  if (t.dataset.open && t.closest(".drill")) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
   if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return render(); }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
-  if (t.dataset.del) { S.confirmDel = t.dataset.del; return render(); }
-  if ("delNo" in t.dataset) { S.confirmDel = null; return render(); }
+  const inDrill = !!t.closest(".drill");
+  if (t.dataset.del) { S.confirmDel = t.dataset.del; render(); return inDrill ? openDrill(S.drill.kind, S.drill.key) : undefined; }
+  if ("delNo" in t.dataset) { S.confirmDel = null; render(); return inDrill ? openDrill(S.drill.kind, S.drill.key) : undefined; }
   if (t.dataset.delYes) {
     const id = t.dataset.delYes; t.disabled = true;
-    deleteFlight(id).then(() => { S.confirmDel = null; S.open = null; render(); toast("Vuelo borrado"); }).catch(() => { t.disabled = false; toast("No se pudo borrar. Probá de nuevo."); });
+    deleteFlight(id).then(() => { S.confirmDel = null; S.open = null; render(); if (inDrill) openDrill(S.drill.kind, S.drill.key); toast("Vuelo borrado"); }).catch(() => { t.disabled = false; toast("No se pudo borrar. Probá de nuevo."); });
   }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $(".scrim")) closeSheet(); });
