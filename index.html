@@ -881,7 +881,7 @@ function applyTheme() {
   document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === theme));
 }
 applyTheme();
-function setTheme(t) { theme = t; try { localStorage.setItem(THEME_KEY, theme); } catch {} applyTheme(); }
+function setTheme(t) { theme = t; try { localStorage.setItem(THEME_KEY, theme); } catch {} applyTheme(); if (typeof updateTouchIcon === "function") updateTouchIcon(); }
 
 /* ---------- accent colour + app icon ---------- */
 const ACCENTS = [["Azul turquesa","#0087E0"],["Azul iOS","#007AFF"],["Turquesa","#00A0B0"],["Verde","#28A745"],["Índigo","#5856D6"],
@@ -889,8 +889,9 @@ const ACCENTS = [["Azul turquesa","#0087E0"],["Azul iOS","#007AFF"],["Turquesa",
 const hx = h => { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
 const toHex = a => "#" + a.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("");
 const mix = (a, b, t) => { const A = hx(a), B = hx(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
-let ACCENT = "#0087E0", ICONMODE = "light";
-try { ACCENT = localStorage.getItem("flights-accent") || ACCENT; ICONMODE = localStorage.getItem("flights-icon") || ICONMODE; } catch {}
+let ACCENT = "#0087E0";
+try { ACCENT = localStorage.getItem("flights-accent") || ACCENT; } catch {}
+const iconMode = () => theme === "dark" || (theme === "auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
 const PLANE_D = "M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
 function iconPNG(mode, size) {
   const c = document.createElement("canvas"); c.width = c.height = size; const x = c.getContext("2d");
@@ -905,8 +906,8 @@ function iconPNG(mode, size) {
 }
 function updateTouchIcon() {
   try {
-    const set = (rel, size) => { let l = document.querySelector(`link[rel="${rel}"]`); if (!l) { l = document.createElement("link"); l.rel = rel; document.head.appendChild(l); } l.href = iconPNG(ICONMODE, size); };
-    set("apple-touch-icon", 180); set("icon", 64);
+    const set = (rel, size, mode) => { let l = document.querySelector(`link[rel="${rel}"]`); if (!l) { l = document.createElement("link"); l.rel = rel; document.head.appendChild(l); } l.href = iconPNG(mode, size); };
+    const m = iconMode(); set("apple-touch-icon", 180, m); set("icon", 64, m);
   } catch {}
 }
 function applyAccent() {
@@ -920,8 +921,8 @@ function applyAccent() {
   updateTouchIcon();
 }
 applyAccent();
+if (window.matchMedia) { const mq = matchMedia("(prefers-color-scheme: dark)"); (mq.addEventListener ? mq.addEventListener("change", updateTouchIcon) : mq.addListener(updateTouchIcon)); }
 function setAccent(h) { if (!/^#[0-9a-f]{6}$/i.test(h)) return; ACCENT = h.toUpperCase(); try { localStorage.setItem("flights-accent", ACCENT); } catch {} applyAccent(); if ($(".settings")) openSettings(); }
-function setIconMode(m) { ICONMODE = m === "dark" ? "dark" : "light"; try { localStorage.setItem("flights-icon", ICONMODE); } catch {} updateTouchIcon(); if ($(".settings")) openSettings(); }
 
 /* ---------- airports bundled for offline lookup ---------- */
 const APT_RAW = `MAD|Adolfo Suárez Madrid-Barajas|Madrid|ES|40.4719|-3.5626|Europe/Madrid
@@ -1262,7 +1263,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006004325";
+const BUILD = "20261006004731";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1968,10 +1969,6 @@ function openSettings() {
         <label class="swatch custom" title="Elegir otro color" aria-pressed="${!ACCENTS.some(([, c]) => c.toUpperCase() === ACCENT.toUpperCase())}" style="--c:${ACCENT}"><input type="color" id="set-accent" value="${ACCENT.toLowerCase()}" aria-label="Elegir otro color"></label></div>
       <p class="hint">${esc((ACCENTS.find(([, c]) => c.toUpperCase() === ACCENT.toUpperCase()) || ["Personalizado"])[0])}</p>
     </div>
-    <div class="box"><h4>Ícono de la app</h4>
-      <div class="icons2">${["light", "dark"].map(m => `<button type="button" class="iconopt" data-icon="${m}" aria-pressed="${ICONMODE === m}"><img src="${iconPNG(m, 120)}" alt=""><span>${m === "dark" ? "Oscuro" : "Claro"}</span></button>`).join("")}</div>
-      <p class="hint">El ícono de la pantalla de inicio se fija al agregar la app. Para cambiarlo, eliminá Flights de la pantalla de inicio y volvé a agregarla desde Safari con <b>Compartir → Agregar a pantalla de inicio</b>.</p>
-    </div>
     <div class="box"><h4>Datos</h4>
       ${wipeArm ? `<div class="acts"><span class="q">¿Borrar los ${n} vuelos? No se puede deshacer.</span><button class="btn danger" type="button" id="set-wipe-yes">Sí, borrar todo</button><button class="btn" type="button" id="set-wipe-no">Cancelar</button></div>`
         : `<div class="acts"><button class="btn danger" type="button" id="set-wipe" ${n ? "" : "disabled"}>Borrar todos mis vuelos</button></div><p class="hint">Antes de borrar, descargá una copia.</p>`}
@@ -2028,7 +2025,6 @@ document.addEventListener("click", e => {
   if (t.id === "b-settings") return openSettings();
   if (t.dataset.themeSet) return setTheme(t.dataset.themeSet);
   if (t.dataset.accent) return setAccent(t.dataset.accent);
-  if (t.dataset.icon) return setIconMode(t.dataset.icon);
   if (t.id === "set-export") return exportBackup();
   if (t.id === "set-logos") { setLogos(!LOGOS); return openSettings(); }
   if (t.id === "set-wipe") { wipeArm = true; return openSettings(); }
