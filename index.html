@@ -626,13 +626,34 @@ body{overflow-x:clip}
   body[data-view="mapa"] .map{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 250px);min-height:360px;width:100%}
   body[data-view="mapa"] .legend{display:flex;left:10px;bottom:10px}
 }
+
+/* header mark follows accent; dark-mode variant */
+.brand .mark{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 72%,#fff),color-mix(in srgb,var(--accent) 85%,#000));color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .brand .mark{background:#000;color:var(--accent);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}}
+:root[data-theme="dark"] .brand .mark{background:#000;color:var(--accent);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.tabbar .tab-add{color:var(--ink)}
+/* settings: colour swatches + icon choice */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:10px}
+.swatch{position:relative;width:40px;height:40px;border-radius:50%;border:0;padding:0;background:var(--c);cursor:pointer;justify-self:center}
+.swatch[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--c)}
+.swatch.custom{background:conic-gradient(#ff3b30,#ff9500,#ffcc00,#34c759,#00c7be,#007aff,#5856d6,#af52de,#ff2d55,#ff3b30);display:block;overflow:hidden}
+.swatch.custom[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--c)}
+.swatch.custom input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
+.icons2{display:flex;gap:18px}
+.iconopt{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px;color:var(--ink);font-weight:600;font-size:13px}
+.iconopt img{width:64px;height:64px;border-radius:15px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.iconopt[aria-pressed="true"] img{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent)}
+
+.brand{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px}
+.brand:active .mark{transform:scale(.94)}
+.box .btn:not(.primary):not(.danger){background:var(--fill);box-shadow:none}
 </style>
 
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="brand">
+    <div class="brand" id="brand" role="button" tabindex="0" aria-label="Ir a Vuelos">
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
@@ -724,6 +745,46 @@ function applyTheme() {
 }
 applyTheme();
 function setTheme(t) { theme = t; try { localStorage.setItem(THEME_KEY, theme); } catch {} applyTheme(); }
+
+/* ---------- accent colour + app icon ---------- */
+const ACCENTS = [["Azul turquesa","#0087E0"],["Azul iOS","#007AFF"],["Turquesa","#00A0B0"],["Verde","#28A745"],["Índigo","#5856D6"],
+  ["Morado","#9B51E0"],["Rosa","#E0457B"],["Rojo","#E5383B"],["Naranja","#F07C00"],["Grafito","#5B6470"]];
+const hx = h => { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+const toHex = a => "#" + a.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("");
+const mix = (a, b, t) => { const A = hx(a), B = hx(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
+let ACCENT = "#0087E0", ICONMODE = "light";
+try { ACCENT = localStorage.getItem("flights-accent") || ACCENT; ICONMODE = localStorage.getItem("flights-icon") || ICONMODE; } catch {}
+const PLANE_D = "M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
+function iconPNG(mode, size) {
+  const c = document.createElement("canvas"); c.width = c.height = size; const x = c.getContext("2d");
+  const g = x.createLinearGradient(0, 0, size * .4, size);
+  g.addColorStop(0, mix(ACCENT, "#ffffff", mode === "dark" ? .3 : .25)); g.addColorStop(1, mix(ACCENT, "#000000", mode === "dark" ? .05 : .15));
+  if (mode === "dark") { x.fillStyle = "#000"; x.fillRect(0, 0, size, size); }
+  else { x.fillStyle = g; x.fillRect(0, 0, size, size); }
+  x.save(); x.translate(size / 2, size / 2); x.rotate(Math.PI / 4); const k = size * .56 / 24; x.scale(k, k); x.translate(-12, -12);
+  x.clip(new Path2D(PLANE_D)); x.setTransform(1, 0, 0, 1, 0, 0);
+  x.fillStyle = mode === "dark" ? g : "#fff"; x.fillRect(0, 0, size, size); x.restore();
+  return c.toDataURL("image/png");
+}
+function updateTouchIcon() {
+  try {
+    const set = (rel, size) => { let l = document.querySelector(`link[rel="${rel}"]`); if (!l) { l = document.createElement("link"); l.rel = rel; document.head.appendChild(l); } l.href = iconPNG(ICONMODE, size); };
+    set("apple-touch-icon", 180); set("icon", 64);
+  } catch {}
+}
+function applyAccent() {
+  const L = { "accent":ACCENT, "accent-text":mix(ACCENT, "#000000", .15), "accent-soft":mix(ACCENT, "#ffffff", .88), "route":ACCENT, "land-visited":mix(ACCENT, "#ffffff", .78) };
+  const dk = mix(ACCENT, "#ffffff", .12);
+  const D = { "accent":dk, "accent-text":mix(ACCENT, "#ffffff", .32), "accent-soft":mix(ACCENT, "#000000", .78), "route":dk, "land-visited":mix(ACCENT, "#000000", .62) };
+  const t = o => Object.entries(o).map(([k, v]) => `--${k}:${v}`).join(";");
+  let el = document.getElementById("accent-style");
+  if (!el) { el = document.createElement("style"); el.id = "accent-style"; document.body.appendChild(el); }
+  el.textContent = `:root,:root[data-theme="light"]{${t(L)}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${t(D)}}}:root[data-theme="dark"]{${t(D)}}`;
+  updateTouchIcon();
+}
+applyAccent();
+function setAccent(h) { if (!/^#[0-9a-f]{6}$/i.test(h)) return; ACCENT = h.toUpperCase(); try { localStorage.setItem("flights-accent", ACCENT); } catch {} applyAccent(); if ($(".settings")) openSettings(); }
+function setIconMode(m) { ICONMODE = m === "dark" ? "dark" : "light"; try { localStorage.setItem("flights-icon", ICONMODE); } catch {} updateTouchIcon(); if ($(".settings")) openSettings(); }
 
 /* ---------- airports bundled for offline lookup ---------- */
 const APT_RAW = `MAD|Adolfo Suárez Madrid-Barajas|Madrid|ES|40.4719|-3.5626|Europe/Madrid
@@ -1660,6 +1721,15 @@ function openSettings() {
     <div class="box"><h4>Apariencia</h4>
       <div class="segm" role="group" aria-label="Tema">${seg("auto", "Automático")}${seg("light", "Claro")}${seg("dark", "Oscuro")}</div>
     </div>
+    <div class="box"><h4>Color de la app</h4>
+      <div class="swatches" role="group" aria-label="Color de la app">${ACCENTS.map(([nm, c]) => `<button type="button" class="swatch" data-accent="${c}" aria-pressed="${c.toUpperCase() === ACCENT.toUpperCase()}" title="${nm}" aria-label="${nm}" style="--c:${c}"></button>`).join("")}
+        <label class="swatch custom" title="Elegir otro color" aria-pressed="${!ACCENTS.some(([, c]) => c.toUpperCase() === ACCENT.toUpperCase())}" style="--c:${ACCENT}"><input type="color" id="set-accent" value="${ACCENT.toLowerCase()}" aria-label="Elegir otro color"></label></div>
+      <p class="hint">${esc((ACCENTS.find(([, c]) => c.toUpperCase() === ACCENT.toUpperCase()) || ["Personalizado"])[0])}</p>
+    </div>
+    <div class="box"><h4>Ícono de la app</h4>
+      <div class="icons2">${["light", "dark"].map(m => `<button type="button" class="iconopt" data-icon="${m}" aria-pressed="${ICONMODE === m}"><img src="${iconPNG(m, 120)}" alt=""><span>${m === "dark" ? "Oscuro" : "Claro"}</span></button>`).join("")}</div>
+      <p class="hint">El ícono de la pantalla de inicio se fija al agregar la app. Para cambiarlo, eliminá Flights de la pantalla de inicio y volvé a agregarla desde Safari con <b>Compartir → Agregar a pantalla de inicio</b>.</p>
+    </div>
     <div class="box"><h4>Datos</h4>
       ${wipeArm ? `<div class="acts"><span class="q">¿Borrar los ${n} vuelos? No se puede deshacer.</span><button class="btn danger" type="button" id="set-wipe-yes">Sí, borrar todo</button><button class="btn" type="button" id="set-wipe-no">Cancelar</button></div>`
         : `<div class="acts"><button class="btn danger" type="button" id="set-wipe" ${n ? "" : "disabled"}>Borrar todos mis vuelos</button></div><p class="hint">Antes de borrar, descargá una copia.</p>`}
@@ -1674,6 +1744,17 @@ async function wipeAll(btn) {
     wipeArm = false; closeSheet(); toast("Se borraron todos los vuelos");
   } catch { btn.disabled = false; toast("No se pudo borrar todo. Probá de nuevo."); }
 }
+
+document.addEventListener("change", e => { if (e.target && e.target.id === "set-accent") setAccent(e.target.value); });
+
+function goHome() {
+  closeSheet(); S.open = null; S.focusTrip = null; S.focusIds = null; S.tab = "up";
+  const hasUp = all().some(f => !f.past); if (!hasUp) S.tab = "past";
+  setView("vuelos", false); render(); window.scrollTo({ top:0, behavior:"smooth" });
+  const l = document.getElementById("p-list"); if (l) l.scrollTop = 0;
+}
+document.getElementById("brand").addEventListener("click", goHome);
+document.getElementById("brand").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goHome(); } });
 
 /* ---------- phone sections ---------- */
 let VIEW_KEY = "flights-view";
@@ -1692,7 +1773,7 @@ function setView(v, save) {
   if (v === "mapa" && S.mapReady) { renderMap(); requestAnimationFrame(updateZoomExtent); }
   window.scrollTo(0, 0);
 }
-let startView = "vuelos"; try { startView = localStorage.getItem(VIEW_KEY) || "vuelos"; } catch {}
+let startView = "vuelos";
 setView(startView, false);
 
 /* ---------- events ---------- */
@@ -1704,6 +1785,8 @@ document.addEventListener("click", e => {
   if (t.id === "b-import") return openSheet("import");
   if (t.id === "b-settings") return openSettings();
   if (t.dataset.themeSet) return setTheme(t.dataset.themeSet);
+  if (t.dataset.accent) return setAccent(t.dataset.accent);
+  if (t.dataset.icon) return setIconMode(t.dataset.icon);
   if (t.id === "set-export") return exportBackup();
   if (t.id === "set-logos") { setLogos(!LOGOS); return openSettings(); }
   if (t.id === "set-wipe") { wipeArm = true; return openSettings(); }
