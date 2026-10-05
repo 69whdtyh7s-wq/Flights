@@ -362,6 +362,30 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
 .trip .d{text-align:center;border-right:1px solid var(--line);padding-right:12px}
 .trip .d b{display:block;font-family:var(--f-mono);font-size:26px;font-weight:600;line-height:1}
 .trip .d span{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
+
+/* airline icons */
+.al-ic{position:relative;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;background:#fff;border:1px solid var(--line);overflow:hidden;flex:none;vertical-align:middle;margin-right:6px}
+.al-ic b{font-family:var(--f-mono);font-size:8.5px;font-weight:700;color:#16181C;letter-spacing:0}
+.al-ic img{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain;max-width:none}
+.al-ic.has-img b{visibility:hidden}
+.al-ic.sm{width:18px;height:18px;border-radius:4px}
+.al-ic.sm b{font-size:7px}
+.meta .fn{display:inline-flex;align-items:center}
+.trip .als{display:flex;gap:3px}
+.trip .als .al-ic{margin:0}
+.rank .nm span{display:flex;align-items:center}
+/* countries list with flags */
+.clist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 18px}
+.clist li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.fl-ic{font-size:22px;line-height:1;text-align:center;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.clist .cn{display:flex;flex-direction:column;gap:2px;min-width:0}
+.clist .cn > span:first-child{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clist .cy{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.clist .bar{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+.clist .bar i{display:block;height:100%;background:var(--route)}
+.clist .ct{font-family:var(--f-mono);font-size:15px;font-weight:700;text-align:right;line-height:1.1}
+.clist .ct small{display:block;font-size:10px;font-weight:400;color:var(--muted)}
+@media (min-width:1100px){#stats .sec-countries{grid-column:1 / -1;border-right:0!important}}
 </style>
 
 </head>
@@ -793,6 +817,29 @@ function renderMap() {
   fitKey = key;
 }
 
+/* ---------- airline icons + flags ---------- */
+const AL_CODES = { "vueling":"VY","ryanair":"FR","iberia":"IB","iberia express":"I2","easyjet":"U2","air france":"AF","lufthansa":"LH",
+  "aerolíneas argentinas":"AR","aerolineas argentinas":"AR","air europa":"UX","aer lingus":"EI","norwegian":"DY","american airlines":"AA",
+  "tap air portugal":"TP","transavia":"HV","alitalia":"AZ","ita airways":"AZ","pluna":"PU","austral":"AU","british airways":"BA",
+  "binter canarias":"NT","qantas":"QF","flybondi":"FO","klm":"KL","delta":"DL","united":"UA","emirates":"EK","qatar airways":"QR",
+  "turkish airlines":"TK","swiss":"LX","latam":"LA","avianca":"AV","copa airlines":"CM","aeroméxico":"AM","volotea":"V7","wizz air":"W6",
+  "level":"IB","jetsmart":"JA","singapore airlines":"SQ","cathay pacific":"CX","virgin australia":"VA","jetstar":"JQ" };
+function alCode(f) {
+  const m = /^([A-Z0-9]{2})\d/.exec(f.num || "");
+  if (m && !/^\d\d$/.test(m[1])) return m[1];
+  const n = (f.airline || "").toLowerCase().trim();
+  if (AL_CODES[n]) return AL_CODES[n];
+  for (const x of S.real) { if ((x.airline || "").toLowerCase().trim() === n) { const k = /^([A-Z0-9]{2})\d/.exec(x.num || ""); if (k) return k[1]; } }
+  return "";
+}
+function alIcon(code, name, size) {
+  if (!code) return "";
+  return `<span class="al-ic${size ? " " + size : ""}" title="${esc(name || code)}" aria-hidden="true"><b>${esc(code)}</b><img src="https://pics.avs.io/96/96/${esc(code)}.png" alt="" loading="lazy" decoding="async"></span>`;
+}
+document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG" && t.closest(".al-ic")) t.remove(); }, true);
+document.addEventListener("load", e => { const t = e.target; if (t && t.tagName === "IMG" && t.closest(".al-ic")) t.closest(".al-ic").classList.add("has-img"); }, true);
+const flag = cc => /^[A-Z]{2}$/.test(cc || "") ? String.fromCodePoint(...[...cc].map(c => 127397 + c.charCodeAt(0))) : "";
+
 /* ---------- derived views ---------- */
 function filtered() { const a = all(); return S.year === "all" ? a : a.filter(f => f.year === S.year); }
 function relDays(ms) {
@@ -843,7 +890,7 @@ function flightRow(f) {
       <div class="path">${PLANE}</div>
       <div class="ap r"><b>${esc(f.to?.iata || "???")}</b><small>${esc(f.to?.city || "")}</small><span class="t">${esc(f.arr || "")}${+f.arrOffset > 0 ? `<sup>+${f.arrOffset}</sup>` : ""}</span></div>
     </div>
-    <div class="meta"><span class="fn">${esc(f.num || "—")}</span><span class="al">${esc(f.airline || "")}</span><span>${pill}</span></div>
+    <div class="meta"><span class="fn">${alIcon(alCode(f), f.airline)}${esc(f.num || "—")}</span><span class="al">${esc(f.airline || "")}</span><span>${pill}</span></div>
   </button>` + (open ? detail(f) : "");
 }
 function detail(f) {
@@ -914,7 +961,7 @@ function tripRow(t, desc) {
     <div class="d"><b class="num">${day}</b><span>${mon}</span></div>
     <div class="tinfo"><span class="tk">${t.round ? "Ida y vuelta" : "Viaje"}</span><span class="tt">${title}</span><span class="pp">${esc(t.path)}</span>
       <span class="mm">${t.legs.length} vuelos · ${t.days} ${t.days === 1 ? "día" : "días"} · ${fmt(t.km)} km</span></div>
-    <div class="tside">${pill}${CHEV}</div>
+    <div class="tside"><span class="als">${[...new Map(t.legs.map(l => [alCode(l), l.airline])).entries()].filter(([c]) => c).slice(0, 4).map(([c, n]) => alIcon(c, n, "sm")).join("")}</span>${pill}${CHEV}</div>
   </button>` + (open ? `<div class="legs">${legs.map(flightRow).join("")}</div>` : "");
 }
 
@@ -996,8 +1043,9 @@ function renderStats() {
   html += `<div class="sec cols2"><div><h3>Aeropuertos</h3>${rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`)}</div>
     <div><h3>Rutas</h3>${rankList(topRoute, k => `<b>${esc(k)}</b>`)}</div></div>`;
   const topAl = count(past.map(f => f.airline)).slice(0, 6);
+  const alOf = new Map(); for (const f of past) if (f.airline && !alOf.get(f.airline)) alOf.set(f.airline, alCode(f));
   const topAc = count(past.map(f => f.aircraft)).slice(0, 6);
-  html += `<div class="sec cols2"><div><h3>Aerolíneas</h3>${topAl.length ? rankList(topAl, esc) : `<p class="hint">Sin datos.</p>`}</div>
+  html += `<div class="sec cols2"><div><h3>Aerolíneas</h3>${topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k)) : `<p class="hint">Sin datos.</p>`}</div>
     <div><h3>Aviones</h3>${topAc.length ? rankList(topAc, esc) : `<p class="hint">Sin datos.</p>`}</div></div>`;
   const byKm = [...past].sort((a, b) => b.km - a.km);
   const lg = byKm[0], sh = byKm[byKm.length - 1];
@@ -1011,7 +1059,10 @@ function renderStats() {
     ${nights ? rec("Llegadas al día siguiente", nights) : ""}
   </div></div>`;
   const ccs = count(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])]));
-  html += `<div class="sec"><h3>Países visitados · ${ccs.length}</h3><div class="ccs">${ccs.map(([c, n]) => `<span title="${n} vuelos">${esc(country(c))}</span>`).join("")}</div></div>`;
+  const yrs = new Map();
+  for (const f of past) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) { const y = yrs.get(c) || [f.year, f.year]; if (f.year < y[0]) y[0] = f.year; if (f.year > y[1]) y[1] = f.year; yrs.set(c, y); }
+  const cmax = ccs.length ? ccs[0][1] : 1;
+  html += `<div class="sec sec-countries"><h3>Países visitados · ${ccs.length}</h3><ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></li>`; }).join("")}</ol></div>`;
   $("#stats").innerHTML = html;
 }
 
