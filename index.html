@@ -19,8 +19,8 @@
 /* Layout: iOS-style grouped cards — header, map card, stat cards, flights list + stats (sidebar on wide screens) */
 :root{
   --bg:#F2F2F7; --surface:#FFFFFF; --surface-2:#F2F2F7; --fill:#E9E9EE; --ink:#1C1C1E; --muted:#8A8A8F; --line:#E3E3E8;
-  --accent:#007AFF; --accent-text:#0067D6; --accent-soft:#E6F0FF; --accent-ink:#FFFFFF; --route:#007AFF; --sky:#F08A00; --sky-soft:#FFF1DE;
-  --sea:#E8EEF5; --land:#FFFFFF; --land-visited:#CFE2FF; --grat:#E8EEF5; --ok:#248A3D; --danger:#D70015;
+  --accent:#0087E0; --accent-text:#0072C2; --accent-soft:#E2F1FC; --accent-ink:#FFFFFF; --route:#0087E0; --sky:#F08A00; --sky-soft:#FFF1DE;
+  --sea:#E8EEF5; --land:#FFFFFF; --land-visited:#CBE7FA; --grat:#E8EEF5; --ok:#248A3D; --danger:#D70015;
   --flap:transparent; --flap-cell:#FFFFFF; --flap-ink:#1C1C1E; --flap-label:#8A8A8F; --flap-seam:transparent;
   --card-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05); --shadow:var(--card-shadow);
   --f-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",system-ui,sans-serif;
@@ -31,14 +31,14 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --fill:#2C2C2E; --ink:#FFFFFF; --muted:#8E8E93; --line:#2F2F33;
-  --accent:#0A84FF; --accent-text:#409CFF; --accent-soft:#0B2847; --accent-ink:#FFFFFF; --route:#0A84FF; --sky:#FF9F0A; --sky-soft:#3A2A10;
-  --sea:#0A0E13; --land:#1E2126; --land-visited:#123A66; --grat:#0A0E13; --ok:#30D158; --danger:#FF453A;
+  --accent:#1693F0; --accent-text:#4DADF5; --accent-soft:#0A2B44; --accent-ink:#FFFFFF; --route:#1693F0; --sky:#FF9F0A; --sky-soft:#3A2A10;
+  --sea:#0A0E13; --land:#1E2126; --land-visited:#0F3F5F; --grat:#0A0E13; --ok:#30D158; --danger:#FF453A;
   --flap:transparent; --flap-cell:#1C1C1E; --flap-ink:#FFFFFF; --flap-label:#8E8E93; --flap-seam:transparent;
   --card-shadow:none; --shadow:none; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --fill:#2C2C2E; --ink:#FFFFFF; --muted:#8E8E93; --line:#2F2F33;
-  --accent:#0A84FF; --accent-text:#409CFF; --accent-soft:#0B2847; --accent-ink:#FFFFFF; --route:#0A84FF; --sky:#FF9F0A; --sky-soft:#3A2A10;
-  --sea:#0A0E13; --land:#1E2126; --land-visited:#123A66; --grat:#0A0E13; --ok:#30D158; --danger:#FF453A;
+  --accent:#1693F0; --accent-text:#4DADF5; --accent-soft:#0A2B44; --accent-ink:#FFFFFF; --route:#1693F0; --sky:#FF9F0A; --sky-soft:#3A2A10;
+  --sea:#0A0E13; --land:#1E2126; --land-visited:#0F3F5F; --grat:#0A0E13; --ok:#30D158; --danger:#FF453A;
   --flap:transparent; --flap-cell:#1C1C1E; --flap-ink:#FFFFFF; --flap-label:#8E8E93; --flap-seam:transparent;
   --card-shadow:none; --shadow:none; color-scheme:dark}
 *{box-sizing:border-box}
@@ -432,7 +432,7 @@ body{font-family:var(--f-body);-webkit-font-smoothing:antialiased;letter-spacing
 .wrap{gap:20px}
 .num,.board .v,.fl .d b,.trip .d b,.yr .big,.next .cd,.fun b,.route .ap b{font-variant-numeric:tabular-nums}
 /* header */
-.brand .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(160deg,#3D9BFF,#0062E0);color:#fff}
+.brand .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(160deg,#3FAEF6,#0072CF);color:#fff}
 .brand h1{font-family:var(--f-display);font-size:30px;font-weight:700;letter-spacing:-.02em;text-transform:none}
 .brand small{font-family:var(--f-body);font-size:13px;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:2px}
 /* buttons, chips, segmented */
@@ -554,7 +554,7 @@ label.f input.fnum{font-family:var(--f-body)}
   .tabbar{border-top:1px solid var(--line);background:color-mix(in srgb,var(--surface) 80%,transparent)}
   .tabbar button{font-family:var(--f-body);font-size:10.5px;font-weight:600;letter-spacing:0;text-transform:none}
   .tabbar button[aria-current="page"]{color:var(--accent)}
-  .tabbar .tab-add{border-radius:50%;box-shadow:0 4px 14px rgba(0,122,255,.35)}
+  .tabbar .tab-add{border-radius:50%;box-shadow:0 4px 14px rgba(0,135,224,.35)}
   .brand h1{font-size:26px}
   .board .v{font-size:26px}
   .fl::before{left:72px}
