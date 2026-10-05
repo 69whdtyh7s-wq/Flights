@@ -849,6 +849,9 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .sg-txt small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sg-empty{padding:12px;color:var(--muted);font-size:13px}
 .apf:last-child .sugg{left:auto;right:0}
+
+#s-airline .sg{grid-template-columns:auto minmax(0,1fr)}
+#s-airline .al-ic.sm{width:26px;height:26px;margin:0}
 </style>
 
 </head>
@@ -1183,7 +1186,7 @@ function lsWrite(arr) { try { localStorage.setItem(LS_KEY, JSON.stringify(arr));
 function newId() { return "f" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function clean(f) {
   const pickApt = a => a ? { iata:String(a.iata||"").toUpperCase(), name:a.name||"", city:a.city||"", cc:(a.cc||"").toUpperCase(), lat:+a.lat, lon:+a.lon, tz:a.tz||"" } : null;
-  return { kind:"flight", num:(f.num||"").toUpperCase().replace(/\s+/g,""), airline:f.airline||"", date:f.date||"", dep:f.dep||"", arr:f.arr||"", arrOffset:+f.arrOffset||0,
+  return { kind:"flight", num:(f.num||"").toUpperCase().replace(/\s+/g,""), airline:f.airline||"", alc:/^[A-Z0-9]{2}$/.test(f.alc||"") ? f.alc : "", date:f.date||"", dep:f.dep||"", arr:f.arr||"", arrOffset:+f.arrOffset||0,
     durationMin: +f.durationMin || null, from:pickApt(f.from), to:pickApt(f.to), aircraft:f.aircraft||"", seat:f.seat||"", cls:f.cls||"", notes:f.notes||"", updated: Date.now() };
 }
 async function saveFlight(id, f) {
@@ -1440,6 +1443,7 @@ const AL_CODES = { "vueling":"VY","ryanair":"FR","iberia":"IB","iberia express":
   "turkish airlines":"TK","swiss":"LX","latam":"LA","avianca":"AV","copa airlines":"CM","aeroméxico":"AM","volotea":"V7","wizz air":"W6",
   "level":"IB","jetsmart":"JA","singapore airlines":"SQ","cathay pacific":"CX","virgin australia":"VA","jetstar":"JQ" };
 function alCode(f) {
+  if (f.alc && /^[A-Z0-9]{2}$/.test(f.alc)) return f.alc;
   const m = /^([A-Z0-9]{2})\d/.exec(f.num || "");
   if (m && !/^\d\d$/.test(m[1])) return m[1];
   const n = (f.airline || "").toLowerCase().trim();
@@ -1449,7 +1453,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006012255";
+const BUILD = "20261006012545";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1897,7 +1901,7 @@ function openSheet(kind, id) {
     </div>
     <div class="box"><h4>Detalles</h4>
       <div class="row">
-        <label class="f">Aerolínea<input id="f-airline" value="${v("airline")}" placeholder="Iberia"></label>
+        <div class="f apf">Aerolínea<input id="f-airline" class="iata" autocomplete="off" autocapitalize="words" spellcheck="false" value="${v("airline")}" placeholder="Iberia" aria-label="Aerolínea"><div class="sugg" id="s-airline" role="listbox" hidden></div></div>
         <label class="f">Avión<input id="f-aircraft" value="${v("aircraft")}" placeholder="Airbus A350-900"></label>
       </div>
       <div class="row">
@@ -1926,6 +1930,12 @@ function openSheet(kind, id) {
     inp.addEventListener("blur", () => setTimeout(() => { const b = $("#s-" + side); if (b) b.hidden = true; }, 180));
     inp.addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#s-" + side + " [data-apt]"); if (first) { e.preventDefault(); pickApt(side, first.dataset.apt); } } });
   }
+  { const ai = $("#f-airline");
+    ai.addEventListener("input", () => { form.alc = ""; showAlSugg(); });
+    ai.addEventListener("focus", () => { if (ai.value.trim().length >= 1 && !form.alc) showAlSugg(); });
+    ai.addEventListener("blur", () => setTimeout(() => { const b = $("#s-airline"); if (b) b.hidden = true; }, 180));
+    ai.addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#s-airline [data-alc]"); if (first) { e.preventDefault(); pickAirline(first.dataset.alc, first.dataset.name); } } });
+    loadAlDB(); }
   $("#f-look").onclick = () => doLookup(true);
   $("#f-stop").onclick = () => { ctl?.abort(); clearTimeout(autoT); };
   lastKey = id ? lookupKey() : "";
@@ -1935,6 +1945,64 @@ function openSheet(kind, id) {
   $("#f-save").onclick = doSave;
   $("#f-num").addEventListener("keydown", e => { if (e.key === "Enter") scheduleAuto(0); });
 }
+/* ---------- airline search ---------- */
+const AL_NAME = { VY:"Vueling", IB:"Iberia", FR:"Ryanair", U2:"easyJet", AF:"Air France", LH:"Lufthansa", AR:"Aerolíneas Argentinas", UX:"Air Europa",
+  EI:"Aer Lingus", DY:"Norwegian", AA:"American Airlines", TP:"TAP Air Portugal", HV:"Transavia", BA:"British Airways", NT:"Binter Canarias",
+  QF:"Qantas", FO:"Flybondi", I2:"Iberia Express", JK:"Spanair", KL:"KLM", V7:"Volotea", W6:"Wizz Air", LX:"Swiss", LA:"LATAM", AV:"Avianca",
+  CM:"Copa Airlines", AM:"Aeroméxico", UA:"United Airlines", DL:"Delta", EK:"Emirates", QR:"Qatar Airways", TK:"Turkish Airlines", AZ:"ITA Airways",
+  YW:"Air Nostrum", SK:"SAS", AY:"Finnair", OS:"Austrian", SN:"Brussels Airlines", EW:"Eurowings", LO:"LOT", A3:"Aegean", SQ:"Singapore Airlines",
+  CX:"Cathay Pacific", EY:"Etihad", NH:"ANA", JL:"Japan Airlines", AC:"Air Canada", WS:"WestJet", B6:"JetBlue", WN:"Southwest", G3:"GOL", AD:"Azul",
+  JA:"JetSMART", H2:"Sky Airline" };
+let ALDB = null, alDbLoading = null;
+function loadAlDB() {
+  if (ALDB || alDbLoading) return alDbLoading;
+  alDbLoading = fetch("airlines.json?v=" + BUILD).then(r => r.ok ? r.json() : []).catch(() => [])
+    .then(arr => { ALDB = arr.map(([name, code, cc, active, logo]) => ({ name, code, cc, active, logo })); });
+  return alDbLoading;
+}
+function searchAirline(q) {
+  const n = norm(q).trim(); if (!n) return [];
+  const pool = new Map();   // code -> {code, name, cc, used}
+  for (const a of (ALDB || [])) if (!pool.has(a.code) || a.active) pool.set(a.code, { ...a, name:AL_NAME[a.code] || a.name, used:0 });
+  for (const [c, nm] of Object.entries(AL_NAME)) if (nm) pool.set(c, { ...(pool.get(c) || { code:c, cc:"", active:1 }), code:c, name:nm, used:0 });
+  for (const f of S.real) { const c = alCode(f); if (c && f.airline) { const x = pool.get(c) || { code:c, cc:"", active:1 }; pool.set(c, { ...x, name:f.airline, used:(x.used || 0) + 1 }); } }
+  const res = [];
+  for (const a of pool.values()) {
+    const nm = norm(a.name), code = a.code.toLowerCase();
+    let sc = 0;
+    if (code === n) sc = 90;
+    else if (nm === n) sc = 95;
+    else if (nm.startsWith(n)) sc = 80;
+    else if (nm.split(/\s+/).some(w => w.startsWith(n))) sc = 65;
+    else if (n.length >= 3 && nm.includes(n)) sc = 45;
+    if (!sc) continue;
+    if (a.used) sc += 20 + Math.min(10, a.used / 4);
+    if (AL_NAME[a.code]) sc += 6;
+    if (LOGO_CODES.has(a.code)) sc += 4;
+    if (a.active) sc += 2;
+    res.push([sc, a]);
+  }
+  return res.sort((x, y) => y[0] - x[0] || x[1].name.localeCompare(y[1].name)).slice(0, 7).map(x => x[1]);
+}
+async function showAlSugg() {
+  const inp = $("#f-airline"), box = $("#s-airline"); if (!inp || !box) return;
+  const q = inp.value.trim();
+  if (!q || form.alc) { box.hidden = true; return; }
+  if (!ALDB) await loadAlDB();
+  if (inp.value.trim() !== q) return;
+  const hits = searchAirline(q);
+  if (!hits.length) { box.hidden = true; return; }
+  box.innerHTML = hits.map(a => `<button type="button" class="sg" role="option" data-alc="${esc(a.code)}" data-name="${esc(a.name)}">
+    ${alIcon(a.code, a.name, "sm")}<span class="sg-txt"><b>${esc(a.name)}</b><small>${esc(a.code)}${a.cc ? " · " + esc(country(a.cc)) : ""}${a.used ? ` · ${a.used} ${a.used === 1 ? "vuelo tuyo" : "vuelos tuyos"}` : ""}</small></span></button>`).join("");
+  box.hidden = false; markLogos(box);
+}
+function pickAirline(code, name) {
+  form.alc = code;
+  const inp = $("#f-airline"); inp.value = name; $("#s-airline").hidden = true;
+  const num = $("#f-num"); if (num && !num.value.trim()) { num.value = code; num.focus(); }
+}
+document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest("[data-alc]"); if (b && b.closest("#s-airline")) { e.preventDefault(); pickAirline(b.dataset.alc, b.dataset.name); } });
+
 /* ---------- airport search: city, airport name, country or code ---------- */
 let APTDB = null, aptDbLoading = null;
 function loadAptDB() {
