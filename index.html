@@ -859,8 +859,8 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .map .apt.dim{opacity:.22}
 
 /* visited countries keep visible borders */
-.map .land.visited{stroke:color-mix(in srgb,var(--route) 70%,var(--surface));stroke-width:.9}
-#mapcard[data-type="satelite"] .map .land.visited,#mapcard[data-type="noche"] .map .land.visited{stroke:rgba(255,255,255,.75);stroke-width:.9}
+.map .land.visited{stroke:color-mix(in srgb,var(--route) 32%,var(--surface));stroke-width:.5}
+#mapcard[data-type="satelite"] .map .land.visited,#mapcard[data-type="noche"] .map .land.visited{stroke:rgba(255,255,255,.38);stroke-width:.5}
 </style>
 
 </head>
@@ -1345,7 +1345,7 @@ function initMap() {
   satImg = gLayer.append("image").attr("class","sat").attr("x", 0).attr("y", 0).attr("width", W).attr("height", H).attr("preserveAspectRatio", "none").style("display", "none");
   gLayer.append("path").attr("class","grat").attr("vector-effect","non-scaling-stroke").attr("d", geoPath(d3.geoGraticule10()));
   gLayer.append("g").attr("class","lands");
-  gArcs = gLayer.append("g"); gApts = gLayer.append("g");
+  gArcs = gLayer.append("g"); gApts = svgSel.append("g").attr("class","aptlayer");
   zoom = d3.zoom().scaleExtent([1, 12]).translateExtent([[0,0],[W,H]])
     .filter(e => mapView !== "globo" ? ((!e.ctrlKey || e.type === "wheel") && !e.button) : (e.type === "wheel" || (e.touches && e.touches.length > 1)))
     .on("zoom", e => {
@@ -1377,12 +1377,13 @@ const ISO_N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","31":"AZ","32":"AR","36":
 function sizeApts() {
   if (!gApts) return;
   // keep dots and codes the same size on screen at any zoom
-  const k = curK, r = d => d.r / k;
-  gApts.selectAll("circle").attr("cx", d => d.p[0]).attr("cy", d => d.p[1]).attr("r", r).style("stroke-width", (1.6 / k) + "px");
+  // dots live outside the zoomed group: place them in screen coordinates so they always sit exactly on the city
+  const t = d3.zoomTransform(svgSel.node()), k = t.k;
+  gApts.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => d.r).style("stroke-width", "1.6px");
   const showCodes = k >= 3 || !!(S.open || S.focusIds);
   gApts.selectAll("text").style("display", showCodes ? null : "none")
-    .attr("font-size", 10.5 / k).style("stroke-width", (3 / k) + "px")
-    .attr("x", d => d.p[0]).attr("y", d => d.p[1] - (d.r + 3.5) / k);
+    .attr("font-size", 10.5).style("stroke-width", "3px")
+    .attr("x", d => t.applyX(d.p[0])).attr("y", d => t.applyY(d.p[1]) - (d.r + 3.5));
 }
 function fitRoutes(animate) {
   if (!svgSel) return;
@@ -1453,7 +1454,7 @@ function renderMap() {
   const top = new Set([...as].sort((a, b) => b.n - a.n).slice(0, 16).map(a => a.iata));
   const hub = as.length ? Math.max(...as.map(a => a.n)) : 0;
   gApts.selectAll("circle").data(as, d => d.iata).join("circle")
-    .attr("class", d => "apt" + (d.dim ? " dim" : "")).attr("cx", d => d.p[0]).attr("cy", d => d.p[1])
+    .attr("class", d => "apt" + (d.dim ? " dim" : ""))
     .selectAll("title").data(d => [d]).join("title").text(d => `${d.iata} · ${d.city || d.name} — ${d.n} ${d.n === 1 ? "vuelo" : "vuelos"}`);
   gApts.selectAll("text").data(as.filter(a => !a.dim), d => d.iata).join("text")
     .attr("class","aptl").attr("text-anchor","middle").text(d => d.iata);
@@ -1484,7 +1485,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006014411";
+const BUILD = "20261006014843";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1931,10 +1932,10 @@ function openSheet(kind, id) {
         <label class="f">Número de vuelo<input id="f-num" class="fnum" autocomplete="off" placeholder="IB6845" value="${v("num")}"></label>
         <label class="f">Fecha de salida<input id="f-date" type="date" value="${v("date")}"></label>
       </div>
-      <div class="acts"><button class="btn" type="button" id="f-look" ${S.sample ? "" : "hidden"}>Buscar otra vez</button><button class="btn" type="button" id="f-stop" hidden>Detener</button></div>
+      <div class="acts"><button class="btn" type="button" id="f-look">Buscar otra vez</button><button class="btn" type="button" id="f-stop" hidden>Detener</button></div>
       <div id="f-stat" class="status" hidden></div>
       <div id="f-alts" class="acts" hidden></div>
-      <p class="hint">${S.sample ? "Escribí el número y la fecha: la ruta, los horarios y el avión se completan solos. Revisá antes de guardar." : "Completá la ruta con los códigos IATA de los aeropuertos."}</p>
+      <p class="hint">${S.sample ? "Escribí el número y la fecha: la ruta, los horarios y el avión se completan solos. Revisá antes de guardar." : "Escribí el número y la fecha: la aerolínea y la ruta se completan solas. Si ya hiciste ese vuelo, también los horarios y el avión."}</p>
     </div>
     <div class="box"><h4>Ruta y horarios</h4>
       <div class="row">
@@ -2148,13 +2149,46 @@ function lookupKey() {
 }
 function scheduleAuto(delay) {
   clearTimeout(autoT);
-  autoT = setTimeout(() => { const k = lookupKey(); if (k && k !== lastKey && S.sample) doLookup(false); }, delay);
+  autoT = setTimeout(() => { const k = lookupKey(); if (k && k !== lastKey) doLookup(false); }, delay);
+}
+/* ---------- lookup without Claude: your own history first, then a public flight-route database ---------- */
+function historyMatch(num) {
+  const n = (num || "").toUpperCase().replace(/\s+/g, "");
+  return S.real.filter(f => f.num === n && validApt(f.from) && validApt(f.to)).sort((a, b) => (b.date || "").localeCompare(a.date || ""))[0] || null;
+}
+async function aptFrom(iata, extra) {
+  const k = knownApt(iata); if (k) return { ...k };
+  if (!APTDB) await loadAptDB();
+  const d = (APTDB || []).find(a => a.iata === iata); if (d) return { ...d };
+  if (!extra) return null;
+  return { iata, name:extra.name || iata, city:extra.municipality || "", cc:(extra.country_iso_name || "").toUpperCase(), lat:+extra.latitude, lon:+extra.longitude, tz:"" };
+}
+async function lookupFree(num, date, signal) {
+  const h = historyMatch(num);
+  if (h) return { found:true, f:{ num:h.num, airline:h.airline, alc:h.alc || alCode(h), from:{ ...h.from }, to:{ ...h.to }, dep:h.dep, arr:h.arr, arrOffset:h.arrOffset,
+    durationMin:h.durationMin, aircraft:h.aircraft, note:`Copiado de tu vuelo ${h.num} del ${h.date}.` } };
+  let j;
+  try {
+    const res = await fetch("https://api.adsbdb.com/v0/callsign/" + encodeURIComponent(num), { signal });
+    if (res.status === 404) return { found:false, f:{ note:"No encontramos ese número de vuelo. Escribí la ruta a mano." } };
+    if (!res.ok) throw new Error("http");
+    j = await res.json();
+  } catch (e) {
+    if (e && e.name === "AbortError") throw { code:"cancelled" };
+    return { found:false, f:{ note:"No se pudo buscar el vuelo (sin conexión o servicio no disponible). Escribí la ruta a mano." } };
+  }
+  const r = j && j.response && j.response.flightroute;
+  if (!r || !r.origin || !r.destination) return { found:false, f:{ note:"No encontramos ese número de vuelo. Escribí la ruta a mano." } };
+  const from = await aptFrom(r.origin.iata_code, r.origin), to = await aptFrom(r.destination.iata_code, r.destination);
+  if (!from || !to) return { found:false, f:{ note:"Encontramos el vuelo pero no sus aeropuertos. Escribí la ruta a mano." } };
+  const alc = r.airline && r.airline.iata || num.slice(0, 2);
+  return { found:true, f:{ num:r.callsign_iata || num, airline:AL_NAME[alc] || (r.airline && r.airline.name) || "", alc, from, to,
+    note:"Ruta habitual de ese número de vuelo. Completá los horarios." } };
 }
 async function doLookup(manual) {
   readForm();
   if (!form.num || !form.date) { setStat("Escribí el número de vuelo y la fecha.", "err"); return; }
   if (manual && !FNUM.test(form.num)) { setStat("El número de vuelo tiene que ser como IB6845 o UX91.", "err"); return; }
-  if (!S.sample) return;
   ctl?.abort();
   const my = ctl = new AbortController();
   const key = lookupKey() || (form.num + "|" + form.date); lastKey = key;
@@ -2164,7 +2198,7 @@ async function doLookup(manual) {
   setStat(`Buscando ${form.num} del ${+d} ${MONTHS[+m - 1]} ${y}…`, "work");
   try {
     const hf = form._manualRoute ? $("#f-from").value : "", ht = form._manualRoute ? $("#f-to").value : "";
-    const r = await lookupFlight(form.num, form.date, hf, ht, my.signal, manual);
+    const r = (S.sample && !historyMatch(form.num)) ? await lookupFlight(form.num, form.date, hf, ht, my.signal, manual) : await lookupFree(form.num, form.date, my.signal);
     if (!$("#f-look") || my !== ctl) return;
     const f = r.f;
     if (!r.found || !f || !f.from || !f.to) { setStat((f && f.note) || "No encontramos ese vuelo. Revisá el número o completá la ruta a mano.", "err"); return; }
@@ -2173,6 +2207,7 @@ async function doLookup(manual) {
     if (f.dep) $("#f-dep").value = f.dep; if (f.arr) $("#f-arr").value = f.arr;
     $("#f-off").value = String(Math.max(-1, Math.min(2, f.arrOffset || 0)));
     if (f.airline) $("#f-airline").value = f.airline;
+    if (f.alc) form.alc = f.alc;
     if (f.aircraft && !$("#f-aircraft").value) $("#f-aircraft").value = f.aircraft;
     if (f.num) $("#f-num").value = f.num;
     form.durationMin = f.durationMin;
@@ -2184,7 +2219,6 @@ async function doLookup(manual) {
     if (my !== ctl) return;
     if (e && e.code === "cancelled") { lastKey = ""; setStat("Búsqueda detenida.", ""); }
     else { const m = sampleErr(e); setStat(m, m ? "err" : ""); if (e && e.code !== "rate_limited") lastKey = key; else lastKey = ""; }
-    if (!S.sample && $("#f-look")) { $("#f-look").hidden = true; }
   } finally {
     if (my === ctl) { const b = $("#f-look"); if (b) b.disabled = false; const s = $("#f-stop"); if (s) s.hidden = true; }
   }
