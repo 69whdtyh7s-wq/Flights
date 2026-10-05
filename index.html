@@ -857,7 +857,10 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 @media (max-width:699px){.detail .acts .showmap{display:inline-flex;flex-basis:100%;background:var(--accent);color:var(--accent-ink)}}
 
 .map .apt.dim{opacity:.22}
-.map .apt{transition:opacity .2s}
+
+/* visited countries keep visible borders */
+.map .land.visited{stroke:color-mix(in srgb,var(--route) 70%,var(--surface));stroke-width:.9}
+#mapcard[data-type="satelite"] .map .land.visited,#mapcard[data-type="noche"] .map .land.visited{stroke:rgba(255,255,255,.75);stroke-width:.9}
 </style>
 
 </head>
@@ -1375,7 +1378,7 @@ function sizeApts() {
   if (!gApts) return;
   // keep dots and codes the same size on screen at any zoom
   const k = curK, r = d => d.r / k;
-  gApts.selectAll("circle").attr("r", r).style("stroke-width", (1.6 / k) + "px");
+  gApts.selectAll("circle").attr("cx", d => d.p[0]).attr("cy", d => d.p[1]).attr("r", r).style("stroke-width", (1.6 / k) + "px");
   const showCodes = k >= 3 || !!(S.open || S.focusIds);
   gApts.selectAll("text").style("display", showCodes ? null : "none")
     .attr("font-size", 10.5 / k).style("stroke-width", (3 / k) + "px")
@@ -1434,6 +1437,7 @@ function renderMap() {
     }
   }
   gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  gLayer.select(".lands").selectAll("path.visited").raise();
   const selIds = S.open ? [S.open] : S.focusIds;
   const isSel = d => !!selIds && d.ids.some(id => selIds.includes(id));
   const selApts = new Set(selIds ? fl.filter(f => selIds.includes(f.id)).flatMap(f => [f.from?.iata, f.to?.iata]) : []);
@@ -1480,7 +1484,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006013902";
+const BUILD = "20261006014411";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1610,9 +1614,22 @@ function buildTrips(list) {
   const fl = list.filter(f => validApt(f.from) && validApt(f.to)).sort((a, b) => a.depT - b.depT);
   // same metro area: same city name, or airports less than 100 km apart (EZE/AEP, Múnich/Munich, BVA/CDG…)
   const near = (a, b) => !!a && !!b && (a.iata === b.iata || cityKey(a) === cityKey(b) || haversine(a, b) < 100);
-  const cnt = new Map(); for (const f of fl) for (const a of [f.from, f.to]) cnt.set(a.iata, [(cnt.get(a.iata)?.[0] || 0) + 1, a]);
-  const homeApt = [...cnt.values()].sort((x, y) => y[0] - x[0])[0]?.[1];
-  const isHome = a => !!homeApt && near(a, homeApt);
+  // "home" can change over the years: the city where most time was spent between flights within ~2 years
+  const stays = fl.map((f, i) => ({ a:f.to, t:f.arrT, dur:i + 1 < fl.length ? Math.max(0, Math.min(fl[i + 1].depT - f.arrT, 365 * DAY)) : 0 }));
+  const bestStay = (filter) => {
+    const tot = new Map();
+    for (const st of stays) if (filter(st)) { const k = cityKey(st.a); tot.set(k, [(tot.get(k)?.[0] || 0) + st.dur, st.a]); }
+    const best = [...tot.values()].sort((x, y) => y[0] - x[0])[0];
+    return best && best[0] >= 60 * DAY ? best[1] : null;
+  };
+  const globalHome = bestStay(() => true);
+  const homeCache = new Map();
+  const homeAt = t => {
+    const key = Math.floor(t / (90 * DAY)); if (homeCache.has(key)) return homeCache.get(key);
+    const h = bestStay(st => Math.abs(st.t - t) < 730 * DAY) || globalHome;
+    homeCache.set(key, h); return h;
+  };
+  const isHome = (a, t) => { const h = homeAt(t); return !!h && near(a, h); };
   const out = []; let cur = null;
   for (const f of fl) {
     if (cur) {
@@ -1622,13 +1639,13 @@ function buildTrips(list) {
       const sameCountry = !!f.from.cc && f.from.cc === last.to.cc;
       if (gap > -(noTimes ? 36 : 2) * 3600000 && ((sameCity && gap <= 200 * DAY) || (sameCountry && gap <= 30 * DAY))) {
         cur.push(f);
-        if (near(f.to, cur[0].from) || isHome(f.to)) { out.push(cur); cur = null; }
+        if (near(f.to, cur[0].from) || (isHome(f.to, f.depT) && !isHome(cur[0].from, f.depT))) { out.push(cur); cur = null; }
         continue;
       }
       out.push(cur); cur = null;
     }
     cur = [f];
-    if (isHome(f.to) && !isHome(f.from)) { out.push(cur); cur = null; }
+    if (isHome(f.to, f.depT) && !isHome(f.from, f.depT)) { out.push(cur); cur = null; }
   }
   if (cur) out.push(cur);
   return out.map(legs => {
