@@ -835,6 +835,20 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .dlg-btns button + button{border-left:0}
 .dlg-btns .ok{background:var(--accent);color:var(--accent-ink)}
 .dlg-btns.one button{background:var(--accent);color:var(--accent-ink)}
+
+/* airport search field */
+.apf{position:relative;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500;min-width:0}
+.apf input.iata{border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:17px;font-family:var(--f-body);font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink);width:100%}
+.sugg{position:absolute;top:58px;left:0;right:0;z-index:30;background:var(--surface);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.28);overflow:hidden;max-height:320px;overflow-y:auto;border:1px solid var(--line);min-width:260px}
+.sg{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;border:0;background:transparent;padding:9px 12px;text-align:left;color:var(--ink);font:inherit;border-bottom:1px solid var(--line)}
+.sg:last-child{border-bottom:0}
+.sg:hover,.sg:focus-visible{background:var(--fill)}
+.sg-code{font-family:var(--f-round);font-weight:800;font-size:16px;color:var(--accent-text);min-width:40px}
+.sg-txt{display:flex;flex-direction:column;min-width:0}
+.sg-txt b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sg-txt small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sg-empty{padding:12px;color:var(--muted);font-size:13px}
+.apf:last-child .sugg{left:auto;right:0}
 </style>
 
 </head>
@@ -1435,7 +1449,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006011352";
+const BUILD = "20261006011615";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1872,8 +1886,8 @@ function openSheet(kind, id) {
     </div>
     <div class="box"><h4>Ruta y horarios</h4>
       <div class="row">
-        <label class="f">Desde<input id="f-from" class="iata" maxlength="3" autocomplete="off" placeholder="MAD" value="${esc(form.from?.iata || "")}"><span class="aptinfo" id="i-from"></span></label>
-        <label class="f">Hasta<input id="f-to" class="iata" maxlength="3" autocomplete="off" placeholder="EZE" value="${esc(form.to?.iata || "")}"><span class="aptinfo" id="i-to"></span></label>
+        <div class="f apf">Desde<input id="f-from" class="iata" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ciudad o código" aria-label="Desde: ciudad, aeropuerto o código" value="${esc(form.from?.iata || "")}"><div class="sugg" id="s-from" role="listbox" hidden></div><span class="aptinfo" id="i-from"></span></div>
+        <div class="f apf">Hasta<input id="f-to" class="iata" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ciudad o código" aria-label="Hasta: ciudad, aeropuerto o código" value="${esc(form.to?.iata || "")}"><div class="sugg" id="s-to" role="listbox" hidden></div><span class="aptinfo" id="i-to"></span></div>
       </div>
       <div class="row">
         <label class="f">Sale (hora local)<input id="f-dep" type="time" value="${v("dep")}"></label>
@@ -1896,10 +1910,21 @@ function openSheet(kind, id) {
     <div class="foot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="f-save">${id ? "Guardar cambios" : "Guardar vuelo"}</button></div>
   </div></div>`;
   showApt("from"); showApt("to");
+  loadAptDB();
   $("#f-num").focus();
   for (const side of ["from", "to"]) {
     const inp = $("#f-" + side);
-    inp.addEventListener("input", () => { form._manualRoute = true; inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, ""); const k = knownApt(inp.value); form[side] = k ? { ...k } : (form[side]?.iata === inp.value ? form[side] : null); showApt(side); scheduleAuto(900); });
+    inp.addEventListener("input", () => {
+      form._manualRoute = true;
+      const v = inp.value.trim();
+      const k = /^[A-Za-z]{3}$/.test(v) ? knownApt(v.toUpperCase()) : null;
+      form[side] = k ? { ...k } : null;
+      showApt(side); showSugg(side);
+      if (k) scheduleAuto(900);
+    });
+    inp.addEventListener("focus", () => { if (inp.value.trim().length >= 2 && !form[side]) showSugg(side); });
+    inp.addEventListener("blur", () => setTimeout(() => { const b = $("#s-" + side); if (b) b.hidden = true; }, 180));
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#s-" + side + " [data-apt]"); if (first) { e.preventDefault(); pickApt(side, first.dataset.apt); } } });
   }
   $("#f-look").onclick = () => doLookup(true);
   $("#f-stop").onclick = () => { ctl?.abort(); clearTimeout(autoT); };
@@ -1910,11 +1935,68 @@ function openSheet(kind, id) {
   $("#f-save").onclick = doSave;
   $("#f-num").addEventListener("keydown", e => { if (e.key === "Enter") scheduleAuto(0); });
 }
+/* ---------- airport search: city, airport name, country or code ---------- */
+let APTDB = null, aptDbLoading = null;
+function loadAptDB() {
+  if (APTDB || aptDbLoading) return aptDbLoading;
+  aptDbLoading = fetch("airports.json?v=" + BUILD).then(r => r.ok ? r.json() : []).catch(() => [])
+    .then(arr => { APTDB = arr.map(([iata, name, city, cc, lat, lon, tz]) => ({ iata, name, city, cc, lat, lon, tz })); });
+  return aptDbLoading;
+}
+const MAIN_APT = new Set(["LHR","JFK","CDG","HND","FCO","MXP","EZE","GRU","ORD","IAD","YYZ","ARN","KIX","PEK","PVG","DME","IST","TFS","LAX","SFO","MIA","BCN","MAD"]);
+const norm = t => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function searchApt(q) {
+  const n = norm(q).trim(); if (n.length < 2) return [];
+  const pool = new Map();
+  for (const a of (APTDB || [])) pool.set(a.iata, a);
+  for (const a of AIRPORTS.values()) pool.set(a.iata, a);          // Spanish names win
+  const mine = new Map(); for (const f of S.real) for (const a of [f.from, f.to]) if (validApt(a)) { pool.set(a.iata, { ...pool.get(a.iata), ...a }); mine.set(a.iata, (mine.get(a.iata) || 0) + 1); }
+  const res = [];
+  for (const a of pool.values()) {
+    const code = a.iata.toLowerCase(), city = norm(a.city), name = norm(a.name), ctry = norm(country(a.cc));
+    let sc = 0;
+    if (code === n) sc = 100;
+    else if (city === n) sc = 85;
+    else if (city.startsWith(n)) sc = 75;
+    else if (name.startsWith(n)) sc = 65;
+    else if (city.includes(n)) sc = 55;
+    else if (name.includes(n)) sc = 45;
+    else if (n.length >= 4 && ctry.startsWith(n)) sc = 25;
+    if (!sc) continue;
+    if (mine.has(a.iata)) sc += 12 + Math.min(8, mine.get(a.iata));
+    if (AIRPORTS.has(a.iata)) sc += 8;
+    if (MAIN_APT.has(a.iata)) sc += 4;
+    res.push([sc, a]);
+  }
+  return res.sort((x, y) => y[0] - x[0] || x[1].city.localeCompare(y[1].city)).slice(0, 8).map(x => x[1]);
+}
+async function showSugg(side) {
+  const inp = $("#f-" + side), box = $("#s-" + side); if (!inp || !box) return;
+  const q = inp.value.trim();
+  if (q.length < 2 || form[side]) { box.hidden = true; return; }
+  if (!APTDB) await loadAptDB();
+  if (inp.value.trim() !== q) return;
+  const hits = searchApt(q);
+  if (!hits.length) { box.innerHTML = `<div class="sg-empty">Sin resultados para “${esc(q)}”</div>`; box.hidden = false; return; }
+  box.innerHTML = hits.map(a => `<button type="button" class="sg" role="option" data-apt="${esc(a.iata)}" data-side="${side}">
+    <span class="sg-code">${esc(a.iata)}</span><span class="sg-txt"><b>${esc(a.city || a.name)}</b><small>${esc(a.name)}${a.cc ? " · " + esc(country(a.cc)) : ""}</small></span>
+    ${a.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(a.cc)}</span>` : ""}</button>`).join("");
+  box.hidden = false;
+}
+function pickApt(side, code) {
+  const a = searchApt(code).find(x => x.iata === code) || knownApt(code); if (!a) return;
+  form[side] = { ...a }; form._manualRoute = true;
+  const inp = $("#f-" + side); inp.value = a.iata;
+  $("#s-" + side).hidden = true; showApt(side); scheduleAuto(900);
+  if (side === "from" && !$("#f-to").value) $("#f-to").focus();
+}
+document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest(".sg"); if (b) { e.preventDefault(); pickApt(b.dataset.side, b.dataset.apt); } });
+
 function showApt(side) {
   const a = form[side], inp = $("#f-" + side), info = $("#i-" + side);
   if (!info) return;
   if (a && validApt(a)) { info.className = "aptinfo ok"; info.textContent = `${a.city || ""}${a.city && a.name ? " · " : ""}${a.name || ""}${a.cc ? " (" + country(a.cc) + ")" : ""}`; }
-  else if (inp.value.length === 3) { info.className = "aptinfo"; info.textContent = S.sample ? "Se busca al guardar" : "Aeropuerto no reconocido"; }
+  else if (inp.value.trim().length >= 2) { info.className = "aptinfo"; info.textContent = "Elegí una opción de la lista"; }
   else { info.className = "aptinfo"; info.textContent = ""; }
 }
 function readForm() {
@@ -1996,8 +2078,12 @@ async function doSave() {
   const err = $("#f-err"); const show = m => { err.hidden = !m; err.textContent = m; };
   show("");
   if (!form.date) return show("Falta la fecha de salida.");
-  const fromC = $("#f-from").value, toC = $("#f-to").value;
-  if (fromC.length !== 3 || toC.length !== 3) return show("Escribí los dos códigos de aeropuerto (3 letras), por ejemplo MAD y EZE.");
+  for (const side of ["from", "to"]) {         // a city or airport name typed but not picked: take the best match
+    const v = $("#f-" + side).value.trim();
+    if (v && !(form[side] && form[side].iata === v.toUpperCase())) { const hit = searchApt(v)[0]; if (hit) { form[side] = { ...hit }; $("#f-" + side).value = hit.iata; showApt(side); } }
+  }
+  const fromC = $("#f-from").value.trim().toUpperCase(), toC = $("#f-to").value.trim().toUpperCase();
+  if (fromC.length !== 3 || toC.length !== 3) return show("Elegí el aeropuerto de salida y el de llegada: escribí la ciudad o el código y tocá una opción de la lista.");
   if (fromC === toC) return show("El origen y el destino son el mismo aeropuerto.");
   const missing = [["from", fromC], ["to", toC]].filter(([s, c]) => !(form[s] && form[s].iata === c && validApt(form[s])));
   const btn = $("#f-save"); btn.disabled = true;
