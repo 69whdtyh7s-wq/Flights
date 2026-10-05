@@ -779,6 +779,19 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .fun{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 .tiles6 b small{white-space:nowrap}
 @media (max-width:699px){.fun{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles6 b,.fun b{font-size:20px}}
+
+/* clickable summary tiles */
+.tbtn{border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tbtn:active{opacity:.75}
+.tbtn b{font-family:var(--f-round);font-size:20px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbtn > span{font-size:12px;color:var(--accent-text);display:flex;align-items:center;gap:3px}
+.chev-r{font-size:15px;line-height:1;font-weight:600}
+.bcell{border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;background:var(--surface);border-radius:18px;box-shadow:var(--card-shadow);padding:14px 16px;min-width:0}
+.bcell:hover{filter:brightness(.97)}
+.bcell .k{display:flex;align-items:center;gap:4px;color:var(--accent-text)!important}
+.listsheet .cnt,.drill h2 .cnt{color:var(--muted);font-weight:600}
+.backbtn{align-self:flex-start;border:0;background:transparent;color:var(--accent-text);font-size:16px;font-weight:600;padding:4px 0;margin-bottom:-6px}
+.sheet .scard{box-shadow:none}
 </style>
 
 </head>
@@ -1074,7 +1087,7 @@ function enrich(f) {
 
 /* ---------- state ---------- */
 const S = {
-  real: [], loaded: false, rankOpen: new Set(), drill: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
+  real: [], loaded: false, rankOpen: new Set(), drill: null, listBack: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
   col: null, sample: null, downloads: null, mapReady: false,
 };
 const DEMO = buildDemo();
@@ -1263,7 +1276,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006004759";
+const BUILD = "20261006005310";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1305,14 +1318,14 @@ function renderBoard() {
   const apts = new Set(), ccs = new Set(), als = new Set();
   for (const f of past) { for (const a of [f.from, f.to]) if (a) { apts.add(a.iata); if (a.cc) ccs.add(a.cc); } if (f.airline) als.add(f.airline); }
   const up = filtered().filter(f => !f.past).length;
-  const cell = (k, v, s) => `<div><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+  const cell = (k, v, s, list) => list ? `<button type="button" class="bcell" data-list="${list}"><div class="k">${k}<span class="chev-r" aria-hidden="true">›</span></div><div class="v">${v}</div><div class="s">${s}</div></button>` : `<div><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
   $("#board").innerHTML =
     cell("Vuelos", fmt(past.length), up ? `+${up} programado${up > 1 ? "s" : ""}` : "volados") +
     cell("Distancia", `${fmt(km)}<small>km</small>`, `${fmt(km / 40075, 1)} vueltas al mundo`) +
     cell("En el aire", `${fmt(Math.floor(mins/60))}<small>h</small>`, `${fmt(mins / 1440, 1)} días`) +
-    cell("Aeropuertos", fmt(apts.size), "distintos") +
-    cell("Países", fmt(ccs.size), ccs.size ? [...ccs].slice(0, 3).map(country).join(", ") + (ccs.size > 3 ? "…" : "") : "—") +
-    cell("Aerolíneas", fmt(als.size), als.size ? [...als][0] + (als.size > 1 ? "…" : "") : "—");
+    cell("Aeropuertos", fmt(apts.size), "distintos", "airport") +
+    cell("Países", fmt(ccs.size), ccs.size ? [...ccs].slice(0, 3).map(country).join(", ") + (ccs.size > 3 ? "…" : "") : "—", "country") +
+    cell("Aerolíneas", fmt(als.size), als.size ? [...als][0] + (als.size > 1 ? "…" : "") : "—", "airline");
 }
 
 function flightRow(f) {
@@ -1484,6 +1497,37 @@ const DRILL = {
   country:{ match:(f, k) => f.from?.cc === k || f.to?.cc === k, title:k => country(k) },
 };
 const DRILL_LABEL = { airline:"Aerolínea", airport:"Aeropuerto", route:"Ruta", aircraft:"Avión", country:"País" };
+const LIST_TITLE = { airline:"Aerolíneas", airport:"Aeropuertos", country:"Países visitados" };
+function listHTML(kind, past) {
+  if (kind === "airline") {
+    const e = count(past.map(f => f.airline)); const alOf = new Map(); for (const f of past) if (f.airline && !alOf.get(f.airline)) alOf.set(f.airline, alCode(f));
+    return [e.length, fullRank(e, k => alIcon(alOf.get(k), k, "sm") + esc(k), kind)];
+  }
+  if (kind === "airport") {
+    const e = count(past.flatMap(f => [f.from?.iata, f.to?.iata])); const nm = new Map(); for (const f of past) for (const a of [f.from, f.to]) if (a) nm.set(a.iata, a);
+    return [e.length, fullRank(e, k => `<b>${esc(k)}</b>${esc(nm.get(k)?.city || "")}`, kind)];
+  }
+  const ccs = count(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])]));
+  const yrs = new Map();
+  for (const f of past) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) { const y = yrs.get(c) || [f.year, f.year]; if (f.year < y[0]) y[0] = f.year; if (f.year > y[1]) y[1] = f.year; yrs.set(c, y); }
+  const cmax = ccs.length ? ccs[0][1] : 1;
+  return [ccs.length, `<ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><button type="button" class="rk crow" data-rk="country" data-key="${esc(c)}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></button></li>`; }).join("")}</ol>`];
+}
+function fullRank(entries, label, kind) {
+  const max = entries.length ? entries[0][1] : 1;
+  return `<ol class="rank">${entries.map(([k, n]) => `<li><button type="button" class="rk" data-rk="${kind}" data-key="${esc(k)}"><div class="nm"><span>${label(k)}</span><div class="bar"><i style="width:${(n / max * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></button></li>`).join("")}</ol>`;
+}
+function openList(kind) {
+  S.listBack = null;
+  const past = filtered().filter(f => f.past);
+  const [n, body] = listHTML(kind, past);
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet drill listsheet" data-kind="${kind}" role="dialog" aria-modal="true" aria-labelledby="ls-t">
+    <div class="hd"><div class="dtt"><small>Stats${S.year !== "all" ? " · " + esc(S.year) : ""}</small><h2 id="ls-t">${LIST_TITLE[kind]} <span class="cnt">${n}</span></h2></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <p class="hint">Tocá uno para ver todos sus vuelos.</p>
+    <div class="scard">${body || `<p class="hint">Sin datos.</p>`}</div>
+  </div></div>`;
+  markLogos($("#sheet-root"));
+}
 function openDrill(kind, key) {
   const d = DRILL[kind]; if (!d) return;
   S.drill = { kind, key };
@@ -1495,6 +1539,7 @@ function openDrill(kind, key) {
   let rows = "", yr = null;
   for (const f of list) { if (f.year !== yr) { yr = f.year; rows += `<div class="dyr">${esc(yr)}</div>`; } rows += flightRow(f); }
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet drill" role="dialog" aria-modal="true" aria-labelledby="dr-t">
+    ${S.listBack ? `<button type="button" class="backbtn" data-list="${S.listBack}">‹ ${esc(LIST_TITLE[S.listBack])}</button>` : ""}
     <div class="hd">${icon}<div class="dtt"><small>${DRILL_LABEL[kind]}${S.year !== "all" ? " · " + esc(S.year) : ""}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     <div class="dstats"><div><b>${list.length}</b><span>${list.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${fmt(km)}</b><span>km</span></div><div><b>${fmt(Math.round(mins / 60))}</b><span>horas</span></div><div><b>${yrs.length > 1 ? esc(yrs[0]) + "–" + esc(yrs[yrs.length - 1].slice(2)) : esc(yrs[0] || "—")}</b><span>${yrs.length > 1 ? "años" : "año"}</span></div></div>
     <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
@@ -1522,8 +1567,8 @@ function renderStats() {
   const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
   const aptSet = new Set(), ccSet = new Set(), alSet = new Set();
   for (const f of past) { for (const a of [f.from, f.to]) if (a) { aptSet.add(a.iata); if (a.cc) ccSet.add(a.cc); } if (f.airline) alSet.add(f.airline); }
-  const tile = (v, u, k) => `<div><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}</span></div>`;
-  html += card("Resumen", `<div class="tiles6">${tile(fmt(past.length), "", "vuelos")}${tile(km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "", "km recorridos")}${tile(fmt(Math.round(mins / 60)), "", "horas en el aire")}${tile(fmt(aptSet.size), "", "aeropuertos")}${tile(fmt(ccSet.size), "", "países")}${tile(fmt(alSet.size), "", "aerolíneas")}</div>`, "phone-only");
+  const tile = (v, u, k, list) => list ? `<button type="button" class="tbtn" data-list="${list}"><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}<span class="chev-r" aria-hidden="true">›</span></span></button>` : `<div><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}</span></div>`;
+  html += card("Resumen", `<div class="tiles6">${tile(fmt(past.length), "", "vuelos")}${tile(km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "", "km recorridos")}${tile(fmt(Math.round(mins / 60)), "", "horas en el aire")}${tile(fmt(aptSet.size), "", "aeropuertos", "airport")}${tile(fmt(ccSet.size), "", "países", "country")}${tile(fmt(alSet.size), "", "aerolíneas", "airline")}</div>`, "phone-only");
   html += card("En perspectiva", `<div class="fun">
     <div><b>${fmt(km / 40075, 1)}</b><span>vueltas al mundo</span></div>
     <div><b>${fmt(km / 384400 * 100, 1)}%</b><span>del camino a la Luna</span></div>
@@ -1535,7 +1580,7 @@ function renderStats() {
   if (years.length) {
     const per = years.map(y => ({ y, p: allF.filter(f => f.year === y && f.past).length, u: allF.filter(f => f.year === y && !f.past).length }));
     const mx = Math.max(...per.map(x => x.p + x.u));
-    html += card("Vuelos por año", `<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${per.map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.p} volados${x.u ? ", " + x.u + " próximos" : ""}">
+    html += card("Vuelos por año", `<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${[...per].reverse().map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.p} volados${x.u ? ", " + x.u + " próximos" : ""}">
       <span class="vv">${x.p + x.u}</span><span class="stack" style="height:${((x.p + x.u) / mx * 90).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div><p class="hint">Tocá un año para filtrar toda la app.</p>`, "wide");
   }
   const byKm = [...past].sort((a, b) => b.km - a.km), lg = byKm[0], sh = byKm[byKm.length - 1];
@@ -1556,16 +1601,9 @@ function renderStats() {
   const topAl = count(past.map(f => f.airline));
   const alOf = new Map(); for (const f of past) if (f.airline && !alOf.get(f.airline)) alOf.set(f.airline, alCode(f));
   const topAc = count(past.map(f => f.aircraft));
-  html += card(`Aerolíneas <span>${topAl.length}</span>`, topAl.length ? rankList(topAl, k => alIcon(alOf.get(k), k, "sm") + esc(k), "airline") : `<p class="hint">Sin datos.</p>`);
-  html += card(`Aeropuertos <span>${topApt.length}</span>`, rankList(topApt, k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`, "airport"));
   html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
   const noAc = past.filter(f => !f.aircraft).length;
   html += card(`Aviones <span>${topAc.length}</span>`, (topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (noAc ? `<p class="hint">${noAc} ${noAc === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""));
-  const ccs = count(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])]));
-  const yrs = new Map();
-  for (const f of past) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) { const y = yrs.get(c) || [f.year, f.year]; if (f.year < y[0]) y[0] = f.year; if (f.year > y[1]) y[1] = f.year; yrs.set(c, y); }
-  const cmax = ccs.length ? ccs[0][1] : 1;
-  html += card(`Países visitados <span>${ccs.length}</span>`, `<ol class="clist">${ccs.map(([c, n]) => { const y = yrs.get(c) || []; return `<li><button type="button" class="rk crow" data-rk="country" data-key="${esc(c)}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><span class="cn"><span>${esc(country(c))}</span><span class="cy">${y[0] === y[1] ? esc(y[0]) : esc(y[0]) + "–" + esc(y[1])}</span><span class="bar"><i style="width:${(n / cmax * 100).toFixed(1)}%"></i></span></span><span class="ct">${n}<small>${n === 1 ? "vuelo" : "vuelos"}</small></span></button></li>`; }).join("")}</ol>`, "wide sec-countries");
   $("#stats").innerHTML = html;
 }
 
@@ -1995,6 +2033,24 @@ function goHome() {
 document.getElementById("brand").addEventListener("click", goHome);
 document.getElementById("brand").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goHome(); } });
 
+/* ---------- installed app: pin the tab bar to the very bottom, measured in JS (iOS fixed-bottom quirks) ---------- */
+const safeProbe = document.createElement("div");
+safeProbe.style.cssText = "position:fixed;left:0;bottom:0;width:0;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none";
+document.body.appendChild(safeProbe);
+function placeTabbar() {
+  const tb = document.getElementById("tabbar");
+  if (!tb) return;
+  if (!IS_STANDALONE || window.innerWidth > 699) { tb.style.top = ""; tb.style.bottom = ""; return; }
+  const safe = parseFloat(getComputedStyle(safeProbe).paddingBottom) || 0;
+  const gap = Math.max(6, safe - 16);
+  const vh = window.innerHeight;
+  tb.style.bottom = "auto";
+  tb.style.top = (vh - tb.offsetHeight - gap) + "px";
+}
+["resize", "orientationchange", "pageshow"].forEach(ev => window.addEventListener(ev, () => requestAnimationFrame(placeTabbar)));
+if (window.visualViewport) visualViewport.addEventListener("resize", () => requestAnimationFrame(placeTabbar));
+requestAnimationFrame(placeTabbar); setTimeout(placeTabbar, 300);
+
 /* ---------- phone sections ---------- */
 let VIEW_KEY = "flights-view";
 function updateZoomExtent() {
@@ -2007,6 +2063,7 @@ function updateZoomExtent() {
 }
 function setView(v, save) {
   document.body.dataset.view = v;
+  requestAnimationFrame(placeTabbar);
   document.querySelectorAll("#tabbar [data-view]").forEach(b => { if (b.dataset.view === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   if (save) { try { localStorage.setItem(VIEW_KEY, v); } catch {} }
   if (v === "mapa" && S.mapReady) { renderMap(); requestAnimationFrame(updateZoomExtent); }
@@ -2042,7 +2099,8 @@ document.addEventListener("click", e => {
     S.open = null; return render();
   }
   if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
-  if (t.dataset.rk) { S.open = null; return openDrill(t.dataset.rk, t.dataset.key); }
+  if (t.dataset.list) { S.open = null; return openList(t.dataset.list); }
+  if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
   if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return render(); }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
