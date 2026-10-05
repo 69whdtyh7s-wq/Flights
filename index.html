@@ -827,12 +827,12 @@ function renderMap() {
     .attr("stroke-width", d => isSel(d) ? 3.4 : (d.past ? Math.min(1.3 + Math.log2(d.n) * 0.8, 4) : 1.6))
     .attr("opacity", d => d.past ? Math.min(0.55 + d.n * 0.1, 0.95) : 0.9)
     .attr("d", d => geoPath({ type:"LineString", coordinates:[[+d.a.lon, +d.a.lat], [+d.b.lon, +d.b.lat]] }));
-  const as = [...apts.values()].map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 2.6 + Math.sqrt(a.n) * 1.3 }));
+  const as = [...apts.values()].map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 3.6 }));
   const showAll = as.length <= 24;
   const top = new Set([...as].sort((a, b) => b.n - a.n).slice(0, 16).map(a => a.iata));
   const hub = as.length ? Math.max(...as.map(a => a.n)) : 0;
   gApts.selectAll("circle").data(as, d => d.iata).join("circle")
-    .attr("class", d => "apt" + (d.n === hub && hub > 1 ? " hub" : "")).attr("cx", d => d.p[0]).attr("cy", d => d.p[1])
+    .attr("class", "apt").attr("cx", d => d.p[0]).attr("cy", d => d.p[1])
     .selectAll("title").data(d => [d]).join("title").text(d => `${d.iata} · ${d.city || d.name} — ${d.n} ${d.n === 1 ? "vuelo" : "vuelos"}`);
   gApts.selectAll("text").data(as.filter(a => showAll || top.has(a.iata) || selApts.has(a.iata)), d => d.iata).join("text")
     .attr("class","aptl").text(d => d.iata);
