@@ -567,7 +567,7 @@ label.f input.fnum{font-family:var(--f-body)}
 @media (min-width:1400px){.board .v{font-size:28px}}
 
 /* airline with a real logo: show only the logo in flight rows */
-.meta:has(.al-ic.has-img) .al{display:none}
+.meta.logo-ok .al{display:none}
 </style>
 
 </head>
@@ -1004,10 +1004,17 @@ let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off";
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
 function alIcon(code, name, size) {
   if (!code) return "";
-  return `<span class="al-ic${size ? " " + size : ""}" title="${esc(name || code)}" aria-hidden="true"><b>${esc(code)}</b>${LOGOS ? `<img src="https://pics.avs.io/96/96/${esc(code)}.png" alt="" loading="lazy" decoding="async">` : ""}</span>`;
+  return `<span class="al-ic${size ? " " + size : ""}" title="${esc(name || code)}" aria-hidden="true"><b>${esc(code)}</b>${LOGOS ? `<img src="https://pics.avs.io/96/96/${esc(code)}.png" alt="" decoding="async">` : ""}</span>`;
 }
 document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG" && t.closest(".al-ic")) t.remove(); }, true);
-document.addEventListener("load", e => { const t = e.target; if (t && t.tagName === "IMG" && t.closest(".al-ic")) t.closest(".al-ic").classList.add("has-img"); }, true);
+function logoOk(img) { const ic = img.closest(".al-ic"); if (!ic) return; ic.classList.add("has-img"); const m = ic.closest(".meta"); if (m) m.classList.add("logo-ok"); }
+function markLogos(root) {
+  (root || document).querySelectorAll(".al-ic img").forEach(img => {
+    if (img.complete && img.naturalWidth > 0) logoOk(img);
+    else if (!img.dataset.watch) { img.dataset.watch = "1"; img.addEventListener("load", () => logoOk(img), { once:true }); }
+  });
+}
+document.addEventListener("load", e => { const t = e.target; if (t && t.tagName === "IMG" && t.closest(".al-ic")) logoOk(t); }, true);
 const flag = cc => /^[A-Z]{2}$/.test(cc || "") ? `<img class="flag" src="flags/${cc.toLowerCase()}.svg" alt="" loading="lazy" decoding="async"><b>${cc}</b>` : "";
 document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG" && t.classList.contains("flag")) t.remove(); }, true);
 
@@ -1234,6 +1241,7 @@ function render() {
   const n = S.real.length;
   $("#sub").textContent = !S.loaded ? "Cargando…" : isDemo() ? "Modo ejemplo" : `${n} ${n === 1 ? "vuelo" : "vuelos"} · ${S.storage === "db" ? "guardado en tu cuenta" : "guardado en este navegador"}`;
   renderFilters(); renderBoard(); renderList(); renderStats(); renderMap();
+  markLogos();
 }
 
 /* ---------- toast ---------- */
