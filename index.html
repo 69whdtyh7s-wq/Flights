@@ -338,6 +338,30 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
   .filters .chip{flex:none}
   .board .v{font-size:24px}
 }
+
+/* trips */
+.trip{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 16px;border:0;border-top:1px dashed var(--line);background:transparent;width:100%;text-align:left}
+.yr + .trip,.yjump + .trip{border-top:0}
+.trip:hover,.trip[aria-expanded="true"]{background:var(--surface-2)}
+.trip .tinfo{display:flex;flex-direction:column;gap:2px;min-width:0}
+.trip .tk{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.trip .tt{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.1;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trip .pp{font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--accent-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trip .mm{font-size:12px;color:var(--muted)}
+.trip .tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.trip .chev,.yr .chev{width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--muted);transition:transform .15s}
+.trip[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.trip[aria-expanded="true"] .chev{background:var(--accent);color:var(--accent-ink)}
+.legs{margin:0 0 8px 44px;border-left:3px solid var(--accent);background:var(--surface-2)}
+.legs .fl{padding-left:12px}
+.legs .fl:first-child{border-top:0}
+.legs .detail{padding-left:16px}
+@media (max-width:560px){.trip{grid-template-columns:46px minmax(0,1fr) auto;gap:10px}.trip .tt{font-size:18px}.legs{margin-left:16px}}
+@media (min-width:1100px){#p-list .trip{grid-template-columns:50px minmax(0,1fr) auto;gap:12px}#p-list .legs{margin-left:24px}}
+
+.trip .d{text-align:center;border-right:1px solid var(--line);padding-right:12px}
+.trip .d b{display:block;font-family:var(--f-mono);font-size:26px;font-weight:600;line-height:1}
+.trip .d span{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
 </style>
 
 </head>
@@ -369,7 +393,8 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
     <div class="mapctl">
       <button type="button" id="z-in" aria-label="Acercar">+</button>
       <button type="button" id="z-out" aria-label="Alejar">−</button>
-      <button type="button" id="z-fit" aria-label="Encuadrar mis rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+      <button type="button" id="z-world" aria-label="Ver el mapa completo" title="Mapa completo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+      <button type="button" id="z-fit" aria-label="Encuadrar mis rutas" title="Encuadrar mis rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
   </div>
@@ -597,7 +622,7 @@ function enrich(f) {
 
 /* ---------- state ---------- */
 const S = {
-  real: [], loaded: false, collapsed: new Set(), storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
+  real: [], loaded: false, collapsed: new Set(), openTrips: new Set(), focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
   col: null, sample: null, downloads: null, mapReady: false,
 };
 const DEMO = buildDemo();
@@ -692,6 +717,7 @@ function initMap() {
   $("#z-in").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1.6);
   $("#z-out").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1/1.6);
   $("#z-fit").onclick = () => fitRoutes(true);
+  $("#z-world").onclick = () => svgSel.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
   S.mapReady = true;
   try {
     const raw = JSON.parse(document.getElementById("world-data").textContent);
@@ -739,12 +765,14 @@ function renderMap() {
     }
   }
   gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
-  const sel = S.open ? fl.find(f => f.id === S.open) : null;
+  const selIds = S.open ? [S.open] : S.focusIds;
+  const isSel = d => !!selIds && d.ids.some(id => selIds.includes(id));
+  const selApts = new Set(selIds ? fl.filter(f => selIds.includes(f.id)).flatMap(f => [f.from?.iata, f.to?.iata]) : []);
   const rs = [...routes.values()].sort((a, b) => (a.past === b.past ? 0 : a.past ? -1 : 1));
   gArcs.selectAll("path").data(rs, d => d.key).join("path")
-    .attr("class", d => "arc " + (d.past ? "past" : "up") + (sel && !d.ids.includes(sel.id) ? " dim" : ""))
+    .attr("class", d => "arc " + (d.past ? "past" : "up") + (selIds && !isSel(d) ? " dim" : ""))
     .attr("vector-effect","non-scaling-stroke")
-    .attr("stroke-width", d => (sel && d.ids.includes(sel.id)) ? 3.4 : (d.past ? Math.min(1.3 + Math.log2(d.n) * 0.8, 4) : 1.6))
+    .attr("stroke-width", d => isSel(d) ? 3.4 : (d.past ? Math.min(1.3 + Math.log2(d.n) * 0.8, 4) : 1.6))
     .attr("opacity", d => d.past ? Math.min(0.55 + d.n * 0.1, 0.95) : 0.9)
     .attr("d", d => geoPath({ type:"LineString", coordinates:[[+d.a.lon, +d.a.lat], [+d.b.lon, +d.b.lat]] }));
   const as = [...apts.values()].map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 2.6 + Math.sqrt(a.n) * 1.3 }));
@@ -754,7 +782,7 @@ function renderMap() {
   gApts.selectAll("circle").data(as, d => d.iata).join("circle")
     .attr("class", d => "apt" + (d.n === hub && hub > 1 ? " hub" : "")).attr("cx", d => d.p[0]).attr("cy", d => d.p[1])
     .selectAll("title").data(d => [d]).join("title").text(d => `${d.iata} · ${d.city || d.name} — ${d.n} ${d.n === 1 ? "vuelo" : "vuelos"}`);
-  gApts.selectAll("text").data(as.filter(a => showAll || top.has(a.iata) || (sel && (sel.from.iata === a.iata || sel.to.iata === a.iata))), d => d.iata).join("text")
+  gApts.selectAll("text").data(as.filter(a => showAll || top.has(a.iata) || selApts.has(a.iata)), d => d.iata).join("text")
     .attr("class","aptl").text(d => d.iata);
   sizeApts();
   const hint = $("#maphint");
@@ -762,7 +790,7 @@ function renderMap() {
   if (!world) hint.textContent = "Cargando mapa…";
   if (world && !rs.length && S.loaded) { hint.hidden = false; hint.textContent = S.year === "all" ? "Tus rutas van a aparecer acá." : "Sin vuelos en " + S.year + "."; }
   const key = S.year + "|" + fl.length + "|" + (S.real.length ? "r" : "d");
-  if (key !== fitKey && fl.length) { fitKey = key; fitRoutes(false); }
+  fitKey = key;
 }
 
 /* ---------- derived views ---------- */
@@ -836,11 +864,68 @@ function detail(f) {
   return `<div class="detail"><dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl><div class="acts">${acts}</div></div>`;
 }
 
+/* ---------- trips: chains of flights that connect (same city, or same country by land) ---------- */
+const DAY = 86400000;
+const cityKey = a => ((a?.cc || "") + "|" + (a?.city || a?.iata || "")).toLowerCase();
+function buildTrips(list) {
+  const fl = list.filter(f => f.from && f.to).sort((a, b) => a.depT - b.depT);
+  const freq = new Map(); for (const f of fl) for (const k of [cityKey(f.from), cityKey(f.to)]) freq.set(k, (freq.get(k) || 0) + 1);
+  const home = [...freq.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
+  const out = []; let cur = null;
+  for (const f of fl) {
+    if (cur) {
+      const last = cur[cur.length - 1], gap = f.depT - last.arrT;
+      const sameCity = cityKey(f.from) === cityKey(last.to);
+      const sameCountry = !!f.from.cc && f.from.cc === last.to.cc;
+      if (gap > -2 * 3600000 && ((sameCity && gap <= 200 * DAY) || (sameCountry && gap <= 30 * DAY))) {
+        cur.push(f);
+        if (cityKey(f.to) === cityKey(cur[0].from) || cityKey(f.to) === home) { out.push(cur); cur = null; }
+        continue;
+      }
+      out.push(cur); cur = null;
+    }
+    cur = [f];
+    if (cityKey(f.to) === home && cityKey(f.from) !== home) { out.push(cur); cur = null; }
+  }
+  if (cur) out.push(cur);
+  return out.map(legs => {
+    const first = legs[0], last = legs[legs.length - 1];
+    const round = legs.length > 1 && cityKey(last.to) === cityKey(first.from);
+    let far = last.to, best = -1;
+    for (const l of legs) { const d = haversine(first.from, l.to); if (d > best) { best = d; far = l.to; } }
+    let path = first.from.iata;
+    legs.forEach((l, i) => { if (i && l.from.iata !== legs[i - 1].to.iata) path += " · " + l.from.iata; path += " → " + l.to.iata; });
+    return { id:"t-" + first.id, legs, first, last, round, far, path, year:first.year, past:last.past,
+      start:first.depT, end:last.arrT, km:legs.reduce((s, x) => s + x.km, 0), mins:legs.reduce((s, x) => s + x.mins, 0),
+      days:Math.max(1, Math.round((new Date(last.arrT).setHours(0,0,0,0) - new Date(first.depT).setHours(0,0,0,0)) / DAY) + 1) };
+  });
+}
+const CHEV = '<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>';
+function tripRow(t, desc) {
+  if (t.legs.length === 1) return flightRow(t.first);
+  const open = S.openTrips.has(t.id);
+  const day = +t.first.date.slice(8, 10), mon = MONTHS[+t.first.date.slice(5, 7) - 1];
+  const a = t.first.from.city || t.first.from.iata, b = (t.round ? t.far : t.last.to);
+  const title = `${esc(a)} ${t.round ? "⇄" : "→"} ${esc(b.city || b.iata)}`;
+  let pill = t.first.demo ? `<span class="pill ex">Ejemplo</span>` : "";
+  if (!t.past) { const r = relDays(t.start); pill += ` <span class="pill ${r <= 3 ? "soon" : "up"}">${r <= 0 ? (Date.now() >= t.start ? "En viaje" : "Hoy") : r === 1 ? "Mañana" : "En " + r + " días"}</span>`; }
+  const legs = desc ? t.legs : t.legs;
+  return `<button class="trip" type="button" data-trip="${esc(t.id)}" aria-expanded="${open}">
+    <div class="d"><b class="num">${day}</b><span>${mon}</span></div>
+    <div class="tinfo"><span class="tk">${t.round ? "Ida y vuelta" : "Viaje"}</span><span class="tt">${title}</span><span class="pp">${esc(t.path)}</span>
+      <span class="mm">${t.legs.length} vuelos · ${t.days} ${t.days === 1 ? "día" : "días"} · ${fmt(t.km)} km</span></div>
+    <div class="tside">${pill}${CHEV}</div>
+  </button>` + (open ? `<div class="legs">${legs.map(flightRow).join("")}</div>` : "");
+}
+
 function renderList() {
   const fl = filtered();
-  const up = fl.filter(f => !f.past).sort((a, b) => a.depT - b.depT);
-  const past = fl.filter(f => f.past).sort((a, b) => b.depT - a.depT);
-  $("#n-up").textContent = up.length; $("#n-past").textContent = past.length;
+  const ids = new Set(fl.map(f => f.id));
+  const trips = buildTrips(all()).filter(t => ids.has(t.first.id));
+  const up = trips.filter(t => !t.past).sort((a, b) => a.start - b.start);
+  const past = trips.filter(t => t.past).sort((a, b) => b.start - a.start);
+  const nFl = ts => ts.reduce((s, t) => s + t.legs.length, 0);
+  $("#n-up").textContent = nFl(up); $("#n-past").textContent = nFl(past);
   $("#t-up").setAttribute("aria-selected", S.tab === "up"); $("#t-past").setAttribute("aria-selected", S.tab === "past");
   const el = $("#list");
   if (!S.loaded) { el.innerHTML = `<div class="empty">Cargando tus vuelos…</div>`; return; }
@@ -849,19 +934,21 @@ function renderList() {
     el.innerHTML = `<div class="empty"><b>${S.tab === "up" ? "Nada programado" : "Todavía no hay vuelos"}</b><span>${S.tab === "up" ? "Agregá tu próximo vuelo con el número y la fecha." : "Cargá vuelos pasados uno por uno o pegá varios a la vez."}</span><button class="btn primary" type="button" data-act="add">Agregar vuelo</button></div>`;
     return;
   }
-  if (S.tab === "up") { el.innerHTML = items.map(flightRow).join(""); return; }
+  if (S.tab === "up") { el.innerHTML = items.map(t => tripRow(t)).join(""); return; }
   const groups = [];
-  for (const f of items) { const g = groups[groups.length - 1]; if (g && g.y === f.year) g.items.push(f); else groups.push({ y:f.year, items:[f] }); }
-  let html = groups.length > 1 ? `<div class="yjump" aria-label="Ir a un año">${groups.map(g => `<button type="button" data-jump="${esc(g.y)}">${esc(g.y || "—")}<span>${g.items.length}</span></button>`).join("")}</div>` : "";
+  for (const t of items) { const g = groups[groups.length - 1]; if (g && g.y === t.year) g.items.push(t); else groups.push({ y:t.year, items:[t] }); }
+  let html = groups.length > 1 ? `<div class="yjump" aria-label="Ir a un año">${groups.map(g => `<button type="button" data-jump="${esc(g.y)}">${esc(g.y || "—")}<span>${nFl(g.items)}</span></button>`).join("")}</div>` : "";
   for (const g of groups) {
-    const km = g.items.reduce((s, x) => s + x.km, 0), mins = g.items.reduce((s, x) => s + x.mins, 0);
-    const ccs = new Set(g.items.flatMap(x => [x.from?.cc, x.to?.cc]).filter(Boolean));
+    const legs = g.items.flatMap(t => t.legs);
+    const km = legs.reduce((s, x) => s + x.km, 0), mins = legs.reduce((s, x) => s + x.mins, 0);
+    const ccs = new Set(legs.flatMap(x => [x.from?.cc, x.to?.cc]).filter(Boolean));
+    const nTrips = g.items.filter(t => t.legs.length > 1).length;
     const open = !S.collapsed.has(g.y);
     html += `<button class="yr" type="button" id="yr-${esc(g.y)}" data-yr="${esc(g.y)}" aria-expanded="${open}">
       <span class="big">${esc(g.y || "Sin fecha")}</span>
-      <span class="sum"><span><b>${g.items.length}</b> ${g.items.length === 1 ? "vuelo" : "vuelos"}</span><span><b>${fmt(km)}</b> km</span><span><b>${fmt(Math.round(mins / 60))}</b> h</span><span><b>${ccs.size}</b> ${ccs.size === 1 ? "país" : "países"}</span></span>
-      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span></button>`;
-    if (open) html += g.items.map(flightRow).join("");
+      <span class="sum"><span><b>${legs.length}</b> ${legs.length === 1 ? "vuelo" : "vuelos"}</span>${nTrips ? `<span><b>${nTrips}</b> ${nTrips === 1 ? "viaje" : "viajes"}</span>` : ""}<span><b>${fmt(km)}</b> km</span><span><b>${fmt(Math.round(mins / 60))}</b> h</span><span><b>${ccs.size}</b> ${ccs.size === 1 ? "país" : "países"}</span></span>
+      ${CHEV}</button>`;
+    if (open) html += g.items.map(t => tripRow(t, true)).join("");
   }
   el.innerHTML = html;
 }
@@ -1269,7 +1356,7 @@ function setView(v, save) {
   document.body.dataset.view = v;
   document.querySelectorAll("#tabbar [data-view]").forEach(b => { if (b.dataset.view === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   if (save) { try { localStorage.setItem(VIEW_KEY, v); } catch {} }
-  if (v === "mapa" && S.mapReady) { fitKey = ""; renderMap(); }
+  if (v === "mapa" && S.mapReady) renderMap();
   window.scrollTo(0, 0);
 }
 let startView = "vuelos"; try { startView = localStorage.getItem(VIEW_KEY) || "vuelos"; } catch {}
@@ -1288,6 +1375,12 @@ document.addEventListener("click", e => {
   if (t.dataset.year) { S.year = S.year === t.dataset.year && t.classList.contains("c") ? "all" : t.dataset.year; S.open = null; return render(); }
   if (t.dataset.yr !== undefined) { const y = t.dataset.yr; S.collapsed.has(y) ? S.collapsed.delete(y) : S.collapsed.add(y); return render(); }
   if (t.dataset.jump !== undefined) { S.collapsed.delete(t.dataset.jump); render(); const h = document.getElementById("yr-" + t.dataset.jump); if (h) h.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); return; }
+  if (t.dataset.trip) {
+    const id = t.dataset.trip;
+    if (S.openTrips.has(id)) { S.openTrips.delete(id); S.focusIds = null; }
+    else { S.openTrips.add(id); const tr = buildTrips(all()).find(x => x.id === id); S.focusIds = tr ? tr.legs.map(l => l.id) : null; }
+    S.open = null; return render();
+  }
   if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return render(); }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
   if (t.dataset.del) { S.confirmDel = t.dataset.del; return render(); }
