@@ -792,6 +792,11 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .listsheet .cnt,.drill h2 .cnt{color:var(--muted);font-weight:600}
 .backbtn{align-self:flex-start;border:0;background:transparent;color:var(--accent-text);font-size:16px;font-weight:600;padding:4px 0;margin-bottom:-6px}
 .sheet .scard{box-shadow:none}
+
+#mapcard[data-view="globo"] .map .sphere{fill:var(--sea);stroke:var(--line);stroke-width:1}
+#mapcard[data-view="globo"] .map{background:var(--surface)}
+#mapcard[data-view="globo"] .map .grat{stroke:color-mix(in srgb,var(--line) 60%,transparent)}
+#mapcard[data-view="globo"] .map{cursor:grab}
 </style>
 
 </head>
@@ -820,6 +825,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
     <div class="mapctl">
       <button type="button" id="z-in" aria-label="Acercar">+</button>
       <button type="button" id="z-out" aria-label="Alejar">−</button>
+      <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
       <button type="button" id="z-fit" aria-label="Encuadrar mis rutas" title="Encuadrar mis rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
@@ -1163,17 +1169,58 @@ async function initStore() {
 /* ---------- map ---------- */
 const W = 960, H = 470;
 let proj, geoPath, gLayer, gArcs, gApts, zoom, svgSel, curK = 1, world = null, fitKey = "";
+const MAP_VIEWS = ["plano", "globo", "mercator"];
+const MAP_VIEW_NAME = { plano:"Mapa plano", globo:"Globo terráqueo", mercator:"Mapa Mercator" };
+let mapView = "plano"; try { mapView = localStorage.getItem("flights-mapview") || "plano"; } catch {}
+if (!MAP_VIEWS.includes(mapView)) mapView = "plano";
+function homeCenter() {
+  const c = new Map(); for (const f of all()) for (const a of [f.from, f.to]) if (validApt(a)) c.set(a.iata, [(c.get(a.iata)?.[0] || 0) + 1, a]);
+  const top = [...c.values()].sort((x, y) => y[0] - x[0])[0];
+  return top ? [+top[1].lon, +top[1].lat] : [0, 30];
+}
+function makeProjection() {
+  if (mapView === "globo") {
+    const [lon, lat] = homeCenter();
+    proj = d3.geoOrthographic().scale(H / 2 - 10).translate([W / 2, H / 2]).clipAngle(90).rotate([-lon, -Math.max(-60, Math.min(60, lat)) * .6]);
+  } else if (mapView === "mercator") {
+    proj = d3.geoMercator().fitExtent([[6, 6], [W - 6, H - 6]], { type:"MultiPoint", coordinates:[[-179.9, -56], [179.9, 78]] });
+  } else {
+    proj = d3.geoEqualEarth().fitExtent([[6, 6], [W - 6, H - 6]], { type:"Sphere" });
+  }
+  geoPath = d3.geoPath(proj);
+  const card = document.getElementById("mapcard"); if (card) card.dataset.view = mapView;
+}
+function isVisible(lon, lat) {
+  if (mapView !== "globo") return true;
+  const r = proj.rotate();
+  return d3.geoDistance([lon, lat], [-r[0], -r[1]]) < Math.PI / 2 - 0.01;
+}
+function redrawGeo() {
+  if (!gLayer) return;
+  gLayer.select(".sphere").attr("d", geoPath({ type:"Sphere" }));
+  gLayer.select(".grat").attr("d", geoPath(d3.geoGraticule10()));
+  gLayer.select(".lands").selectAll("path").attr("d", geoPath);
+  renderMap();
+}
+function setMapView(v) {
+  mapView = v; try { localStorage.setItem("flights-mapview", v); } catch {}
+  makeProjection();
+  if (svgSel) svgSel.call(zoom.transform, d3.zoomIdentity);
+  redrawGeo();
+  toast(MAP_VIEW_NAME[v] + (v === "globo" ? " · arrastrá para girarlo" : ""));
+}
 function initMap() {
   if (!window.d3) { $("#maphint").textContent = "No se pudo cargar el mapa."; return; }
-  proj = d3.geoEqualEarth().fitExtent([[6, 6], [W-6, H-6]], { type:"Sphere" });
-  geoPath = d3.geoPath(proj);
+  makeProjection();
   svgSel = d3.select("#map");
   gLayer = svgSel.append("g");
   gLayer.append("path").attr("class","sphere").attr("d", geoPath({ type:"Sphere" }));
   gLayer.append("path").attr("class","grat").attr("vector-effect","non-scaling-stroke").attr("d", geoPath(d3.geoGraticule10()));
   gLayer.append("g").attr("class","lands");
   gArcs = gLayer.append("g"); gApts = gLayer.append("g");
-  zoom = d3.zoom().scaleExtent([1, 12]).translateExtent([[0,0],[W,H]]).on("zoom", e => {
+  zoom = d3.zoom().scaleExtent([1, 12]).translateExtent([[0,0],[W,H]])
+    .filter(e => mapView !== "globo" ? ((!e.ctrlKey || e.type === "wheel") && !e.button) : (e.type === "wheel" || (e.touches && e.touches.length > 1)))
+    .on("zoom", e => {
     gLayer.attr("transform", e.transform); curK = e.transform.k; sizeApts();
   });
   svgSel.call(zoom).on("dblclick.zoom", null);
@@ -1182,6 +1229,9 @@ function initMap() {
   $("#z-in").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1.6);
   $("#z-out").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1/1.6);
   $("#z-fit").onclick = () => fitRoutes(true);
+  $("#z-view").onclick = () => { const i = MAP_VIEWS.indexOf(mapView); setMapView(MAP_VIEWS[(i + 1) % MAP_VIEWS.length]); };
+  svgSel.call(d3.drag().filter(e => mapView === "globo" && !e.button && !(e.touches && e.touches.length > 1))
+    .on("drag", e => { const r = proj.rotate(), k = 70 / proj.scale() / curK; proj.rotate([r[0] + e.dx * k * 1.2, Math.max(-85, Math.min(85, r[1] - e.dy * k * 1.2))]); redrawGeo(); }));
   S.mapReady = true;
   try {
     const raw = JSON.parse(document.getElementById("world-data").textContent);
@@ -1199,6 +1249,11 @@ function sizeApts() {
 }
 function fitRoutes(animate) {
   if (!svgSel) return;
+  if (mapView === "globo") {
+    const pts = filtered().flatMap(f => [f.from, f.to]).filter(validApt).map(a => [+a.lon, +a.lat]);
+    if (pts.length) { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); }
+    svgSel.call(zoom.transform, d3.zoomIdentity); return;
+  }
   const pts = [];
   for (const f of filtered()) for (const a of [f.from, f.to]) if (validApt(a)) pts.push(proj([+a.lon, +a.lat]));
   let t = d3.zoomIdentity;
@@ -1239,7 +1294,7 @@ function renderMap() {
     .attr("stroke-width", d => isSel(d) ? 3.4 : (d.past ? Math.min(1.3 + Math.log2(d.n) * 0.8, 4) : 1.6))
     .attr("opacity", d => d.past ? Math.min(0.55 + d.n * 0.1, 0.95) : 0.9)
     .attr("d", d => geoPath({ type:"LineString", coordinates:[[+d.a.lon, +d.a.lat], [+d.b.lon, +d.b.lat]] }));
-  const as = [...apts.values()].map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 3.6 }));
+  const as = [...apts.values()].filter(a => isVisible(+a.lon, +a.lat)).map(a => ({ ...a, p: proj([+a.lon, +a.lat]), r: 3.6 }));
   const showAll = as.length <= 24;
   const top = new Set([...as].sort((a, b) => b.n - a.n).slice(0, 16).map(a => a.iata));
   const hub = as.length ? Math.max(...as.map(a => a.n)) : 0;
@@ -1274,7 +1329,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006010201";
+const BUILD = "20261006010444";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
