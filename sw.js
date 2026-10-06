@@ -1,5 +1,5 @@
 // Flights service worker: works offline, never stores flight data (that lives in the browser's localStorage).
-const CACHE = "flights-20261006130823";
+const CACHE = "flights-20261006131843";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./apple-touch-icon.png",
   "https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
