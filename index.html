@@ -909,6 +909,11 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
   body[data-view="stats"] .top .brand small{display:block;max-width:100%}
   body[data-view="vuelos"] #p-list .list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:16px}
 }
+
+.pastelink{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 7%,var(--surface));color:var(--ink);border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer;font:inherit}
+.pastelink svg{width:24px;height:24px;flex:none;color:var(--accent)}
+.pastelink span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pastelink small{color:var(--muted);font-size:13px}
 </style>
 
 </head>
@@ -1263,7 +1268,7 @@ const STANDALONE = !(window.claude && window.claude.use);
 function useLocal() {
   S.storage = "local"; S.real = lsRead(); S.loaded = true;
   if (STANDALONE) {
-    $("#b-import").hidden = true; $("#claudenote").hidden = true; $("#tab-import").hidden = true;
+    $("#claudenote").hidden = true;
   }
   render();
 }
@@ -1290,7 +1295,7 @@ const W = 960, H = 470;
 let proj, geoPath, gLayer, gArcs, gApts, zoom, svgSel, curK = 1, world = null, fitKey = "";
 const MAP_VIEWS = ["plano", "globo", "mercator"];
 const MAP_VIEW_NAME = { plano:"Mapa plano", globo:"Globo terráqueo", mercator:"Mapa Mercator" };
-let mapView = "plano";
+let mapView = window.innerWidth <= 699 ? "mercator" : "plano";   // iPhone opens on the Mercator map
 function homeCenter() {
   const c = new Map(); for (const f of all()) for (const a of [f.from, f.to]) if (validApt(a)) c.set(a.iata, [(c.get(a.iata)?.[0] || 0) + 1, a]);
   const top = [...c.values()].sort((x, y) => y[0] - x[0])[0];
@@ -1386,6 +1391,7 @@ function setMapView(v) {
   makeProjection();
   if (svgSel) svgSel.call(zoom.transform, d3.zoomIdentity);
   redrawGeo();
+  if (phoneMap()) focusSelection();
   toast(MAP_VIEW_NAME[v] + (v === "globo" ? " · arrastrá para girarlo" : ""));
 }
 function initMap() {
@@ -1555,7 +1561,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006021805";
+const BUILD = "20261006022447";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1997,6 +2003,7 @@ function openSheet(kind, id) {
   const v = k => esc(form[k] ?? "");
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
     <div class="hd"><h2 id="sh-t">${id ? "Editar vuelo" : "Agregar vuelo"}</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    ${id ? "" : `<button class="pastelink" type="button" data-act="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5V3h6v1.5M9 11h6M9 15h4"/></svg><span><b>Pegar reserva</b><small>Copiá el email o la tarjeta de embarque y detectamos los vuelos</small></span></button>`}
     <div class="box"><h4>Buscar vuelo</h4>
       <div class="row">
         <label class="f">Número de vuelo<input id="f-num" class="fnum" autocomplete="off" placeholder="IB6845" value="${v("num")}"></label>
@@ -2341,7 +2348,7 @@ function openImport() {
   found = [];
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="im-t">
     <div class="hd"><h2 id="im-t">Pegar reserva</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
-    ${S.sample ? `<p class="hint">Pegá el texto de un email de confirmación, una tarjeta de embarque o una lista tuya. Ejemplo:<br><span class="mono">IB6845 12/03/2023<br>BCN-LIS 5 julio 2024 TP1033</span></p>
+    ${true ? `<p class="hint">Pegá el texto de un email de confirmación, una tarjeta de embarque o una lista tuya. Ejemplo:<br><span class="mono">IB6845 12/03/2023<br>BCN-LIS 5 julio 2024 TP1033</span></p>
     <textarea class="big" id="im-text" aria-label="Texto con vuelos" placeholder="Pegá acá…"></textarea>
     <div class="acts"><button class="btn primary" type="button" id="im-go">Detectar vuelos</button><button class="btn" type="button" id="im-stop" hidden>Detener</button></div>
     <div id="im-stat" class="status" hidden></div>
@@ -2349,7 +2356,6 @@ function openImport() {
     <div class="foot" id="im-foot" hidden><button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="im-save">Guardar</button></div>`
     : `<div class="status err">La lectura de texto con Claude no está disponible en esta vista. Podés agregar vuelos uno por uno o importar un archivo .json exportado.</div>`}
   </div></div>`;
-  if (!S.sample) return;
   $("#im-text").focus();
   const stat = (m, c) => { const el = $("#im-stat"); el.hidden = !m; el.className = "status " + (c || ""); el.textContent = m; };
   $("#im-stop").onclick = () => ctl?.abort();
@@ -2359,13 +2365,13 @@ function openImport() {
     ctl = new AbortController();
     $("#im-go").disabled = true; $("#im-stop").hidden = false; stat("Leyendo el texto…", "work"); $("#im-prev").innerHTML = ""; $("#im-foot").hidden = true;
     try {
-      const res = await extractFlights(text, ctl.signal);
+      const res = S.sample ? await extractFlights(text, ctl.signal) : await extractLocal(text, ctl.signal);
       found = res.filter(f => f.from && f.to && f.date);
       const skipped = res.length - found.length;
       if (!found.length) { stat("No encontramos vuelos completos en el texto." + (skipped ? ` Hubo ${skipped} sin ruta o fecha.` : ""), "err"); return; }
       const dup = f => S.real.some(r => r.num === f.num && r.date === f.date && r.from?.iata === f.from.iata);
       stat(`Encontramos ${found.length} vuelo${found.length > 1 ? "s" : ""}.${skipped ? ` ${skipped} no tenía${skipped > 1 ? "n" : ""} ruta o fecha.` : ""} Destildá los que no quieras guardar.`, "ok");
-      $("#im-prev").innerHTML = found.map((f, i) => `<label><input type="checkbox" id="im-c${i}" ${dup(f) ? "" : "checked"}><div><b>${esc(f.from.iata)} → ${esc(f.to.iata)}</b> <span class="mono">${esc(f.num)}</span><br><span>${esc(f.date)}${f.dep ? " · " + esc(f.dep) : ""} · ${esc(f.airline)}${dup(f) ? " · ya está guardado" : ""}${f.confidence === "baja" ? " · verificar horarios" : ""}</span></div></label>`).join("");
+      $("#im-prev").innerHTML = found.map((f, i) => `<label><input type="checkbox" id="im-c${i}" ${dup(f) ? "" : "checked"}><div><b>${esc(f.from.iata)} → ${esc(f.to.iata)}</b> <span class="mono">${esc(f.num)}</span><br><span>${esc(f.date)}${f.dep ? " · " + esc(f.dep) + (f.arr ? "–" + esc(f.arr) + (f.arrOffset ? " +" + f.arrOffset : "") : "") : ""}${f.airline ? " · " + esc(f.airline) : ""}${dup(f) ? " · ya está guardado" : ""}${f.confidence === "baja" ? " · verificar horarios" : ""}</span></div></label>`).join("");
       $("#im-foot").hidden = false;
     } catch (e) { stat(sampleErr(e), "err"); }
     finally { const g = $("#im-go"); if (g) g.disabled = false; const s = $("#im-stop"); if (s) s.hidden = true; }
@@ -2377,6 +2383,111 @@ function openImport() {
     try { await saveMany(pick); closeSheet(); toast(`${pick.length} vuelo${pick.length > 1 ? "s" : ""} guardado${pick.length > 1 ? "s" : ""}`); S.tab = "past"; render(); }
     catch { stat("Se cortó el guardado. Revisá tu lista y probá de nuevo con los que falten.", "err"); e.target.disabled = false; }
   };
+}
+/* ---------- read a pasted booking without any server: flight numbers, dates, airports and times ---------- */
+const MONTH3 = { ene:1, jan:1, feb:2, fev:2, mar:3, abr:4, apr:4, may:5, mai:5, jun:6, jul:7, ago:8, aug:8, sep:9, set:9, oct:10, out:10, nov:11, dic:12, dec:12, dez:12 };
+const NOT_APT = new Set("THE AND FOR YOU ARE NOT ALL ANY CAN HAS HER HIS ITS OUR OUT WAS WHO WHY HOW NEW NOW OFF ONE TWO PER VIA EUR USD ARS GBP CHF BRL MXN CLP COP PEN UYU PDF CIF NIF DNI NIE IVA TAX VAT FEE PAX ADT CHD INF SEC REF ETA ETD CIA WWW COM NET ORG FAQ APP SMS GMT UTC CET CST EST PST STD STA MAX MIN BAG SSR TKT PNR SKY VIP KGS LBS NIL YES".split(" "));
+function pyear(y) { if (y == null || y === "") return null; y = +String(y).replace("'", ""); if (y < 100) y += (y > (new Date().getFullYear() % 100) + 5 ? 1900 : 2000); return y; }
+function guessYear(m, d) {
+  const now = new Date(), y = now.getFullYear(), t = new Date(y, m - 1, d);
+  return (now - t) / DAY > 60 ? y + 1 : y;    // bookings are usually for upcoming trips
+}
+function findDates(low) {
+  const out = [], add = (pos, len, y, m, d) => {
+    if (!(m >= 1 && m <= 12 && d >= 1 && d <= 31)) return;
+    if (y == null) y = guessYear(m, d);
+    if (y < 1950 || y > 2100) return;
+    out.push({ pos, end:pos + len, date:`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}` });
+  };
+  let m;
+  const iso = /\b(19\d\d|20\d\d)-(\d{1,2})-(\d{1,2})\b/g;
+  while ((m = iso.exec(low))) add(m.index, m[0].length, +m[1], +m[2], +m[3]);
+  const dmy = /\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4}|\d{2})\b/g;
+  while ((m = dmy.exec(low))) { let d = +m[1], mo = +m[2]; if (mo > 12 && d <= 12) [d, mo] = [mo, d]; add(m.index, m[0].length, pyear(m[3]), mo, d); }
+  const dMy = /\b(\d{1,2})(?:\s*de)?\s*([a-z]{3,10})\.?,?(?:\s*(?:de|del))?\s*('?\d{4}|'?\d{2}(?![\d:h]))?/g;
+  while ((m = dMy.exec(low))) { const mo = MONTH3[m[2].slice(0, 3)]; if (mo) add(m.index, m[0].length, pyear(m[3]), mo, +m[1]); }
+  const Mdy = /\b([a-z]{3,10})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/g;
+  while ((m = Mdy.exec(low))) { const mo = MONTH3[m[1].slice(0, 3)]; if (mo) add(m.index, m[0].length, +m[3], mo, +m[2]); }
+  return out.sort((a, b) => a.pos - b.pos);
+}
+async function extractLocal(text, signal) {
+  await Promise.all([loadAptDB(), loadAlDB()]);
+  const low = text.toLowerCase().replace(/[áàâä]/g, "a").replace(/[éèêë]/g, "e").replace(/[íìîï]/g, "i").replace(/[óòôö]/g, "o").replace(/[úùûü]/g, "u");
+  const aptSet = new Set((APTDB || []).map(a => a.iata)); for (const a of AIRPORTS.values()) aptSet.add(a.iata);
+  const alSet = new Set(Object.keys(AL_NAME)); for (const a of (ALDB || [])) if (a.active) alSet.add(a.code); for (const f of S.real) { const c = alCode(f); if (c) alSet.add(c); }
+  let m;
+  // flight numbers: an airline code written in capitals + 1-4 digits (IB6845, IB 6845, AR-1132)
+  const nums = [], reNum = /\b([A-Z][A-Z0-9]|[0-9][A-Z])[ \-]?(\d{1,4})(?![\d:])\b/g;
+  while ((m = reNum.exec(text))) {
+    const code = m[1], spaced = m[0].length > code.length + m[2].length;
+    if (!alSet.has(code)) continue;
+    if (spaced && (code === "AM" || code === "PM" || code === "DE")) continue;
+    nums.push({ pos:m.index, end:m.index + m[0].length, num:code + m[2], code });
+  }
+  // routes: MAD-EZE, MAD → EZE, MAD to EZE
+  const pairs = [], rePair = /\b([A-Z]{3})\s*(?:-|–|—|→|->|>|\/|\ba\b|\bto\b)\s*([A-Z]{3})\b/g;
+  while ((m = rePair.exec(text))) if (aptSet.has(m[1]) && aptSet.has(m[2]) && m[1] !== m[2]) pairs.push({ pos:m.index, end:m.index + m[0].length, a:m[1], b:m[2] });
+  const codes = [], reCode = /\b[A-Z]{3}\b/g;
+  while ((m = reCode.exec(text))) if (aptSet.has(m[0]) && !NOT_APT.has(m[0])) codes.push({ pos:m.index, iata:m[0] });
+  // city names of airports you already use (and the built-in list), e.g. "Barcelona → Lisboa"
+  const cityPool = new Map();
+  for (const a of AIRPORTS.values()) if (a.city) cityPool.set(norm(a.city), a.iata);
+  const used = new Map(); for (const f of S.real) for (const a of [f.from, f.to]) if (validApt(a) && a.city) used.set(a.iata, (used.get(a.iata) || 0) + 1);
+  for (const [iata] of [...used].sort((x, y) => x[1] - y[1])) { const a = knownApt(iata); if (a && a.city) cityPool.set(norm(a.city), iata); }
+  const cities = [];
+  for (const [c, iata] of cityPool) { if (c.length < 4) continue; const re = new RegExp("\\b" + c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"); while ((m = re.exec(low))) cities.push({ pos:m.index, iata }); }
+  const dates = findDates(low);
+  const times = [], reT = /\b([01]?\d|2[0-3])[:h]([0-5]\d)\s*(a\.?m\.?|p\.?m\.?)?(?![\d])/g;
+  while ((m = reT.exec(low))) { let h = +m[1]; const ap = m[3] ? m[3][0] : ""; if (ap === "p" && h < 12) h += 12; if (ap === "a" && h === 12) h = 0; times.push({ pos:m.index, t:`${String(h).padStart(2, "0")}:${m[2]}` }); }
+
+  const anchors = nums.length ? nums : pairs.map(p => ({ ...p, num:"" }));
+  // a date/airport on the same line as a flight belongs to it; otherwise to the closest flight
+  const lineNo = pos => { let n = 0, k = -1; while ((k = text.indexOf("\n", k + 1)) !== -1 && k < pos) n++; return n; };
+  for (const a of anchors) a.line = lineNo(a.pos);
+  const owner = x => {
+    if (x._own) return x._own;
+    const ln = lineNo(x.pos), same = anchors.filter(a => a.line === ln), pool = same.length ? same : anchors;
+    return (x._own = pool.reduce((b, a) => Math.abs(a.pos - x.pos) < Math.abs(b.pos - x.pos) ? a : b));
+  };
+  const out = []; let lastDate = null;
+  for (let i = 0; i < anchors.length; i++) {
+    if (signal && signal.aborted) throw { code:"cancelled" };
+    const an = anchors[i], prev = anchors[i - 1], next = anchors[i + 1];
+    const lineStart = pos => text.lastIndexOf("\n", pos - 1) + 1;
+    // dates, airports and cities go to whichever flight they are closest to
+    const dist = x => Math.abs(x.pos - an.pos);
+    const mine = x => owner(x) === an;
+    const near = arr => arr.filter(mine).sort((a, b) => dist(a) - dist(b));
+    // times: from this flight's line until the next flight's line
+    const t0 = Math.max(prev ? prev.end : 0, lineStart(an.pos)), t1 = next ? Math.max(t0, lineStart(next.pos)) : text.length;
+    const inSeg = x => x.pos >= t0 && x.pos < t1;
+    const dt = near(dates.filter(d => !(d.pos <= an.pos && d.end > an.pos)))[0];
+    const date = dt ? dt.date : lastDate;
+    let from = null, to = null;
+    const pr = an.a ? an : near(pairs)[0];
+    if (pr) { from = pr.a; to = pr.b; }
+    else {
+      let c = near(codes).slice(0, 2);
+      if (c.length < 2) c = near(cities).filter((x, k, arr) => arr.findIndex(y => y.iata === x.iata) === k).slice(0, 2);
+      if (c.length === 2 && c[0].iata !== c[1].iata) { c.sort((a, b) => a.pos - b.pos); from = c[0].iata; to = c[1].iata; }
+    }
+    const tt = times.filter(inSeg).sort((a, b) => a.pos - b.pos);
+    const f = { num:an.num || "", date, dep:tt[0] ? tt[0].t : "", arr:tt[1] ? tt[1].t : "", arrOffset:0, airline:"", aircraft:"", from:null, to:null };
+    if (f.dep && f.arr && f.arr < f.dep) f.arrOffset = 1;
+    if (f.num) { const c = f.num.slice(0, 2); f.alc = c; f.airline = AL_NAME[c] || ((ALDB || []).find(a => a.code === c && a.active) || {}).name || ""; }
+    if (from && to) { f.from = await aptFrom(from); f.to = await aptFrom(to); }
+    if ((!f.from || !f.to) && f.num) {
+      const r = await lookupFree(f.num, date, signal);
+      if (r.found) { f.from = r.f.from; f.to = r.f.to; if (!f.airline) f.airline = r.f.airline; }
+    }
+    if (f.num && f.from && f.to && !f.dep) {
+      const h = historyMatch(f.num);
+      if (h && h.from.iata === f.from.iata && h.to.iata === f.to.iata) Object.assign(f, { dep:h.dep, arr:h.arr, arrOffset:h.arrOffset, durationMin:h.durationMin, aircraft:h.aircraft || "" });
+    }
+    if (date) lastDate = date;
+    out.push(f);
+  }
+  return out;
 }
 async function saveMany(list) {
   if (!list.length) return;
