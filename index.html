@@ -974,6 +974,8 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .tripttl b{font-size:15px;font-weight:700;color:var(--accent-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .tripttl small{font-size:12px;color:var(--muted);white-space:nowrap}
 .tripttl .chev-r{margin-left:auto;color:var(--muted)}
+.apf input#f-trip,.apf input#tr-name{border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:16px;font-family:var(--f-body);color:var(--ink);width:100%;min-width:0}
+.tripsheet .apf input#tr-name{background:var(--surface);font-size:17px;font-weight:600;padding:10px 12px}
 </style>
 
 </head>
@@ -1668,7 +1670,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006141818";
+const BUILD = "20261006142933";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1967,6 +1969,25 @@ function tripBlock(f) {
   return `<div class="dtrip"><span>Viaje</span><b>${esc(f.trip)}</b><small>${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"} · ${esc(shortDate(legs[0]))}</small>
     <div class="tb"><button class="btn" type="button" data-tripview="${esc(f.trip)}">Ver viaje</button><button class="btn" type="button" data-tripedit="${esc(f.trip)}">Editar</button></div></div>`;
 }
+/* suggestions of existing trips while typing a trip name */
+function tripSugg(inp, box, pick, exclude) {
+  if (!inp || !box) return;
+  const show = () => {
+    const q = norm(inp.value).trim(), tm = tripMap();
+    let names = [...tm.keys()].filter(n => n !== exclude);
+    if (q) names = names.filter(n => norm(n).includes(q)).sort((a, b) => (norm(b).startsWith(q) - norm(a).startsWith(q)));
+    else names.sort((a, b) => tm.get(b)[0].depT - tm.get(a)[0].depT);
+    names = names.slice(0, 8);
+    if (!names.length || (names.length === 1 && names[0] === inp.value.trim())) { box.hidden = true; return; }
+    box.innerHTML = names.map(n => { const l = tm.get(n); return `<button type="button" class="sg" role="option" data-tripsg="${esc(n)}"><span class="sg-code">✈︎</span><span class="sg-txt"><b>${esc(n)}</b><small>${l.length} ${l.length === 1 ? "vuelo" : "vuelos"} · ${esc(shortDate(l[0]))}${l.length > 1 ? " – " + esc(shortDate(l[l.length - 1])) : ""}</small></span></button>`; }).join("");
+    box.hidden = false;
+  };
+  inp.addEventListener("input", show);
+  inp.addEventListener("focus", show);
+  inp.addEventListener("blur", () => setTimeout(() => { const on = !box.hidden && box.querySelector(".sg.on"); if (on) pick(on.dataset.tripsg); box.hidden = true; }, 180));
+  box.addEventListener("pointerdown", e => { const b = e.target.closest("[data-tripsg]"); if (!b) return; e.preventDefault(); e.stopPropagation(); box.hidden = true; pick(b.dataset.tripsg); });
+  suggNav(inp, box, o => { box.hidden = true; pick(o.dataset.tripsg); }, o => o.dataset.tripsg, false);   // Enter keeps a new name unless you picked one
+}
 async function saveTrip(oldName, newName, ids) {
   newName = String(newName || "").trim().slice(0, 60);
   const changed = [];
@@ -2005,7 +2026,7 @@ function drawTripEditor() {
   const scrollEl = document.querySelector(".tripsheet"), sc = scrollEl ? scrollEl.scrollTop : 0;
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet tripsheet" role="dialog" aria-modal="true" aria-labelledby="tr-t">
     <div class="hd"><h2 id="tr-t">${ed.old ? "Editar viaje" : "Nuevo viaje"}</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
-    <label class="f">Nombre del viaje<input id="tr-name" value="${esc(ed.name)}" placeholder="Ej.: Japón 2024" autocomplete="off"></label>
+    <div class="f apf">Nombre del viaje<input id="tr-name" value="${esc(ed.name)}" placeholder="Ej.: Japón 2024" autocomplete="off" spellcheck="false" aria-label="Nombre del viaje"><div class="sugg" id="s-trname" role="listbox" hidden></div></div>
     ${!ed.old && others.length ? `<div class="trpick"><span>O sumalo a un viaje que ya tenés:</span><div>${others.slice(0, 12).map(n => `<button type="button" class="chip" data-trippick="${esc(n)}">${esc(n)}</button>`).join("")}</div></div>` : ""}
     <div class="trhead"><b>Vuelos del viaje <span class="cnt">${sel.length}</span></b>${sel.length ? `<button type="button" class="linkbtn" data-tripall>${ed.all ? "Ver solo vuelos cercanos" : "Ver todos los vuelos"}</button>` : ""}</div>
     <div class="trlist">${shown.map(f => `<label class="tritem${ed.members.has(f.id) ? " on" : ""}"><input type="checkbox" data-tripchk="${esc(f.id)}" ${ed.members.has(f.id) ? "checked" : ""}>
@@ -2016,6 +2037,7 @@ function drawTripEditor() {
   </div></div>`;
   const sh = document.querySelector(".tripsheet"); if (sh) sh.scrollTop = sc;
   $("#tr-name").addEventListener("input", e => { ed.name = e.target.value; });
+  tripSugg($("#tr-name"), $("#s-trname"), n => { const seed = [...ed.members]; tripEd = { old:n, name:n, members:new Set([...(tripMap().get(n) || []).map(f => f.id), ...seed]), all:false }; drawTripEditor(); }, ed.old);
   if (!ed.old && !ed.name) $("#tr-name").focus();
 }
 document.addEventListener("change", e => {
@@ -2298,7 +2320,7 @@ function openSheet(kind, id) {
         <label class="f">Clase<select id="f-cls"><option value="">—</option>${Object.entries(CLASSES).map(([k, t]) => `<option value="${k}" ${form.cls === k ? "selected" : ""}>${t}</option>`).join("")}</select></label>
       </div>
       <label class="f">Notas<input id="f-notes" value="${v("notes")}" placeholder="Motivo, recuerdos…"></label>
-      <label class="f">Viaje<input id="f-trip" list="trip-names" autocomplete="off" value="${v("trip")}" placeholder="Opcional · ej.: Japón 2024"><datalist id="trip-names">${tripNames().map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></label>
+      <div class="f apf">Viaje<input id="f-trip" autocomplete="off" autocapitalize="sentences" spellcheck="false" value="${v("trip")}" placeholder="Opcional · ej.: Japón 2024" aria-label="Viaje"><div class="sugg" id="s-trip" role="listbox" hidden></div></div>
     </div>
     <div id="f-err" class="status err" hidden></div>
     <div class="foot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="f-save">${id ? "Guardar cambios" : "Guardar vuelo"}</button></div>
@@ -2326,6 +2348,7 @@ function openSheet(kind, id) {
     ai.addEventListener("blur", () => setTimeout(() => { const b = $("#s-airline"); if (!b) return; const on = !b.hidden && b.querySelector(".sg.on"); if (on) pickAirline(on.dataset.alc, on.dataset.name); b.hidden = true; }, 180));
     suggNav(ai, $("#s-airline"), o => pickAirline(o.dataset.alc, o.dataset.name), o => o.dataset.name);
     loadAlDB(); }
+  tripSugg($("#f-trip"), $("#s-trip"), n => { $("#f-trip").value = n; });
   $("#f-look").onclick = () => doLookup(true);
   $("#f-stop").onclick = () => { ctl?.abort(); clearTimeout(autoT); };
   lastKey = id ? lookupKey() : "";
@@ -2387,7 +2410,7 @@ async function showAlSugg() {
   box.hidden = false; markLogos(box);
 }
 /* arrow keys move through the suggestions (the first ↓ selects the first one); Enter or Tab confirms */
-function suggNav(inp, box, commit, label) {
+function suggNav(inp, box, commit, label, enterFirst = true) {
   let typed = null;
   inp.addEventListener("input", () => { typed = null; });
   inp.addEventListener("keydown", e => {
@@ -2403,7 +2426,7 @@ function suggNav(inp, box, commit, label) {
       inp.value = label(opts[i]);
       return;
     }
-    if (e.key === "Enter") { e.preventDefault(); typed = null; return commit(i >= 0 ? opts[i] : opts[0]); }
+    if (e.key === "Enter") { if (i < 0 && !enterFirst) { box.hidden = true; return; } e.preventDefault(); typed = null; return commit(i >= 0 ? opts[i] : opts[0]); }
     if (e.key === "Tab" && i >= 0) { typed = null; return commit(opts[i]); }
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (typed != null) inp.value = typed; typed = null; opts.forEach(o => o.classList.remove("on")); box.hidden = true; }
   });
