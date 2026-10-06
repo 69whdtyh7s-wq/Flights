@@ -944,6 +944,30 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .flpop .popbody{overflow-y:auto;overscroll-behavior:contain}
 .flpop .detail{margin:0;border-radius:0;background:transparent;padding:6px 18px 18px}
 @media (max-width:699px){.flpop{display:none}}
+/* manual trips */
+.triptag{font-size:11.5px;font-weight:600;color:var(--accent-text);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:999px;padding:2px 8px;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.dtrip{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;background:var(--surface);border-radius:14px;padding:12px 14px}
+.dtrip > span{grid-column:1 / -1;font-size:12px;color:var(--muted)}
+.dtrip > b{font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dtrip > small{grid-column:1;font-size:12.5px;color:var(--muted)}
+.dtrip .tb{grid-column:2;grid-row:2 / span 2;display:flex;gap:6px}
+.dtrip > .btn{grid-column:1 / -1;justify-content:center}
+.tripsheet .trpick span{font-size:13px;color:var(--muted)}
+.tripsheet .trpick > div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tripsheet .trhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.tripsheet .trhead .cnt{color:var(--muted);font-weight:600}
+.linkbtn{border:0;background:none;color:var(--accent-text);font:inherit;font-size:14px;cursor:pointer;padding:0}
+.trlist{display:flex;flex-direction:column;background:var(--surface);border-radius:14px;overflow:clip}
+.tritem{display:grid;grid-template-columns:auto 92px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.tritem:last-child{border-bottom:0}
+.tritem.on{background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+.tritem input{width:20px;height:20px;accent-color:var(--accent);margin:0}
+.tritem .trd{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tritem .trr{display:flex;flex-direction:column;min-width:0}
+.tritem .trr small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tritem .trother{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank.trips .nm{display:flex;flex-direction:column;gap:2px}
+.rank.trips small{font-size:12px;color:var(--muted)}
 </style>
 
 </head>
@@ -1283,7 +1307,7 @@ function newId() { return "f" + Date.now().toString(36) + Math.random().toString
 function clean(f) {
   const pickApt = a => a ? { iata:String(a.iata||"").toUpperCase(), name:a.name||"", city:a.city||"", cc:(a.cc||"").toUpperCase(), lat:+a.lat, lon:+a.lon, tz:a.tz||"" } : null;
   return { kind:"flight", num:(f.num||"").toUpperCase().replace(/\s+/g,""), airline:f.airline||"", alc:/^[A-Z0-9]{2}$/.test(f.alc||"") ? f.alc : "", date:f.date||"", dep:f.dep||"", arr:f.arr||"", arrOffset:+f.arrOffset||0,
-    durationMin: +f.durationMin || null, from:pickApt(f.from), to:pickApt(f.to), aircraft:f.aircraft||"", seat:f.seat||"", cls:f.cls||"", notes:f.notes||"", updated: Date.now() };
+    durationMin: +f.durationMin || null, from:pickApt(f.from), to:pickApt(f.to), aircraft:f.aircraft||"", seat:f.seat||"", cls:f.cls||"", notes:f.notes||"", trip:String(f.trip||"").trim().slice(0, 60), updated: Date.now() };
 }
 async function saveFlight(id, f) {
   const body = clean(f);
@@ -1638,7 +1662,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006130413";
+const BUILD = "20261006130823";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1745,7 +1769,7 @@ function flightRow(f, noDetail) {
       <div class="path">${PLANE}</div>
       <div class="ap r"><b>${esc(f.to?.iata || "???")}</b><small>${esc(f.to?.city || "")}</small><span class="t">${esc(f.arr || "")}${+f.arrOffset > 0 ? `<sup>+${f.arrOffset}</sup>` : ""}</span></div>
     </div>
-    <div class="meta"><span class="dt">${day} ${mon}</span><span class="fn">${esc(f.num ? f.num.replace(/^([A-Z0-9]{2})(\d)/, "$1 $2") : "")}</span>${hasLogo(alCode(f)) ? "" : `<span class="al">${esc(f.airline || "")}</span>`}${pill ? `<span>${pill}</span>` : ""}</div>
+    <div class="meta"><span class="dt">${day} ${mon}</span><span class="fn">${esc(f.num ? f.num.replace(/^([A-Z0-9]{2})(\d)/, "$1 $2") : "")}</span>${hasLogo(alCode(f)) ? "" : `<span class="al">${esc(f.airline || "")}</span>`}${f.trip ? `<span class="triptag" title="Viaje">${esc(f.trip)}</span>` : ""}${pill ? `<span>${pill}</span>` : ""}</div>
   </button>` + (open && !noDetail ? detail(f) : "");
 }
 const WD = ["dom","lun","mar","mié","jue","vie","sáb"];
@@ -1795,6 +1819,7 @@ function detail(f) {
       ${ap(f.to, f.arr, niceDate(f.date, +f.arrOffset || 0), true)}</div>
     <div class="dtiles">${tiles.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("")}</div>
     ${f.notes ? `<div class="dnotes"><span>Notas</span><p>${esc(f.notes)}</p></div>` : ""}
+    ${f.demo ? "" : tripBlock(f)}
     <div class="acts">${acts}</div></div>`;
 }
 
@@ -1905,14 +1930,112 @@ function rankList(entries, label, kind) {
     + (entries.length > RANK_TOP ? `<button type="button" class="more" data-more="${kind}">${open ? "Ver menos" : `Ver todos (${entries.length})`}</button>` : "");
 }
 const routeKey = f => f.from && f.to ? [f.from.iata, f.to.iata].sort().join(" ⇄ ") : null;
+/* ---------- trips you group by hand (stored as a "trip" name on each flight) ---------- */
+function tripMap() {
+  const m = new Map();
+  for (const f of all()) if (f.trip && !f.demo) { if (!m.has(f.trip)) m.set(f.trip, []); m.get(f.trip).push(f); }
+  for (const l of m.values()) l.sort((a, b) => a.depT - b.depT);
+  return m;
+}
+const tripNames = () => [...tripMap().entries()].sort((a, b) => b[1][0].depT - a[1][0].depT).map(e => e[0]);
+const shortDate = f => f.date ? `${+f.date.slice(8, 10)} ${MONTHS[+f.date.slice(5, 7) - 1]} ${f.date.slice(0, 4)}` : "";
+function tripBlock(f) {
+  if (!f.trip) return `<div class="dtrip"><span>Viaje</span><button class="btn" type="button" data-tripfor="${esc(f.id)}">Agregar a un viaje</button></div>`;
+  const legs = tripMap().get(f.trip) || [f];
+  return `<div class="dtrip"><span>Viaje</span><b>${esc(f.trip)}</b><small>${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"} · ${esc(shortDate(legs[0]))}</small>
+    <div class="tb"><button class="btn" type="button" data-tripview="${esc(f.trip)}">Ver viaje</button><button class="btn" type="button" data-tripedit="${esc(f.trip)}">Editar</button></div></div>`;
+}
+async function saveTrip(oldName, newName, ids) {
+  newName = String(newName || "").trim().slice(0, 60);
+  const changed = [];
+  for (const f of S.real) {
+    const want = ids.has(f.id) ? newName : (oldName && f.trip === oldName ? "" : (f.trip || ""));
+    if ((f.trip || "") !== want) changed.push({ ...f, trip:want });
+  }
+  if (!changed.length) return 0;
+  if (S.storage === "db") {
+    for (let i = 0; i < changed.length; i += 8) await Promise.all(changed.slice(i, i + 8).map(f => S.col.doc(f.id).set(clean(f))));
+  } else {
+    const byId = new Map(changed.map(f => [f.id, f]));
+    const arr = lsRead().map(x => byId.has(x.id) ? { id:x.id, ...clean(byId.get(x.id)) } : x);
+    if (!lsWrite(arr)) throw { code:"local" };
+    S.real = arr; render();
+  }
+  return changed.length;
+}
+let tripEd = null;
+function openTripEditor(name, seedId) {
+  const members = new Set(name ? (tripMap().get(name) || []).map(f => f.id) : []);
+  if (seedId) members.add(seedId);
+  tripEd = { old:name || "", name:name || "", members, all:false };
+  drawTripEditor();
+}
+function drawTripEditor() {
+  const ed = tripEd, fl = all().filter(f => !f.demo).sort((a, b) => b.depT - a.depT);
+  const sel = fl.filter(f => ed.members.has(f.id));
+  let shown = fl;
+  if (!ed.all && sel.length) {
+    const t0 = Math.min(...sel.map(f => f.depT)) - 45 * DAY, t1 = Math.max(...sel.map(f => f.depT)) + 45 * DAY;
+    shown = fl.filter(f => ed.members.has(f.id) || (f.depT >= t0 && f.depT <= t1));
+  }
+  const others = tripNames().filter(n => n !== ed.old);
+  const scrollEl = document.querySelector(".tripsheet"), sc = scrollEl ? scrollEl.scrollTop : 0;
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet tripsheet" role="dialog" aria-modal="true" aria-labelledby="tr-t">
+    <div class="hd"><h2 id="tr-t">${ed.old ? "Editar viaje" : "Nuevo viaje"}</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <label class="f">Nombre del viaje<input id="tr-name" value="${esc(ed.name)}" placeholder="Ej.: Japón 2024" autocomplete="off"></label>
+    ${!ed.old && others.length ? `<div class="trpick"><span>O sumalo a un viaje que ya tenés:</span><div>${others.slice(0, 12).map(n => `<button type="button" class="chip" data-trippick="${esc(n)}">${esc(n)}</button>`).join("")}</div></div>` : ""}
+    <div class="trhead"><b>Vuelos del viaje <span class="cnt">${sel.length}</span></b>${sel.length ? `<button type="button" class="linkbtn" data-tripall>${ed.all ? "Ver solo vuelos cercanos" : "Ver todos los vuelos"}</button>` : ""}</div>
+    <div class="trlist">${shown.map(f => `<label class="tritem${ed.members.has(f.id) ? " on" : ""}"><input type="checkbox" data-tripchk="${esc(f.id)}" ${ed.members.has(f.id) ? "checked" : ""}>
+      <span class="trd">${esc(shortDate(f))}</span><span class="trr"><b>${esc(f.from?.iata || "?")} → ${esc(f.to?.iata || "?")}</b><small>${esc([f.num, f.from?.city && f.to?.city ? f.from.city + " – " + f.to.city : ""].filter(Boolean).join(" · "))}</small></span>
+      ${f.trip && f.trip !== ed.old ? `<span class="trother" title="Está en otro viaje">${esc(f.trip)}</span>` : ""}</label>`).join("") || `<p class="hint">No hay vuelos.</p>`}</div>
+    <div id="tr-err" class="status err" hidden></div>
+    <div class="foot">${ed.old ? `<button class="btn danger" type="button" data-tripdel>Deshacer viaje</button>` : ""}<button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" data-tripsave>Guardar</button></div>
+  </div></div>`;
+  const sh = document.querySelector(".tripsheet"); if (sh) sh.scrollTop = sc;
+  $("#tr-name").addEventListener("input", e => { ed.name = e.target.value; });
+  if (!ed.old && !ed.name) $("#tr-name").focus();
+}
+document.addEventListener("change", e => {
+  const c = e.target.closest && e.target.closest("[data-tripchk]"); if (!c || !tripEd) return;
+  if (c.checked) tripEd.members.add(c.dataset.tripchk); else tripEd.members.delete(c.dataset.tripchk);
+  c.closest(".tritem").classList.toggle("on", c.checked);
+  const n = document.querySelector(".trhead .cnt"); if (n) n.textContent = tripEd.members.size;
+});
+async function tripAction(t) {
+  const ed = tripEd;
+  if ("trippick" in t.dataset) { const n = t.dataset.trippick; const seed = [...ed.members]; tripEd = { old:n, name:n, members:new Set([...(tripMap().get(n) || []).map(f => f.id), ...seed]), all:false }; return drawTripEditor(); }
+  if ("tripall" in t.dataset) { ed.all = !ed.all; return drawTripEditor(); }
+  const err = m => { const el = $("#tr-err"); el.hidden = !m; el.textContent = m || ""; };
+  if ("tripsave" in t.dataset) {
+    const name = ($("#tr-name").value || "").trim();
+    if (!name) return err("Ponele un nombre al viaje.");
+    if (!ed.members.size) return err("Marcá al menos un vuelo.");
+    t.disabled = true;
+    try { await saveTrip(ed.old, name, ed.members); tripEd = null; closeSheet(); toast(`Viaje “${name}” guardado`); render(); }
+    catch { t.disabled = false; err("No se pudo guardar. Probá de nuevo."); }
+    return;
+  }
+  if ("tripdel" in t.dataset) {
+    t.disabled = true;
+    try { await saveTrip(ed.old, "", new Set()); tripEd = null; closeSheet(); toast("Viaje deshecho. Los vuelos siguen guardados."); render(); }
+    catch { t.disabled = false; err("No se pudo deshacer. Probá de nuevo."); }
+  }
+}
+function viewTrip(name) {
+  const legs = tripMap().get(name); if (!legs) return;
+  S.open = null; S.focusTrip = null; S.focusIds = legs.map(f => f.id);
+  render(); focusSelection();
+  openDrill("trip", name);
+}
 const DRILL = {
   airline:{ match:(f, k) => alKey(f) === k, title:k => alLabel(k) },
   airport:{ match:(f, k) => f.from?.iata === k || f.to?.iata === k, title:k => { const a = knownApt(k); return a ? `${k} · ${a.city || a.name}` : k; } },
   route:{ match:(f, k) => routeKey(f) === k, title:k => k },
   aircraft:{ match:(f, k) => f.aircraft === k, title:k => k },
   country:{ match:(f, k) => f.from?.cc === k || f.to?.cc === k, title:k => country(k) },
+  trip:{ match:(f, k) => f.trip === k, title:k => k },
 };
-const DRILL_LABEL = { airline:"Aerolínea", airport:"Aeropuerto", route:"Ruta", aircraft:"Avión", country:"País" };
+const DRILL_LABEL = { trip:"Viaje", airline:"Aerolínea", airport:"Aeropuerto", route:"Ruta", aircraft:"Avión", country:"País" };
 const LIST_TITLE = { airline:"Aerolíneas", airport:"Aeropuertos", country:"Países visitados" };
 function listHTML(kind, past) {
   if (kind === "airline") {
@@ -1947,7 +2070,7 @@ function openList(kind) {
 function openDrill(kind, key) {
   const d = DRILL[kind]; if (!d) return;
   S.drill = { kind, key };
-  const list = filtered().filter(f => d.match(f, key)).sort((a, b) => b.depT - a.depT);
+  const list = (kind === "trip" ? all() : filtered()).filter(f => d.match(f, key)).sort((a, b) => kind === "trip" ? a.depT - b.depT : b.depT - a.depT);
   const past = list.filter(f => f.past);
   const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
   const yrs = [...new Set(list.map(f => f.year))].sort();
@@ -1956,7 +2079,7 @@ function openDrill(kind, key) {
   for (const f of list) { if (f.year !== yr) { yr = f.year; rows += `<div class="dyr">${esc(yr)}</div>`; } rows += flightRow(f); }
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet drill" role="dialog" aria-modal="true" aria-labelledby="dr-t">
     ${S.listBack ? `<button type="button" class="backbtn" data-list="${S.listBack}">‹ ${esc(LIST_TITLE[S.listBack])}</button>` : ""}
-    <div class="hd">${icon}<div class="dtt"><small>${DRILL_LABEL[kind]}${S.year !== "all" ? " · " + esc(S.year) : ""}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="hd">${icon}<div class="dtt"><small>${DRILL_LABEL[kind]}${S.year !== "all" && kind !== "trip" ? " · " + esc(S.year) : ""}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div>${kind === "trip" ? `<button class="btn" type="button" data-tripedit="${esc(key)}">Editar</button>` : ""}<button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     <div class="dstats"><div><b>${list.length}</b><span>${list.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${fmt(km)}</b><span>km</span></div><div><b>${fmt(Math.round(mins / 60))}</b><span>horas</span></div><div><b>${yrs.length > 1 ? esc(yrs[0]) + "–" + esc(yrs[yrs.length - 1].slice(2)) : esc(yrs[0] || "—")}</b><span>${yrs.length > 1 ? "años" : "año"}</span></div></div>
     <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
   </div></div>`;
@@ -2016,6 +2139,9 @@ function renderStats() {
   const topRoute = count(past.map(f => routeKey(f)));
   const topAl = count(past.map(alKey));
   const topAc = count(past.map(f => f.aircraft));
+  { const tm = [...tripMap().entries()].sort((a, b) => b[1][0].depT - a[1][0].depT);
+    html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.map(([n, l]) => `<li><button type="button" class="rk" data-tripview="${esc(n)}"><div class="nm"><span><b>${esc(n)}</b></span><small>${esc(shortDate(l[0]))}${l.length > 1 ? " – " + esc(shortDate(l[l.length - 1])) : ""} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>`
+      : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`); }
   html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
   const noAc = past.filter(f => !f.aircraft).length;
   html += card(`Aviones <span>${topAc.length}</span>`, (topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (noAc ? `<p class="hint">${noAc} ${noAc === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""));
@@ -2148,7 +2274,8 @@ function openSheet(kind, id) {
         <label class="f">Asiento<input id="f-seat" value="${v("seat")}" placeholder="23A"></label>
         <label class="f">Clase<select id="f-cls"><option value="">—</option>${Object.entries(CLASSES).map(([k, t]) => `<option value="${k}" ${form.cls === k ? "selected" : ""}>${t}</option>`).join("")}</select></label>
       </div>
-      <label class="f">Notas<input id="f-notes" value="${v("notes")}" placeholder="Viaje, motivo, recuerdos…"></label>
+      <label class="f">Notas<input id="f-notes" value="${v("notes")}" placeholder="Motivo, recuerdos…"></label>
+      <label class="f">Viaje<input id="f-trip" list="trip-names" autocomplete="off" value="${v("trip")}" placeholder="Opcional · ej.: Japón 2024"><datalist id="trip-names">${tripNames().map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></label>
     </div>
     <div id="f-err" class="status err" hidden></div>
     <div class="foot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="f-save">${id ? "Guardar cambios" : "Guardar vuelo"}</button></div>
@@ -2330,7 +2457,7 @@ function showApt(side) {
   else { info.className = "aptinfo"; info.textContent = ""; }
 }
 function readForm() {
-  for (const k of ["num","date","dep","arr","airline","aircraft","seat","notes"]) form[k] = $("#f-" + k).value.trim();
+  for (const k of ["num","date","dep","arr","airline","aircraft","seat","notes","trip"]) form[k] = $("#f-" + k).value.trim();
   form.num = form.num.toUpperCase().replace(/\s+/g, "");
   form.cls = $("#f-cls").value; form.arrOffset = +$("#f-off").value;
 }
@@ -2476,7 +2603,11 @@ async function doSave() {
     const b = $("#f-save"); if (b) { b.disabled = false; b.textContent = form._id ? "Guardar cambios" : "Guardar vuelo"; }
   }
 }
-function closeSheet() { clearTimeout(autoT); ctl?.abort(); ctl = null; $("#sheet-root").innerHTML = ""; form = null; renderPop(); }
+function closeSheet() {
+  clearTimeout(autoT); ctl?.abort(); ctl = null; $("#sheet-root").innerHTML = ""; form = null; tripEd = null;
+  if (S.drill && S.drill.kind === "trip" && S.focusIds) { S.drill = null; S.focusIds = null; renderMap(); focusSelection(); }
+  renderPop();
+}
 
 /* ---------- paste / import sheet ---------- */
 let found = [];
@@ -2934,6 +3065,11 @@ document.addEventListener("click", e => {
   if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.popList = false; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
   if ("popclose" in t.dataset) return closePop();
+  if (t.dataset.tripfor) return openTripEditor("", t.dataset.tripfor);
+  if (t.dataset.tripedit) return openTripEditor(t.dataset.tripedit);
+  if (t.dataset.tripview) return viewTrip(t.dataset.tripview);
+  if ("tripnew" in t.dataset) return openTripEditor("");
+  if (["trippick", "tripall", "tripsave", "tripdel"].some(k => k in t.dataset)) return tripAction(t);
   if (t.dataset.open) { S.popList = true; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); if (S.open) revealOpenRow(); focusSelection(); return; }
   if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
