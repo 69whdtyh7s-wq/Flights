@@ -861,6 +861,54 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 /* visited countries keep visible borders */
 .map .land.visited{stroke:color-mix(in srgb,var(--route) 32%,var(--surface));stroke-width:.5}
 #mapcard[data-type="satelite"] .map .land.visited,#mapcard[data-type="noche"] .map .land.visited{stroke:rgba(255,255,255,.38);stroke-width:.5}
+
+/* ---------- iPhone: full-screen map + draggable flights sheet (Flighty style) ---------- */
+.show-phone{display:none!important}
+.grab{display:none}
+@media (max-width:699px){
+  .show-phone{display:grid!important}
+  #tabbar{display:none!important}
+  .wrap{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
+  .toast{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 62px)}
+  .top .rbtn{width:44px;height:44px;min-width:0;border-radius:50%;padding:0;display:grid;place-items:center;flex:none;color:var(--ink);
+    background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 6px 18px rgba(0,0,0,.16)}
+  .top .rbtn svg{width:21px;height:21px;margin:0}
+  .top .rbtn.addc{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .top .rbtn:active{transform:scale(.94)}
+  #b-stats .i-map{display:none}
+  body[data-view="stats"] #b-stats .i-map{display:block}
+  body[data-view="stats"] #b-stats .i-stats{display:none}
+
+  body[data-view="vuelos"]{overflow:hidden;overscroll-behavior:none}
+  body[data-view="vuelos"] .top{position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;gap:8px}
+  body[data-view="vuelos"] .brand,body[data-view="vuelos"] #demo{display:none!important}
+  body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:174px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
+  body[data-view="vuelos"] #filters .chip{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12);height:36px;display:inline-flex;align-items:center}
+  body[data-view="vuelos"] #filters .chip.c,body[data-view="vuelos"] #filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  body[data-view="vuelos"] #mapcard{display:block!important;position:fixed;inset:0;z-index:1;margin:0;width:auto;max-width:none;border:0;border-radius:0;box-shadow:none}
+  body[data-view="vuelos"] #mapcard .map{width:100%;height:100%;min-height:0;display:block;border-radius:0}
+  body[data-view="vuelos"] #mapcard .mapfoot{display:none!important}
+  body[data-view="vuelos"] #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 62px);right:12px;gap:0;padding:3px;border-radius:999px;
+    background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 6px 18px rgba(0,0,0,.16)}
+  body[data-view="vuelos"] #mapcard .mapctl button{width:38px;height:38px;background:transparent;box-shadow:none;border:0;border-radius:50%;color:var(--ink);font-size:20px}
+  body[data-view="vuelos"] #mapcard .mapctl button svg{width:19px;height:19px}
+  body[data-view="vuelos"] .grid{display:block}
+  body[data-view="vuelos"] #p-list{display:flex!important;flex-direction:column;position:fixed;z-index:8;left:8px;right:8px;top:50vh;height:48vh;margin:0;
+    border-radius:34px;overflow:hidden;background:var(--surface);border:1px solid var(--glass-line);box-shadow:0 -2px 30px rgba(0,0,0,.22);
+    transition:top .38s cubic-bezier(.2,.85,.25,1),height .38s cubic-bezier(.2,.85,.25,1)}
+  body.sheet-drag[data-view="vuelos"] #p-list{transition:none}
+  body[data-view="vuelos"] #p-list .grab{display:block;flex:none;width:38px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--muted) 45%,transparent);margin:7px auto 0}
+  body[data-view="vuelos"] #p-list header{flex:none;touch-action:none;padding:10px 18px 12px;border-bottom:0;cursor:grab}
+  body[data-view="vuelos"] #p-list header h2{font-size:30px;letter-spacing:-.025em}
+  body[data-view="vuelos"] #p-list .list > *{flex-shrink:0}
+  body[data-view="vuelos"] #p-list .list .yr{top:0}
+  body[data-view="vuelos"] #p-list .list .fl{scroll-margin-top:84px}
+  body[data-view="vuelos"] #p-list header,body[data-view="vuelos"] #p-list .grab{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  body[data-view="stats"] .top .brand{flex:1;min-width:0}
+  body[data-view="stats"] .top .brand > div{min-width:0}
+  body[data-view="stats"] .top .brand small{display:block;max-width:100%}
+  body[data-view="vuelos"] #p-list .list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:16px}
+}
 </style>
 
 </head>
@@ -871,7 +919,9 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
-    <button class="btn themebtn" id="b-settings" type="button" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button class="btn themebtn rbtn" id="b-settings" type="button" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button class="btn rbtn show-phone" id="b-stats" type="button" aria-label="Stats" title="Stats"><svg class="i-stats" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><svg class="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></button>
+    <button class="btn rbtn addc show-phone" type="button" data-act="add" aria-label="Agregar vuelo" title="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
     <button class="btn hide-phone" id="b-import" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.5z"/><path d="M8 9h8M8 12h5"/></svg>Pegar reserva</button>
     <button class="btn primary hide-phone" id="b-add" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Agregar vuelo</button>
   </div>
@@ -890,6 +940,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
       <button type="button" id="z-in" aria-label="Acercar">+</button>
       <button type="button" id="z-out" aria-label="Alejar">−</button>
       <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+      <button type="button" id="z-type" class="show-phone" aria-label="Tipo de mapa" title="Tipo de mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
       <button type="button" id="z-fit" aria-label="Encuadrar mis rutas" title="Encuadrar mis rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="mapfoot">
@@ -902,6 +953,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 
   <div class="grid">
     <section class="panel" id="p-list" data-sec="vuelos">
+      <div class="grab" aria-hidden="true"></div>
       <header>
         <h2>Vuelos</h2>
         <div class="tabs" role="tablist">
@@ -1408,17 +1460,35 @@ function fitRoutes(animate) {
 function focusSelection() {
   if (!svgSel || !zoom) return;
   const ids = S.open ? [S.open] : S.focusIds;
-  if (!ids) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
-  const fl = all().filter(f => ids.includes(f.id));
+  const phone = phoneMap();
+  if (!ids && !phone) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
+  const fl = ids ? all().filter(f => ids.includes(f.id)) : filtered();
   const pts = fl.flatMap(f => [f.from, f.to]).filter(validApt).map(a => [+a.lon, +a.lat]);
   if (!pts.length) return;
   if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
   const lines = { type:"MultiLineString", coordinates:fl.filter(f => validApt(f.from) && validApt(f.to)).map(f => [[+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]]) };
-  const [[x0, y0], [x1, y1]] = geoPath.bounds(lines);
-  updateZoomExtent(); const ext = zoom.extent().call(svgSel.node()); const vw = ext[1][0] - ext[0][0], vh = ext[1][1] - ext[0][1];
+  let [[x0, y0], [x1, y1]] = geoPath.bounds(lines);
+  if (!ids) {
+    // nothing selected on iPhone: center on the airport you fly from most
+    const cnt = new Map(); for (const f of fl) for (const a of [f.from, f.to]) if (validApt(a)) cnt.set(a.iata, (cnt.get(a.iata) || [a, 0]).map((v, i) => i ? v + 1 : v));
+    const top = [...cnt.values()].sort((a, b) => b[1] - a[1])[0];
+    if (top) { const q = proj([+top[0].lon, +top[0].lat]); x0 = q[0] - 60; x1 = q[0] + 60; y0 = q[1] - 45; y1 = q[1] + 45; }
+  }
+  updateZoomExtent(); const ext = zoom.extent().call(svgSel.node());
+  let vx0 = ext[0][0], vx1 = ext[1][0], vy0 = ext[0][1], vy1 = ext[1][1];
+  const vw0 = vx1 - vx0;
+  if (phone) {
+    // only the strip between the top buttons and the flights sheet is visible
+    const r = svgSel.node().getBoundingClientRect(), sc = vw0 / r.width;
+    vx0 = ext[0][0] + 12 * sc; vx1 = ext[0][0] + (r.width - 64) * sc;
+    vy0 = ext[0][1] + (safeTop() + 58 - r.top) * sc;
+    vy1 = ext[0][1] + (sheetTopPx() - 10 - r.top) * sc;
+    if (vy1 - vy0 < 40) vy1 = vy0 + 40;
+  }
+  const vw = vx1 - vx0, vh = vy1 - vy0;
   const pad = 0.72, w = Math.max(x1 - x0, 30), h = Math.max(y1 - y0, 30);
-  const k = Math.max(1, Math.min(10, pad / Math.max(w / vw, h / vh)));
-  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, mx = (ext[0][0] + ext[1][0]) / 2, my = (ext[0][1] + ext[1][1]) / 2;
+  const k = ids ? Math.max(phone ? 0.45 : 1, Math.min(10, pad / Math.max(w / vw, h / vh))) : 1;
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, mx = (vx0 + vx1) / 2, my = (vy0 + vy1) / 2;
   svgSel.transition().duration(550).call(zoom.transform, d3.zoomIdentity.translate(mx - k * cx, my - k * cy).scale(k));
 }
 function renderMap() {
@@ -1485,7 +1555,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006014843";
+const BUILD = "20261006021805";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2434,8 +2504,9 @@ document.addEventListener("change", e => { if (e.target && e.target.id === "set-
 function goHome() {
   closeSheet(); S.open = null; S.focusTrip = null; S.focusIds = null; S.tab = "up";
   const hasUp = all().some(f => !f.past); if (!hasUp) S.tab = "past";
-  setView("vuelos", false); render(); focusSelection(); window.scrollTo({ top:0, behavior:"smooth" });
+  sheetState = "mid"; setView("vuelos", false); render(); focusSelection(); window.scrollTo({ top:0, behavior:"smooth" });
   const l = document.getElementById("p-list"); if (l) l.scrollTop = 0;
+  const ll = document.getElementById("list"); if (ll) ll.scrollTop = 0;
 }
 document.getElementById("brand").addEventListener("click", goHome);
 document.getElementById("brand").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goHome(); } });
@@ -2466,15 +2537,93 @@ function updateZoomExtent() {
   if (!r.width || !r.height) return;
   const vw = Math.min(W, H * r.width / r.height), vh = Math.min(H, W * r.height / r.width);
   zoom.extent([[(W - vw) / 2, (H - vh) / 2], [(W + vw) / 2, (H + vh) / 2]]);
+  zoom.translateExtent(phoneMap() ? [[-W * 0.05, -H * 0.12], [W * 1.05, H * 1.75]] : [[0, 0], [W, H]]).scaleExtent([phoneMap() ? 0.45 : 1, 12]);
   svgSel.call(zoom.transform, d3.zoomTransform(svgSel.node()));
 }
 function setView(v, save) {
+  if (v === "mapa" && isPhone()) { v = "vuelos"; sheetState = "peek"; }
   document.body.dataset.view = v;
+  layoutSheet();
   requestAnimationFrame(placeTabbar);
   document.querySelectorAll("#tabbar [data-view]").forEach(b => { if (b.dataset.view === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   if (save) { try { localStorage.setItem(VIEW_KEY, v); } catch {} }
-  if (v === "mapa" && S.mapReady) { renderMap(); requestAnimationFrame(updateZoomExtent); }
+  if ((v === "mapa" || (v === "vuelos" && isPhone())) && S.mapReady) { renderMap(); requestAnimationFrame(updateZoomExtent); }
   window.scrollTo(0, 0);
+}
+
+/* ---------- iPhone flights sheet over the map ---------- */
+const isPhone = () => window.innerWidth <= 699;
+const phoneMap = () => isPhone() && document.body.dataset.view === "vuelos";
+let sheetState = "mid", sheetSuppress = false;
+const safeTopProbe = document.createElement("div");
+safeTopProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:0;padding-top:env(safe-area-inset-top,0px);visibility:hidden;pointer-events:none";
+document.body.appendChild(safeTopProbe);
+function safeTop() { return parseFloat(getComputedStyle(safeTopProbe).paddingTop) || 0; }
+function sheetGap() { const sb = parseFloat(getComputedStyle(safeProbe).paddingBottom) || 0; return IS_STANDALONE ? Math.max(8, sb - 22) : 8; }
+function sheetH(st) {
+  const vh = window.innerHeight, hd = document.querySelector("#p-list header");
+  if (st === "peek") return (hd ? hd.offsetHeight : 64) + 22 + (IS_STANDALONE ? 8 : 0);
+  if (st === "full") return vh - safeTop() - 62 - sheetGap();
+  return Math.round(vh * 0.5);
+}
+function sheetTopPx() { return window.innerHeight - sheetH(sheetState) - sheetGap(); }
+function layoutSheet(h) {
+  const p = document.getElementById("p-list"); if (!p) return;
+  if (!phoneMap()) { p.style.top = ""; p.style.height = ""; delete document.body.dataset.sheet; return; }
+  if (h == null) h = sheetH(sheetState);
+  p.style.height = h + "px"; p.style.top = (window.innerHeight - h - sheetGap()) + "px";
+  document.body.dataset.sheet = sheetState;
+}
+function setSheet(st, refocus) {
+  sheetState = st; layoutSheet();
+  if (refocus) setTimeout(focusSelection, 40);
+}
+(function sheetDrag() {
+  const p = document.getElementById("p-list");
+  let active = false, drag = false, y0 = 0, h0 = 0, ly = 0, lt = 0, vel = 0;
+  p.addEventListener("pointerdown", e => {
+    if (!phoneMap() || !e.target.closest(".grab,header")) return;
+    active = true; drag = false; y0 = ly = e.clientY; lt = e.timeStamp; vel = 0; h0 = p.getBoundingClientRect().height;
+  });
+  window.addEventListener("pointermove", e => {
+    if (!active) return;
+    const dy = e.clientY - y0;
+    if (!drag && Math.abs(dy) > 6) { drag = true; document.body.classList.add("sheet-drag"); }
+    if (!drag) return;
+    const dt = e.timeStamp - lt; if (dt > 0) vel = vel * 0.4 + 0.6 * ((e.clientY - ly) / dt);
+    ly = e.clientY; lt = e.timeStamp;
+    layoutSheet(Math.max(sheetH("peek") - 24, Math.min(sheetH("full") + 12, h0 - dy)));
+  });
+  const end = () => {
+    if (!active) return; active = false;
+    if (!drag) return;
+    document.body.classList.remove("sheet-drag");
+    sheetSuppress = true; setTimeout(() => { sheetSuppress = false; }, 60);
+    const h = p.getBoundingClientRect().height, mid = sheetH("mid");
+    let st;
+    if (vel > 0.45) st = h > mid + 30 ? "mid" : "peek";
+    else if (vel < -0.45) st = h < mid - 30 ? "mid" : "full";
+    else st = ["peek", "mid", "full"].reduce((a, b) => Math.abs(sheetH(b) - h) < Math.abs(sheetH(a) - h) ? b : a);
+    setSheet(st, !!(S.open || S.focusIds));
+  };
+  window.addEventListener("pointerup", end); window.addEventListener("pointercancel", end);
+  document.addEventListener("click", e => { if (sheetSuppress) { e.stopPropagation(); e.preventDefault(); sheetSuppress = false; } }, true);
+  p.addEventListener("click", e => {
+    if (!phoneMap() || !e.target.closest(".grab,header") || e.target.closest("button")) return;
+    setSheet(sheetState === "peek" ? "mid" : sheetState === "mid" ? "full" : "mid", !!(S.open || S.focusIds));
+  });
+  document.getElementById("map").addEventListener("click", () => { if (phoneMap() && sheetState !== "peek") setSheet("peek", !!(S.open || S.focusIds)); });
+  const relayout = () => requestAnimationFrame(() => layoutSheet());
+  ["resize", "orientationchange"].forEach(ev => window.addEventListener(ev, relayout));
+  if (window.visualViewport) visualViewport.addEventListener("resize", relayout);
+})();
+function revealOpenRow() {
+  if (!phoneMap()) return;
+  if (sheetState === "full") sheetState = "mid";
+  if (sheetState === "peek" && S.open) sheetState = "mid";
+  layoutSheet();
+  const id = S.open, el = id && document.querySelector(`#p-list [data-open="${CSS.escape(id)}"]`);
+  if (el) setTimeout(() => el.scrollIntoView({ block:"start", behavior:"smooth" }), 30);
 }
 let startView = "vuelos";
 setView(startView, false);
@@ -2507,6 +2656,8 @@ document.addEventListener("click", e => {
   if (t.id === "set-wipe-yes") { return wipeAll(t); }
   if (t.dataset.act === "import") return openSheet("import");
   if (t.dataset.view && t.closest("#tabbar")) return setView(t.dataset.view, true);
+  if (t.id === "b-stats") { if (document.body.dataset.view === "stats") goHome(); else { closeSheet(); setView("stats", false); } return; }
+  if (t.id === "z-type") { const ts = ["estandar", "satelite", "noche"], n = ts[(ts.indexOf(mapType) + 1) % ts.length]; setMapType(n); toast(n === "estandar" ? "Mapa estándar" : n === "satelite" ? "Mapa satélite" : "Mapa de noche"); return; }
   if (t.id === "t-up" || t.id === "t-past") { S.tab = t.id === "t-up" ? "up" : "past"; S.open = null; return render(); }
   if (t.dataset.year) { S.year = S.year === t.dataset.year && t.classList.contains("c") ? "all" : t.dataset.year; S.open = null; return render(); }
   if (t.dataset.jump !== undefined) { const h = document.getElementById("yr-" + t.dataset.jump); if (h) h.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); return; }
@@ -2514,13 +2665,13 @@ document.addEventListener("click", e => {
     const id = t.dataset.trip;
     if (S.focusTrip === id) { S.focusTrip = null; S.focusIds = null; }
     else { const tr = buildTrips(all()).find(x => x.id === id); S.focusTrip = id; S.focusIds = tr ? tr.legs.map(l => l.id) : null; }
-    S.open = null; render(); focusSelection(); return;
+    S.open = null; render(); if (S.focusIds && phoneMap() && sheetState === "full") { sheetState = "mid"; layoutSheet(); } focusSelection(); return;
   }
   if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
   if (t.dataset.list) { S.open = null; return openList(t.dataset.list); }
   if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
-  if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); focusSelection(); return; }
+  if (t.dataset.open) { S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); if (S.open) revealOpenRow(); focusSelection(); return; }
   if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
   const inDrill = !!t.closest(".drill");
@@ -2535,7 +2686,9 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && $(".scrim"
 
 initMap();
 render();
+layoutSheet();
 initStore();
+if (isPhone()) setTimeout(() => { updateZoomExtent(); focusSelection(); }, 400);
 if (STANDALONE && "serviceWorker" in navigator && location.protocol === "https:") {
   navigator.serviceWorker.register("sw.js", { updateViaCache:"none" }).then(r => r.update()).catch(() => {});
   let reloaded = false;
