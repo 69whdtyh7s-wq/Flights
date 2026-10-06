@@ -882,7 +882,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
   body[data-view="vuelos"]{overflow:hidden;overscroll-behavior:none}
   body[data-view="vuelos"] .top{position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;gap:8px}
   body[data-view="vuelos"] .brand,body[data-view="vuelos"] #demo{display:none!important}
-  body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:174px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
+  body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:226px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
   body[data-view="vuelos"] #filters .chip{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12);height:36px;display:inline-flex;align-items:center}
   body[data-view="vuelos"] #filters .chip.c,body[data-view="vuelos"] #filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
   html:has(body[data-view="vuelos"]),body[data-view="vuelos"]{background:var(--sea);min-height:100dvh;min-height:var(--fullh,100dvh)}
@@ -976,6 +976,25 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .tripttl .chev-r{margin-left:auto;color:var(--muted)}
 .apf input#f-trip,.apf input#tr-name{border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:16px;font-family:var(--f-body);color:var(--ink);width:100%;min-width:0}
 .tripsheet .apf input#tr-name{background:var(--surface);font-size:17px;font-weight:600;padding:10px 12px}
+/* search */
+.searchsheet{gap:10px}
+.searchsheet .sbar{position:sticky;top:calc(-1 * (env(safe-area-inset-top,0px) + 18px));z-index:2;display:flex;align-items:center;gap:8px;background:var(--bg);padding:6px 0 10px;margin-top:-6px}
+.searchsheet .sbar svg{position:absolute;left:12px;width:18px;height:18px;color:var(--muted);pointer-events:none}
+.searchsheet .sbar input{flex:1;min-width:0;border:0;background:var(--surface);border-radius:12px;padding:11px 12px 11px 38px;font-size:17px;color:var(--ink);font-family:var(--f-body);-webkit-appearance:none;appearance:none}
+.searchsheet .sbar input:focus{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent)}
+.sq-g h3{margin:8px 4px 6px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.sq-g h3 .cnt{font-weight:500}
+.sq-list{display:flex;flex-direction:column;background:var(--surface);border-radius:14px;overflow:clip}
+.sq-it{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:10px 14px;text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.sq-it:last-child{border-bottom:0}
+.sq-it:hover,.sq-it:focus-visible{background:var(--fill)}
+.sq-ic{display:grid;place-items:center;font-size:18px;color:var(--accent-text)}
+.sq-ic .sq-code{font-family:var(--f-round);font-weight:800;font-size:13px}
+.sq-tx{display:flex;flex-direction:column;min-width:0}
+.sq-tx b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sq-tx small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sq-it .chev-r{color:var(--muted)}
+.sq-fl .al-ic{margin:0}
 </style>
 
 </head>
@@ -986,6 +1005,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
+    <button class="btn themebtn rbtn" id="b-search" type="button" aria-label="Buscar" title="Buscar (/)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
     <button class="btn themebtn rbtn" id="b-settings" type="button" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button class="btn rbtn show-phone" id="b-stats" type="button" aria-label="Stats" title="Stats"><svg class="i-stats" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><svg class="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></button>
     <button class="btn rbtn addc show-phone" type="button" data-act="add" aria-label="Agregar vuelo" title="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -1670,7 +1690,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006143157";
+const BUILD = "20261007014942";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2071,6 +2091,94 @@ function viewTrip(name) {
   render(); focusSelection();
   openDrill("trip", name);
 }
+/* ---------- search: flights, trips, cities, airports, countries, airlines, planes, routes, years ---------- */
+let searchQ = "", searchT;
+function openSearch(q) {
+  searchQ = q || "";
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet searchsheet" role="dialog" aria-modal="true" aria-label="Buscar">
+    <div class="sbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+      <input id="sq" type="search" value="${esc(searchQ)}" placeholder="Vuelos, viajes, ciudades, países…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar">
+      <button class="btn" type="button" data-close>Cerrar</button></div>
+    <div id="sres"></div>
+  </div></div>`;
+  const inp = $("#sq");
+  inp.addEventListener("input", () => { clearTimeout(searchT); searchT = setTimeout(() => { searchQ = inp.value; drawSearch(); }, 90); });
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); const first = $("#sres [data-sqk]"); if (first) first.click(); } });
+  drawSearch();
+  setTimeout(() => inp.focus(), 30);
+}
+const MONTH_FULL = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function drawSearch() {
+  const box = $("#sres"); if (!box) return;
+  const q = norm(searchQ).trim(), toks = q.split(/\s+/).filter(Boolean);
+  const fl = all();
+  if (!toks.length) {
+    const tn = tripNames().slice(0, 6);
+    box.innerHTML = `<p class="hint">Buscá por número de vuelo, ciudad, aeropuerto, país, aerolínea, avión, viaje, año o mes (ej.: “nov 2024”).</p>`
+      + (tn.length ? sgroup("Viajes", tn.map(n => sitem("trip", n, "✈︎", n, tripSub(n))).join("")) : "");
+    return;
+  }
+  const hit = hay => toks.every(t => hay.includes(t));
+  const res = [];
+  // trips
+  const tm = tripMap();
+  res.push(["Viajes", [...tm.keys()].filter(n => hit(norm(n))).map(n => sitem("trip", n, "✈︎", n, tripSub(n)))]);
+  // countries
+  const cc = new Map(); for (const f of fl) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) cc.set(c, (cc.get(c) || 0) + 1);
+  res.push(["Países", [...cc].filter(([c]) => hit(norm(country(c) + " " + c))).sort((a, b) => b[1] - a[1]).map(([c, n]) => sitem("country", c, `<span class="fl-ic" aria-hidden="true">${flag(c)}</span>`, country(c), cnt(n)))]);
+  // airports / cities
+  const ap = new Map(); for (const f of fl) for (const a of [f.from, f.to]) if (validApt(a)) { const x = ap.get(a.iata) || { a, n:0 }; x.n++; ap.set(a.iata, x); }
+  res.push(["Ciudades y aeropuertos", [...ap.values()].filter(({ a }) => hit(norm([a.iata, a.city, a.name, country(a.cc)].join(" ")))).sort((x, y) => y.n - x.n).map(({ a, n }) => sitem("airport", a.iata, `<span class="sq-code">${esc(a.iata)}</span>`, a.city || a.name, `${a.name}${a.cc ? " · " + country(a.cc) : ""} · ${cnt(n)}`))]);
+  // airlines
+  const al = new Map(); for (const f of fl) { const k = alKey(f); if (k) al.set(k, (al.get(k) || 0) + 1); }
+  res.push(["Aerolíneas", [...al].filter(([k]) => hit(norm(alLabel(k) + " " + (k.startsWith("n:") ? "" : k)))).sort((a, b) => b[1] - a[1]).map(([k, n]) => sitem("airline", k, alIconK(k, "sm"), alLabel(k), cnt(n)))]);
+  // aircraft
+  const ac = new Map(); for (const f of fl) if (f.aircraft) ac.set(f.aircraft, (ac.get(f.aircraft) || 0) + 1);
+  res.push(["Aviones", [...ac].filter(([k]) => hit(norm(k))).sort((a, b) => b[1] - a[1]).map(([k, n]) => sitem("aircraft", k, "🛩", k, cnt(n)))]);
+  // routes (need two places, e.g. "bcn mad" or "barcelona londres")
+  if (toks.length >= 2) {
+    const rt = new Map(); for (const f of fl) { const k = routeKey(f); if (k) { const x = rt.get(k) || { f, n:0 }; x.n++; rt.set(k, x); } }
+    res.push(["Rutas", [...rt].filter(([k, { f }]) => hit(norm([f.from.iata, f.to.iata, f.from.city, f.to.city].join(" ")))).sort((a, b) => b[1].n - a[1].n).map(([k, { f, n }]) => sitem("route", k, "⇄", `${f.from.city || f.from.iata} ⇄ ${f.to.city || f.to.iata}`, `${k} · ${cnt(n)}`))]);
+  }
+  // years
+  const yrs = [...new Set(fl.map(f => f.year))].filter(y => y && toks.length === 1 && y.startsWith(toks[0]) && toks[0].length >= 2 && /^\d+$/.test(toks[0]));
+  res.push(["Años", yrs.sort().reverse().map(y => sitem("year", y, "📅", y, cnt(fl.filter(f => f.year === y).length) + " · filtrar la app por este año"))]);
+  // flights
+  const fh = f => norm([f.num, f.num && f.num.replace(/^([A-Z0-9]{2})/, "$1 "), f.airline, alLabel(alKey(f)), f.from?.iata, f.from?.city, f.from?.name, country(f.from?.cc), f.to?.iata, f.to?.city, f.to?.name, country(f.to?.cc),
+    f.date, f.date && MONTHS[+f.date.slice(5, 7) - 1], f.date && MONTH_FULL[+f.date.slice(5, 7) - 1], f.year, f.aircraft, f.notes, f.seat, f.trip, f.past ? "" : "proximo"].filter(Boolean).join(" "));
+  const fls = fl.filter(f => hit(fh(f))).sort((a, b) => b.depT - a.depT);
+  res.push([`Vuelos${fls.length > 40 ? ` <span class="cnt">${fls.length}</span>` : ""}`, fls.slice(0, 40).map(f => `<button type="button" class="sq-it sq-fl" data-sqk="flight" data-sqv="${esc(f.id)}">${alIcon(alCode(f), f.airline, "sm")}
+      <span class="sq-tx"><b>${esc(f.from?.iata || "?")} → ${esc(f.to?.iata || "?")}</b><small>${esc([shortDate(f), f.num, f.from?.city && f.to?.city ? f.from.city + " – " + f.to.city : ""].filter(Boolean).join(" · "))}</small></span>${f.past ? "" : `<span class="pill up">Próximo</span>`}</button>`)
+    .concat(fls.length > 40 ? [`<p class="hint">Mostrando los 40 más recientes. Afiná la búsqueda para ver otros.</p>`] : [])]);
+  const html = res.filter(([, items]) => items.length).map(([t, items]) => sgroup(t, items.join(""))).join("");
+  box.innerHTML = html || `<div class="empty"><b>Sin resultados</b><span>No encontramos nada con “${esc(searchQ)}”.</span></div>`;
+  markLogos(box);
+}
+const cnt = n => `${n} ${n === 1 ? "vuelo" : "vuelos"}`;
+function tripSub(n) { const l = tripMap().get(n) || []; return l.length ? `${cnt(l.length)} · ${shortDate(l[0])}${l.length > 1 ? " – " + shortDate(l[l.length - 1]) : ""}` : ""; }
+const sgroup = (t, body) => `<section class="sq-g"><h3>${t}</h3><div class="sq-list">${body}</div></section>`;
+const sitem = (k, v, icon, title, sub) => `<button type="button" class="sq-it" data-sqk="${k}" data-sqv="${esc(v)}"><span class="sq-ic">${icon}</span><span class="sq-tx"><b>${esc(title)}</b><small>${esc(sub)}</small></span><span class="chev-r" aria-hidden="true">›</span></button>`;
+function searchPick(k, v) {
+  if (k === "year") { closeSheet(); S.year = v; S.open = null; render(); focusSelection(); toast("Mostrando " + v); return; }
+  if (k === "flight") {
+    const f = all().find(x => x.id === v); if (!f) return;
+    closeSheet(); S.tab = f.past ? "past" : "up"; S.year = "all"; S.open = v; S.popList = true; S.focusIds = null;
+    if (isPhone() && document.body.dataset.view !== "vuelos") setView("vuelos", false);
+    render(); revealOpenRow(); focusSelection();
+    if (!isPhone()) { const row = document.querySelector(`#list [data-open="${CSS.escape(v)}"]`); if (row) row.scrollIntoView({ block:"center", behavior:"smooth" }); }
+    return;
+  }
+  if (S.year !== "all") { S.year = "all"; render(); }
+  S.listBack = "search"; S.open = null;
+  if (k === "trip") return viewTrip(v);
+  openDrill(k, v);
+}
+document.addEventListener("keydown", e => {
+  if ((e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) {
+    if ($(".scrim") && !$(".searchsheet")) return;
+    e.preventDefault(); openSearch(searchQ);
+  }
+});
 const DRILL = {
   airline:{ match:(f, k) => alKey(f) === k, title:k => alLabel(k) },
   airport:{ match:(f, k) => f.from?.iata === k || f.to?.iata === k, title:k => { const a = knownApt(k); return a ? `${k} · ${a.city || a.name}` : k; } },
@@ -2080,7 +2188,7 @@ const DRILL = {
   trip:{ match:(f, k) => f.trip === k, title:k => k },
 };
 const DRILL_LABEL = { trip:"Viaje", airline:"Aerolínea", airport:"Aeropuerto", route:"Ruta", aircraft:"Avión", country:"País" };
-const LIST_TITLE = { airline:"Aerolíneas", airport:"Aeropuertos", country:"Países visitados" };
+const LIST_TITLE = { search:"Búsqueda", airline:"Aerolíneas", airport:"Aeropuertos", country:"Países visitados" };
 function listHTML(kind, past) {
   if (kind === "airline") {
     const e = count(past.map(alKey));
@@ -3122,10 +3230,13 @@ document.addEventListener("click", e => {
     S.open = null; render(); if (S.focusIds && phoneMap() && sheetState === "full") { sheetState = "mid"; layoutSheet(); } focusSelection(); return;
   }
   if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
+  if (t.dataset.list === "search") return openSearch(searchQ);
   if (t.dataset.list) { S.open = null; return openList(t.dataset.list); }
   if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.popList = false; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
   if ("popclose" in t.dataset) return closePop();
+  if (t.id === "b-search") return openSearch("");
+  if (t.dataset.sqk) return searchPick(t.dataset.sqk, t.dataset.sqv);
   if (t.dataset.tripfor) return openTripEditor("", t.dataset.tripfor);
   if (t.dataset.tripedit) return openTripEditor(t.dataset.tripedit);
   if (t.dataset.tripview) return viewTrip(t.dataset.tripview);
