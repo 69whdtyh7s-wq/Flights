@@ -1568,7 +1568,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006032810";
+const BUILD = "20261006034048";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1757,11 +1757,11 @@ function tripRow(t) {
 
 function renderList() {
   const fl = filtered();
-  const ids = new Set(fl.map(f => f.id));
-  const trips = buildTrips(all()).filter(t => ids.has(t.first.id));
-  const up = trips.filter(t => !t.past).sort((a, b) => a.start - b.start);
-  const past = trips.filter(t => t.past).sort((a, b) => b.start - a.start);
-  const nFl = ts => ts.reduce((s, t) => s + t.legs.length, 0);
+  // plain chronological list: next flights soonest first, history newest first (no trip grouping)
+  const t0 = f => Number.isFinite(f.depT) ? f.depT : 0;
+  const up = fl.filter(f => !f.past).sort((a, b) => t0(a) - t0(b));
+  const past = fl.filter(f => f.past).sort((a, b) => t0(b) - t0(a));
+  const nFl = ts => ts.length;
   $("#n-up").textContent = nFl(up); $("#n-past").textContent = nFl(past);
   $("#t-up").setAttribute("aria-selected", S.tab === "up"); $("#t-past").setAttribute("aria-selected", S.tab === "past");
   const el = $("#list");
@@ -1771,20 +1771,19 @@ function renderList() {
     el.innerHTML = `<div class="empty"><b>${S.tab === "up" ? "Nada programado" : "Todavía no hay vuelos"}</b><span>${S.tab === "up" ? "Agregá tu próximo vuelo con el número y la fecha." : "Cargá vuelos pasados uno por uno o pegá varios a la vez."}</span><button class="btn primary" type="button" data-act="add">Agregar vuelo</button></div>`;
     return;
   }
-  if (S.tab === "up") { el.innerHTML = items.map(t => tripRow(t)).join(""); return; }
+  if (S.tab === "up") { el.innerHTML = items.map(f => flightRow(f)).join(""); return; }
   const groups = [];
   for (const t of items) { const g = groups[groups.length - 1]; if (g && g.y === t.year) g.items.push(t); else groups.push({ y:t.year, items:[t] }); }
   let html = groups.length > 1 ? `<div class="yjump" aria-label="Ir a un año">${groups.map(g => `<button type="button" data-jump="${esc(g.y)}">${esc(g.y || "—")}<span>${nFl(g.items)}</span></button>`).join("")}</div>` : "";
   for (const g of groups) {
-    const legs = g.items.flatMap(t => t.legs);
+    const legs = g.items;
     const km = legs.reduce((s, x) => s + x.km, 0), mins = legs.reduce((s, x) => s + x.mins, 0);
     const ccs = new Set(legs.flatMap(x => [x.from?.cc, x.to?.cc]).filter(Boolean));
-    const nTrips = g.items.filter(t => t.legs.length > 1).length;
     html += `<div class="yr" id="yr-${esc(g.y)}">
       <span class="big">${esc(g.y || "Sin fecha")}</span>
-      <span class="sum"><span><b>${legs.length}</b> ${legs.length === 1 ? "vuelo" : "vuelos"}</span>${nTrips ? `<span><b>${nTrips}</b> ${nTrips === 1 ? "viaje" : "viajes"}</span>` : ""}<span><b>${fmt(km)}</b> km</span><span><b>${fmt(Math.round(mins / 60))}</b> h</span><span><b>${ccs.size}</b> ${ccs.size === 1 ? "país" : "países"}</span></span>
+      <span class="sum"><span><b>${legs.length}</b> ${legs.length === 1 ? "vuelo" : "vuelos"}</span><span><b>${fmt(km)}</b> km</span><span><b>${fmt(Math.round(mins / 60))}</b> h</span><span><b>${ccs.size}</b> ${ccs.size === 1 ? "país" : "países"}</span></span>
       </div>`;
-    html += g.items.map(t => tripRow(t)).join("");
+    html += g.items.map(f => flightRow(f)).join("");
   }
   el.innerHTML = html;
 }
