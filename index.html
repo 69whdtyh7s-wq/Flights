@@ -885,7 +885,8 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
   body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:174px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
   body[data-view="vuelos"] #filters .chip{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12);height:36px;display:inline-flex;align-items:center}
   body[data-view="vuelos"] #filters .chip.c,body[data-view="vuelos"] #filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-  body[data-view="vuelos"] #mapcard{display:block!important;position:fixed;inset:0;z-index:1;margin:0;width:auto;max-width:none;border:0;border-radius:0;box-shadow:none}
+  html:has(body[data-view="vuelos"]),body[data-view="vuelos"]{background:var(--sea)}
+  body[data-view="vuelos"] #mapcard{display:block!important;position:fixed;inset:0 0 auto 0;height:max(100%,100lvh,var(--fullh,100%));z-index:1;margin:0;width:auto;max-width:none;border:0;border-radius:0;box-shadow:none}
   body[data-view="vuelos"] #mapcard .map{width:100%;height:100%;min-height:0;display:block;border-radius:0}
   body[data-view="vuelos"] #mapcard .mapfoot{display:none!important}
   body[data-view="vuelos"] #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 62px);right:12px;gap:0;padding:3px;border-radius:999px;
@@ -1589,7 +1590,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006035829";
+const BUILD = "20261006040627";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2723,17 +2724,29 @@ document.body.appendChild(safeTopProbe);
 function safeTop() { return parseFloat(getComputedStyle(safeTopProbe).paddingTop) || 0; }
 function sheetGap() { const sb = parseFloat(getComputedStyle(safeProbe).paddingBottom) || 0; return IS_STANDALONE ? Math.max(8, sb - 22) : 8; }
 function sheetH(st) {
-  const vh = window.innerHeight, hd = document.querySelector("#p-list header");
+  const vh = fullH(), hd = document.querySelector("#p-list header");
   if (st === "peek") return (hd ? hd.offsetHeight : 64) + 22 + (IS_STANDALONE ? 8 : 0);
   if (st === "full") return vh - safeTop() - 62 - sheetGap();
   return Math.round(vh * 0.5);
 }
-function sheetTopPx() { return window.innerHeight - sheetH(sheetState) - sheetGap(); }
+function sheetTopPx() { return fullH() - sheetH(sheetState) - sheetGap(); }
+/* iOS home-screen apps sometimes report a viewport shorter than the screen, leaving a dark strip at the bottom:
+   use the real screen height there so the map reaches the bottom edge */
+function fullH() {
+  let h = window.innerHeight;
+  if (IS_STANDALONE && window.screen) {
+    const portrait = window.innerHeight >= window.innerWidth;
+    const sh = portrait ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
+    if (sh > h && sh - h <= 140) h = sh;
+  }
+  return h;
+}
 function layoutSheet(h) {
   const p = document.getElementById("p-list"); if (!p) return;
+  document.documentElement.style.setProperty("--fullh", fullH() + "px");
   if (!phoneMap()) { p.style.top = ""; p.style.height = ""; delete document.body.dataset.sheet; return; }
   if (h == null) h = sheetH(sheetState);
-  p.style.height = h + "px"; p.style.top = (window.innerHeight - h - sheetGap()) + "px";
+  p.style.height = h + "px"; p.style.top = (fullH() - h - sheetGap()) + "px";
   document.body.dataset.sheet = sheetState;
 }
 function setSheet(st, refocus) {
