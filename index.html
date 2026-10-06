@@ -920,6 +920,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .sheet .panel,.sheet .dlist{overflow:clip;max-height:none;height:auto}
 @supports not (overflow:clip){.sheet .panel,.sheet .dlist{overflow:visible}}
 .sheet{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.sg.on{background:color-mix(in srgb,var(--accent) 16%,var(--surface));box-shadow:inset 3px 0 0 var(--accent)}
 </style>
 
 </head>
@@ -1567,7 +1568,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006025012";
+const BUILD = "20261006025558";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2059,14 +2060,14 @@ function openSheet(kind, id) {
       if (k) scheduleAuto(900);
     });
     inp.addEventListener("focus", () => { if (inp.value.trim().length >= 2 && !form[side]) showSugg(side); });
-    inp.addEventListener("blur", () => setTimeout(() => { const b = $("#s-" + side); if (b) b.hidden = true; }, 180));
-    inp.addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#s-" + side + " [data-apt]"); if (first) { e.preventDefault(); pickApt(side, first.dataset.apt); } } });
+    inp.addEventListener("blur", () => setTimeout(() => { const b = $("#s-" + side); if (!b) return; const on = !b.hidden && b.querySelector(".sg.on"); if (on) pickApt(side, on.dataset.apt); b.hidden = true; }, 180));
+    suggNav(inp, $("#s-" + side), o => pickApt(side, o.dataset.apt), o => o.dataset.apt);
   }
   { const ai = $("#f-airline");
     ai.addEventListener("input", () => { form.alc = ""; showAlSugg(); });
     ai.addEventListener("focus", () => { if (ai.value.trim().length >= 1 && !form.alc) showAlSugg(); });
-    ai.addEventListener("blur", () => setTimeout(() => { const b = $("#s-airline"); if (b) b.hidden = true; }, 180));
-    ai.addEventListener("keydown", e => { if (e.key === "Enter") { const first = $("#s-airline [data-alc]"); if (first) { e.preventDefault(); pickAirline(first.dataset.alc, first.dataset.name); } } });
+    ai.addEventListener("blur", () => setTimeout(() => { const b = $("#s-airline"); if (!b) return; const on = !b.hidden && b.querySelector(".sg.on"); if (on) pickAirline(on.dataset.alc, on.dataset.name); b.hidden = true; }, 180));
+    suggNav(ai, $("#s-airline"), o => pickAirline(o.dataset.alc, o.dataset.name), o => o.dataset.name);
     loadAlDB(); }
   $("#f-look").onclick = () => doLookup(true);
   $("#f-stop").onclick = () => { ctl?.abort(); clearTimeout(autoT); };
@@ -2127,6 +2128,28 @@ async function showAlSugg() {
   box.innerHTML = hits.map(a => `<button type="button" class="sg" role="option" data-alc="${esc(a.code)}" data-name="${esc(a.name)}">
     ${alIcon(a.code, a.name, "sm")}<span class="sg-txt"><b>${esc(a.name)}</b><small>${esc(a.code)}${a.cc ? " · " + esc(country(a.cc)) : ""}${a.used ? ` · ${a.used} ${a.used === 1 ? "vuelo tuyo" : "vuelos tuyos"}` : ""}</small></span></button>`).join("");
   box.hidden = false; markLogos(box);
+}
+/* arrow keys move through the suggestions (the first ↓ selects the first one); Enter or Tab confirms */
+function suggNav(inp, box, commit, label) {
+  let typed = null;
+  inp.addEventListener("input", () => { typed = null; });
+  inp.addEventListener("keydown", e => {
+    if (!box || box.hidden) return;
+    const opts = [...box.querySelectorAll(".sg")]; if (!opts.length) return;
+    let i = opts.findIndex(o => o.classList.contains("on"));
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      if (typed == null) typed = inp.value;
+      i = e.key === "ArrowDown" ? (i + 1) % opts.length : (i <= 0 ? opts.length - 1 : i - 1);
+      opts.forEach((o, k) => { o.classList.toggle("on", k === i); o.setAttribute("aria-selected", k === i); });
+      opts[i].scrollIntoView({ block:"nearest" });
+      inp.value = label(opts[i]);
+      return;
+    }
+    if (e.key === "Enter") { e.preventDefault(); typed = null; return commit(i >= 0 ? opts[i] : opts[0]); }
+    if (e.key === "Tab" && i >= 0) { typed = null; return commit(opts[i]); }
+    if (e.key === "Escape") { e.preventDefault(); if (typed != null) inp.value = typed; typed = null; opts.forEach(o => o.classList.remove("on")); box.hidden = true; }
+  });
 }
 function pickAirline(code, name) {
   form.alc = code;
