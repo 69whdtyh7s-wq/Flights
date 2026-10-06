@@ -1668,7 +1668,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261006131843";
+const BUILD = "20261006132412";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2777,6 +2777,14 @@ async function extractLocal(text, signal) {
   }
   return out;
 }
+async function updateMany(list) {      // existing flights (with id), written in one go
+  if (!list.length) return;
+  if (S.storage === "db") { for (let i = 0; i < list.length; i += 8) await Promise.all(list.slice(i, i + 8).map(f => S.col.doc(f.id).set(clean(f)))); return; }
+  const byId = new Map(list.map(f => [f.id, f]));
+  const arr = lsRead().map(x => byId.has(x.id) ? { id:x.id, ...clean(byId.get(x.id)) } : x);
+  if (!lsWrite(arr)) throw { code:"local" };
+  S.real = arr; render();
+}
 async function saveMany(list) {
   if (!list.length) return;
   if (S.storage === "db") {           // a few writes at a time; the live snapshot re-renders
@@ -2830,11 +2838,19 @@ $("#imp-file").addEventListener("change", async e => {
   } catch {
     return dialog({ title:"No se pudo leer el archivo", body:"<p>Tiene que ser una copia <b>.json</b> descargada desde Flights.</p>", cancelText:"Aceptar" });
   }
-  const fresh = list.filter(f => !S.real.some(r => r.num === f.num && r.date === f.date && r.from?.iata === f.from.iata));
+  const same = f => S.real.find(r => r.num === f.num && r.date === f.date && r.from?.iata === f.from.iata);
+  const fresh = list.filter(f => !same(f));
+  // flights you already have: bring over the trip they belong to in the copy
+  const tripUpd = list.map(f => [f, same(f)]).filter(([f, r]) => r && (f.trip || "") && (f.trip || "") !== (r.trip || "")).map(([f, r]) => ({ ...r, trip:f.trip }));
   const dates = list.map(f => f.date).sort();
   const yr = d => d ? d.slice(0, 4) : "";
   const range = dates.length ? (yr(dates[0]) === yr(dates[dates.length - 1]) ? yr(dates[0]) : `${yr(dates[0])} – ${yr(dates[dates.length - 1])}`) : "";
   if (!list.length) return dialog({ title:"La copia está vacía", body:`<p>${esc(file.name)} no tiene vuelos válidos.</p>`, cancelText:"Aceptar" });
+  if (!fresh.length && tripUpd.length) {
+    const nT = new Set(tripUpd.map(f => f.trip)).size;
+    return dialog({ title:"¿Traer los viajes de la copia?", body:`<p class="dlg-file">${esc(file.name)}</p><p>Ya tenés todos estos vuelos. La copia agrupa ${tripUpd.length} de ellos en ${nT} ${nT === 1 ? "viaje" : "viajes"}: <b>${esc([...new Set(tripUpd.map(f => f.trip))].slice(0, 4).join(", "))}</b>.</p>`,
+      okText:"Traer viajes", onOk: async () => { try { await updateMany(tripUpd); toast("Viajes actualizados"); } catch { toast("No se pudo actualizar. Probá de nuevo."); } if ($(".settings")) openSettings(); } });
+  }
   if (!fresh.length) return dialog({ title:"Nada para restaurar", body:`<p>Los ${list.length} vuelos de <b>${esc(file.name)}</b> ya están en tu bitácora.</p>`, cancelText:"Aceptar" });
   const dup = list.length - fresh.length;
   dialog({
@@ -2844,7 +2860,7 @@ $("#imp-file").addEventListener("change", async e => {
       <p>Se van a agregar ${fresh.length === 1 ? "el vuelo nuevo" : "los " + fresh.length + " vuelos nuevos"}. No se borra ni se cambia nada de lo que ya tenés.</p>`,
     okText:"Restaurar",
     onOk: async () => {
-      try { await saveMany(fresh); toast(`${fresh.length} ${fresh.length === 1 ? "vuelo restaurado" : "vuelos restaurados"}`); }
+      try { await saveMany(fresh); if (tripUpd.length) await updateMany(tripUpd); toast(`${fresh.length} ${fresh.length === 1 ? "vuelo restaurado" : "vuelos restaurados"}`); }
       catch { toast("No se pudo terminar de restaurar. Probá de nuevo: no se duplica nada."); }
       if ($(".settings")) openSettings();
     },
