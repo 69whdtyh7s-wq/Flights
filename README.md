@@ -18,3 +18,4 @@ Registro personal de vuelos con mapa de rutas y estadísticas. Es una sola pági
 
 - Imágenes de la Tierra (satélite y noche): texturas de los ejemplos de three.js (MIT), basadas en imágenes de la NASA.
 - Banderas: flag-icons (MIT).
+- Mapa y gráficos: D3.js v7 (ISC), incluido en el repositorio para que la app funcione sin conexión.
