@@ -1007,6 +1007,24 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
   body.mapfull #mapcard .mapfoot{display:none!important}
 }
 .sheet.noanim{animation:none!important}
+/* airport card on the map */
+.map .apt{cursor:pointer}
+.aptcard{position:fixed;z-index:19;width:min(300px,calc(100vw - 24px));background:var(--surface);border-radius:18px;padding:14px 16px 16px;box-shadow:0 18px 50px rgba(0,0,0,.25),0 0 0 1px var(--line);display:flex;flex-direction:column;gap:6px;animation:popin .18s ease-out}
+.aptcard .x{position:absolute;right:10px;top:10px;width:28px;height:28px;border-radius:50%;border:0;background:var(--fill);color:var(--muted);font-size:18px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.ac-h{display:flex;align-items:center;gap:10px}
+.ac-code{font-family:var(--f-round);font-weight:800;font-size:28px;letter-spacing:.02em;color:var(--accent-text)}
+.ac-city{font-size:17px;font-weight:700;display:flex;flex-direction:column}
+.ac-city span{font-size:13px;font-weight:500;color:var(--muted)}
+.ac-name{font-size:12.5px;color:var(--muted);margin-top:-2px}
+.ac-st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 4px}
+.ac-st div{background:var(--surface-2);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column}
+.ac-st b{font-size:18px;font-family:var(--f-round)}
+.ac-st span{font-size:11.5px;color:var(--muted)}
+.ac-row{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 0;border-top:1px solid var(--line)}
+.ac-row span{color:var(--muted);white-space:nowrap}
+.ac-row b{font-weight:600;text-align:right}
+.ac-row small{color:var(--muted);font-weight:500}
+.aptcard .btn{margin-top:8px;justify-content:center}
 </style>
 
 </head>
@@ -1755,7 +1773,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261007023450";
+const BUILD = "20261007023757";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -3076,9 +3094,10 @@ let wipeArm = false;
 /* swipe down closes any floating window: side panels (settings, search, trips…), the flight window and dialogs */
 (function swipeToClose() {
   let st = null;
-  const win = el => el.closest && (el.closest(".dlg") || (!el.closest(".pophd") && el.closest("#flpop")) || el.closest("#sheet-root .sheet"));
+  const win = el => el.closest && (el.closest(".dlg") || el.closest("#aptcard") || (!el.closest(".pophd") && el.closest("#flpop")) || el.closest("#sheet-root .sheet"));
   const closeWin = w => {
     if (w.classList.contains("dlg")) document.getElementById("dialog-root").innerHTML = "";
+    else if (w.id === "aptcard") closeAptCard();
     else if (w.id === "flpop") closePop();
     else closeSheet();
   };
@@ -3116,6 +3135,55 @@ let wipeArm = false;
   };
   document.addEventListener("touchend", end); document.addEventListener("touchcancel", end);
 })();
+/* ---------- airport card: tap an airport dot or code on the map ---------- */
+function aptAt(e) {
+  if (!gApts) return false;
+  const svg = svgSel.node(), r = svg.getBoundingClientRect(), [px, py] = d3.pointer(e, svg), t = d3.zoomTransform(svg);
+  const ext = zoom.extent().call(svg), unit = (ext[1][0] - ext[0][0]) / r.width;          // svg units per screen pixel
+  let best = null, bd = 22 * unit;
+  gApts.selectAll("circle").each(d => { const dd = Math.hypot(t.applyX(d.p[0]) - px, t.applyY(d.p[1]) - py); if (dd < bd) { bd = dd; best = d; } });
+  if (!best) return false;
+  showAptCard(best.iata, e.clientX, e.clientY);
+  return true;
+}
+function closeAptCard() { const el = document.getElementById("aptcard"); if (el) el.remove(); }
+function showAptCard(iata, x, y) {
+  const fl = all().filter(f => f.from?.iata === iata || f.to?.iata === iata);
+  const a = (fl[0] && (fl[0].from?.iata === iata ? fl[0].from : fl[0].to)) || knownApt(iata); if (!a) return;
+  const past = fl.filter(f => f.past).sort((p, q) => p.depT - q.depT), up = fl.filter(f => !f.past);
+  const dep = fl.filter(f => f.from?.iata === iata).length, arr = fl.length - dep;
+  const other = count(fl.map(f => f.from?.iata === iata ? f.to?.iata : f.from?.iata)).slice(0, 4);
+  const al = count(fl.map(alKey)).slice(0, 3);
+  closeAptCard();
+  const el = document.createElement("div"); el.id = "aptcard"; el.className = "aptcard"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Aeropuerto " + iata);
+  el.innerHTML = `<button class="x" type="button" data-aptclose aria-label="Cerrar">×</button>
+    <div class="ac-h"><span class="ac-code">${esc(iata)}</span>${a.cc ? `<span class="fl-ic" aria-hidden="true">${flag(a.cc)}</span>` : ""}</div>
+    <div class="ac-city">${esc(a.city || a.name || "")}${a.cc ? `<span>${esc(country(a.cc))}</span>` : ""}</div>
+    <div class="ac-name">${esc(a.name || "")}</div>
+    <div class="ac-st"><div><b>${fl.length}</b><span>${fl.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${dep}</b><span>salidas</span></div><div><b>${arr}</b><span>llegadas</span></div></div>
+    ${past.length ? `<div class="ac-row"><span>Primera vez</span><b>${esc(shortDate(past[0]))}</b></div><div class="ac-row"><span>Última vez</span><b>${esc(shortDate(past[past.length - 1]))}</b></div>` : ""}
+    ${up.length ? `<div class="ac-row"><span>Próximos</span><b>${up.length}</b></div>` : ""}
+    ${other.length ? `<div class="ac-row"><span>Conecta con</span><b>${other.map(([c, n]) => `${esc(c)}${n > 1 ? ` <small>×${n}</small>` : ""}`).join(" · ")}</b></div>` : ""}
+    ${al.length ? `<div class="ac-row"><span>Aerolíneas</span><b>${al.map(([k]) => esc(alLabel(k))).join(", ")}</b></div>` : ""}
+    ${a.tz ? `<div class="ac-row"><span>Hora local</span><b>${esc(new Date().toLocaleTimeString("es", { timeZone:a.tz, hour:"2-digit", minute:"2-digit" }))}</b></div>` : ""}
+    <button class="btn primary" type="button" data-rk="airport" data-key="${esc(iata)}">Ver sus vuelos</button>`;
+  document.body.appendChild(el);
+  markLogos(el);
+  const w = el.offsetWidth, h = el.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  if (phoneMap()) { el.style.left = Math.round((vw - w) / 2) + "px"; el.style.top = (safeTop() + 60) + "px"; }
+  else {
+    let lx = x + 14, ty = y - 20;
+    if (lx + w > vw - 10) lx = x - w - 14;
+    lx = Math.max(10, Math.min(vw - w - 10, lx)); ty = Math.max(10, Math.min(vh - h - 10, ty));
+    el.style.left = lx + "px"; el.style.top = ty + "px";
+  }
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-aptclose]"); if (b) { closeAptCard(); return; }
+  const card = document.getElementById("aptcard");
+  if (card && !card.contains(e.target) && !e.target.closest("#map")) closeAptCard();
+  if (card && e.target.closest("#aptcard [data-rk]")) setTimeout(closeAptCard, 0);
+});
 function markBackup() { try { localStorage.setItem("flights-last-backup", new Date().toISOString()); } catch {} if ($(".settings")) openSettings(); }
 function lastBackup() { try { const v = localStorage.getItem("flights-last-backup"); return v ? new Date(v) : null; } catch { return null; } }
 function openSettings() {
@@ -3289,7 +3357,11 @@ function setSheet(st, refocus) {
     if (!phoneMap() || !e.target.closest(".grab,header") || e.target.closest("button")) return;
     setSheet(sheetState === "peek" ? "mid" : sheetState === "mid" ? "full" : "mid", !!(S.open || S.focusIds));
   });
-  document.getElementById("map").addEventListener("click", () => { if (phoneMap() && sheetState !== "peek") setSheet("peek", !!(S.open || S.focusIds)); });
+  document.getElementById("map").addEventListener("click", e => {
+    if (aptAt(e)) return;                                   // tapped an airport: its card opens instead
+    closeAptCard();
+    if (phoneMap() && sheetState !== "peek") setSheet("peek", !!(S.open || S.focusIds));
+  });
   const relayout = () => requestAnimationFrame(() => layoutSheet());
   ["resize", "orientationchange"].forEach(ev => window.addEventListener(ev, relayout));
   if (window.visualViewport) visualViewport.addEventListener("resize", relayout);
@@ -3369,7 +3441,7 @@ document.addEventListener("click", e => {
     deleteFlight(id).then(() => { S.confirmDel = null; S.open = null; render(); if (inDrill) openDrill(S.drill.kind, S.drill.key); toast("Vuelo borrado"); }).catch(() => { t.disabled = false; toast("No se pudo borrar. Probá de nuevo."); });
   }
 });
-document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if ($(".scrim")) closeSheet(); else if (document.getElementById("flpop")) closePop(); else if (document.body.classList.contains("mapfull")) toggleMapFull(false); });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if ($(".scrim")) closeSheet(); else if (document.getElementById("aptcard")) closeAptCard(); else if (document.getElementById("flpop")) closePop(); else if (document.body.classList.contains("mapfull")) toggleMapFull(false); });
 
 initMap();
 render();
