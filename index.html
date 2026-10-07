@@ -925,8 +925,8 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 /* light map: grey-blue sea, near-white land, visited countries clearly tinted */
 #mapcard .map .land,#mapcard .map .land.visited{stroke:none!important}
 .map .bord,.map .bord-v{fill:none;pointer-events:none;stroke-linejoin:round;stroke-linecap:round}
-.map .bord{stroke:#BFC8D2;stroke-width:.45}
-.map .bord-v{stroke:#ffffff;stroke-width:.6}
+.map .bord{stroke:#BFC8D2;stroke-width:calc(.45px * var(--bz,1))}
+.map .bord-v{stroke:#ffffff;stroke-width:calc(.6px * var(--bz,1))}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .map .bord{stroke:#33373D}:root:not([data-theme="light"]) .map .bord-v{stroke:color-mix(in srgb,var(--route) 65%,#ffffff)}}
 :root[data-theme="dark"] .map .bord{stroke:#33373D}
 :root[data-theme="dark"] .map .bord-v{stroke:color-mix(in srgb,var(--route) 65%,#ffffff)}
@@ -995,6 +995,17 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .sq-tx small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sq-it .chev-r{color:var(--muted)}
 .sq-fl .al-ic{margin:0}
+/* map full screen */
+body.mapfull{overflow:hidden}
+body.mapfull #mapcard{position:fixed!important;inset:0!important;z-index:17;margin:0!important;width:auto!important;max-width:none!important;height:auto!important;border-radius:0!important;border:0!important;display:block!important}
+body.mapfull #mapcard .map{width:100%!important;height:100%!important;min-height:0!important;border-radius:0}
+body.mapfull #mapcard .mapfoot{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);background:transparent;border:0;padding:0;display:flex!important;justify-content:space-between;pointer-events:none}
+body.mapfull #mapcard .mapfoot > *{pointer-events:auto;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-radius:999px;padding:4px 10px}
+body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!important}
+@media (max-width:699px){
+  body.mapfull #p-list,body.mapfull #filters,body.mapfull .top{display:none!important}
+  body.mapfull #mapcard .mapfoot{display:none!important}
+}
 </style>
 
 </head>
@@ -1027,7 +1038,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
       <button type="button" id="z-out" aria-label="Alejar">−</button>
       <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
       <button type="button" id="z-type" class="show-phone" aria-label="Tipo de mapa" title="Tipo de mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
-      <button type="button" id="z-fit" aria-label="Encuadrar mis rutas" title="Encuadrar mis rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+      <button type="button" id="z-fit" aria-label="Mapa a pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="mapfoot">
       <div class="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
@@ -1508,6 +1519,24 @@ function oneFingerZoom(el) {
   }, opt);
   el.addEventListener("touchcancel", () => { mode = null; lastTap = null; }, opt);
 }
+/* map full screen (the expand button inside the map) */
+const ICON_EXPAND = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>`;
+const ICON_SHRINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>`;
+function toggleMapFull(on) {
+  const b = document.body; on = on ?? !b.classList.contains("mapfull");
+  if (on === b.classList.contains("mapfull")) return;
+  b.classList.toggle("mapfull", on);
+  const btn = $("#z-fit"); btn.innerHTML = on ? ICON_SHRINK : ICON_EXPAND; btn.setAttribute("aria-label", on ? "Salir de pantalla completa" : "Mapa a pantalla completa"); btn.title = on ? "Salir de pantalla completa" : "Pantalla completa";
+  if (!isPhone()) {
+    try {
+      if (on && document.documentElement.requestFullscreen && !document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    } catch {}
+  }
+  requestAnimationFrame(() => { layoutSheet(); updateZoomExtent(); renderMap(); focusSelection(); });
+  setTimeout(() => { updateZoomExtent(); }, 350);
+}
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("mapfull") && !isPhone()) toggleMapFull(false); });
 function initMap() {
   if (!window.d3) { $("#maphint").textContent = "No se pudo cargar el mapa."; return; }
   makeProjection();
@@ -1524,6 +1553,7 @@ function initMap() {
     .filter(e => mapView !== "globo" ? ((!e.ctrlKey || e.type === "wheel") && !e.button) : (e.type === "wheel" || (e.touches && e.touches.length > 1)))
     .on("zoom", e => {
     gLayer.attr("transform", e.transform); curK = e.transform.k; sizeApts();
+    svgSel.node().style.setProperty("--bz", Math.min(1, 0.35 + 0.22 * curK).toFixed(3));   // thinner borders when zoomed out
   });
   svgSel.call(zoom).on("dblclick.zoom", null);
   oneFingerZoom(svgSel.node());
@@ -1531,7 +1561,7 @@ function initMap() {
   if (window.ResizeObserver) new ResizeObserver(() => updateZoomExtent()).observe(document.getElementById("map"));
   $("#z-in").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1.6);
   $("#z-out").onclick = () => svgSel.transition().duration(250).call(zoom.scaleBy, 1/1.6);
-  $("#z-fit").onclick = () => fitRoutes(true);
+  $("#z-fit").onclick = () => toggleMapFull();
   $("#z-view").onclick = () => { const i = MAP_VIEWS.indexOf(mapView); setMapView(MAP_VIEWS[(i + 1) % MAP_VIEWS.length]); };
   svgSel.call(d3.drag().filter(e => mapView === "globo" && !e.button && !(e.touches && e.touches.length > 1))
     .on("start", () => { dragging = true; })
@@ -1626,8 +1656,9 @@ function focusSelection() {
     // only the strip between the top buttons and the flights sheet is visible
     const r = svgSel.node().getBoundingClientRect(), sc = vw0 / r.width;
     vx0 = ext[0][0] + 12 * sc; vx1 = ext[0][0] + (r.width - 64) * sc;
-    vy0 = ext[0][1] + (safeTop() + 58 - r.top) * sc;
-    vy1 = ext[0][1] + (sheetTopPx() - 10 - r.top) * sc;
+    const full = document.body.classList.contains("mapfull");
+    vy0 = ext[0][1] + (safeTop() + (full ? 12 : 58) - r.top) * sc;
+    vy1 = ext[0][1] + ((full ? fullH() - 24 : sheetTopPx() - 10) - r.top) * sc;
     if (vy1 - vy0 < 40) vy1 = vy0 + 40;
   }
   const vw = vx1 - vx0, vh = vy1 - vy0;
@@ -1723,7 +1754,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261007020452";
+const BUILD = "20261007022020";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -3288,7 +3319,7 @@ document.addEventListener("click", e => {
     deleteFlight(id).then(() => { S.confirmDel = null; S.open = null; render(); if (inDrill) openDrill(S.drill.kind, S.drill.key); toast("Vuelo borrado"); }).catch(() => { t.disabled = false; toast("No se pudo borrar. Probá de nuevo."); });
   }
 });
-document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if ($(".scrim")) closeSheet(); else if (document.getElementById("flpop")) closePop(); });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if ($(".scrim")) closeSheet(); else if (document.getElementById("flpop")) closePop(); else if (document.body.classList.contains("mapfull")) toggleMapFull(false); });
 
 initMap();
 render();
