@@ -995,8 +995,6 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .sq-tx small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sq-it .chev-r{color:var(--muted)}
 .sq-fl .al-ic{margin:0}
-.tripbox.inner{margin:6px 10px 10px;border-style:dashed;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
-.tripbox.inner .tripttl b{font-size:14px}
 </style>
 
 </head>
@@ -1725,7 +1723,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261007020235";
+const BUILD = "20261007020452";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1968,39 +1966,17 @@ function renderList() {
   }
   const fw = popMode(), titled = new Set(), tm = tripMap();
   // flights of the same trip that sit next to each other share one outline, with the trip name once on top
-  // trips nested in time: a trip whose dates fall inside another trip is drawn inside it
-  const span = new Map([...tm].map(([n, l]) => [n, [l[0].depT, l[l.length - 1].depT, l.length]]));
-  const parent = new Map();
-  for (const [n, [a, b, c]] of span) {
-    let best = null;
-    for (const [m, [a2, b2, c2]] of span) if (m !== n && a2 <= a && b <= b2 && (a2 < a || b < b2 || c2 > c) && (!best || (b2 - a2) < (span.get(best)[1] - span.get(best)[0]))) best = m;
-    parent.set(n, best);
-  }
-  const chain = n => { const c = []; let x = n, guard = 0; while (x && guard++ < 10) { c.unshift(x); x = parent.get(x); } return c; };   // root … n
-  const box = (name, run, depth) => {
-    const legs = tm.get(name) || [], own = run.filter(x => x.trip === name).length;
-    const part = own < legs.length ? `${own} de ${legs.length} vuelos` : `${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"}`;
-    const head = `<button type="button" class="tripttl" data-tripview="${esc(name)}"><b>${esc(name)}</b><small>${part}${legs.length ? " · " + esc(shortDate(legs[0])) + (legs.length > 1 ? " – " + esc(shortDate(legs[legs.length - 1])) : "") : ""}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
-    return `<div class="tripbox${depth ? " inner" : ""}">${head}${inside(run, name, depth + 1)}</div>`;
-  };
-  const inside = (run, container, depth) => {   // rows of the container trip, nested trips as their own boxes
-    let out = "";
-    for (let i = 0; i < run.length; ) {
-      const c = chain(run[i].trip), k = c[c.indexOf(container) + 1] || null;
-      if (!k) { out += flightRow(run[i], fw); i++; continue; }
-      let j = i; while (j < run.length) { const cj = chain(run[j].trip); if ((cj[cj.indexOf(container) + 1] || null) !== k) break; j++; }
-      out += box(k, run.slice(i, j), depth); i = j;
-    }
-    return out;
-  };
   const rowsHTML = list => {
     let out = "";
     for (let i = 0; i < list.length; ) {
       const f = list[i];
       if (!f.trip) { out += flightRow(f, fw); i++; continue; }
-      const root = chain(f.trip)[0];
-      let j = i; while (j < list.length && list[j].trip && chain(list[j].trip)[0] === root) j++;
-      out += box(root, list.slice(i, j), 0);
+      let j = i; while (j < list.length && list[j].trip === f.trip) j++;
+      const legs = tm.get(f.trip) || [];
+      // every box gets the trip title (a trip can be split by another flight or by the change of year)
+      const part = j - i < legs.length ? `${j - i} de ${legs.length} vuelos` : `${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"}`;
+      const head = `<button type="button" class="tripttl" data-tripview="${esc(f.trip)}"><b>${esc(f.trip)}</b><small>${part}${legs.length ? " · " + esc(shortDate(legs[0])) + (legs.length > 1 ? " – " + esc(shortDate(legs[legs.length - 1])) : "") : ""}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
+      out += `<div class="tripbox">${head}${list.slice(i, j).map(x => flightRow(x, fw)).join("")}</div>`;
       i = j;
     }
     return out;
