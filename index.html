@@ -1006,6 +1006,20 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
   body.mapfull #p-list,body.mapfull #filters,body.mapfull .top{display:none!important}
   body.mapfull #mapcard .mapfoot{display:none!important}
 }
+/* number finder */
+.nf{background:var(--surface);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.nf-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.nf-h b{font-size:16px}
+.nf-h span{font-size:13px;color:var(--muted)}
+.nf-c{display:flex;flex-direction:column;gap:6px}
+.nf-o{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--surface-2)}
+.nf-o.best{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.nf-o .al-ic{margin:0}
+.nf-t{display:flex;flex-direction:column;min-width:0}
+.nf-t b{font-family:var(--f-mono);font-size:15px}
+.nf-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nf-none{margin:0}
+.nf-warn{font-style:normal;font-size:11.5px;font-weight:600;color:#C26A00}
 </style>
 
 </head>
@@ -1754,7 +1768,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261007022020";
+const BUILD = "20261007022652";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -1911,6 +1925,7 @@ function detail(f) {
       ${ap(f.to, f.arr, niceDate(f.date, +f.arrOffset || 0), true)}</div>
     <div class="dtiles">${tiles.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("")}</div>
     ${f.notes ? `<div class="dnotes"><span>Notas</span><p>${esc(f.notes)}</p></div>` : ""}
+    ${f.demo || f.num ? "" : `<div class="dtrip"><span>Número de vuelo</span><b>Sin número</b><small>${numCands(f).length ? "Hay coincidencias en tu historial" : "Buscá en tus vuelos de la misma ruta"}</small><div class="tb"><button class="btn" type="button" data-numfind="${esc(f.id)}">Buscar</button></div></div>`}
     ${f.demo ? "" : tripBlock(f)}
     <div class="acts">${acts}</div></div>`;
 }
@@ -2243,6 +2258,66 @@ document.addEventListener("keydown", e => {
     e.preventDefault(); openSearch(searchQ);
   }
 });
+/* ---------- flights without a number: find matches in your own flights on the same route ---------- */
+function numCands(f) {
+  if (!validApt(f.from) || !validApt(f.to)) return [];
+  const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[1] * 60 + +m[2] : null; };
+  const k = alKey(f), dm = mins(f.dep), by = new Map();
+  for (const x of all()) {
+    if (!x.num || x.id === f.id || x.demo || x.from?.iata !== f.from.iata || x.to?.iata !== f.to.iata) continue;
+    const c = by.get(x.num) || { num:x.num, airline:x.airline, alc:alCode(x), uses:0, near:Infinity, ex:x, score:0 };
+    c.uses++;
+    const dd = Math.abs((x.depT || 0) - (f.depT || 0)) / DAY;
+    if (dd < c.near) { c.near = dd; c.ex = x; }
+    by.set(x.num, c);
+  }
+  for (const c of by.values()) {
+    let sc = 0;
+    if (f.airline && k && alKey(c.ex) === k) sc += 3; else if (f.airline) sc -= 2;
+    const xm = mins(c.ex.dep);
+    if (dm != null && xm != null) { const d = Math.abs(dm - xm); sc += d <= 30 ? 3 : d <= 90 ? 1.5 : 0; }
+    sc += Math.max(0, 1 - c.near / 1500) * 2 + Math.min(c.uses, 5) * .3;
+    c.score = sc;
+    c.otherAl = !!(f.airline && k && alKey(c.ex) !== k);
+    c.otherTime = dm != null && xm != null && Math.abs(dm - xm) > 90;
+  }
+  return [...by.values()].sort((a, b) => b.score - a.score).slice(0, 5);
+}
+let numOnly = null;
+function openNumFinder(id) {
+  numOnly = id;
+  const list = (id ? all().filter(f => f.id === id) : all().filter(f => !f.num && !f.demo)).sort((a, b) => (numCands(b).length > 0) - (numCands(a).length > 0) || b.depT - a.depT);   // with matches first
+  const withC = list.filter(f => numCands(f).length).length;
+  const row = f => {
+    const cs = numCands(f);
+    return `<div class="nf"><div class="nf-h"><b>${esc(f.from?.iata || "?")} → ${esc(f.to?.iata || "?")}</b><span>${esc(shortDate(f))}${f.dep ? " · " + esc(f.dep) : ""}${f.airline ? " · " + esc(f.airline) : ""}</span></div>
+      ${cs.length ? `<div class="nf-c">${cs.map((c, i) => `<div class="nf-o${i === 0 && !c.otherAl ? " best" : ""}">${alIcon(c.alc, c.airline, "sm")}<span class="nf-t"><b>${esc(c.num.replace(/^([A-Z0-9]{2})(\d)/, "$1 $2"))}</b><small>${esc(c.airline || "")}${c.ex.dep ? " · sale " + esc(c.ex.dep) : ""} · ${c.uses === 1 ? "1 vez" : c.uses + " veces"}, la más cercana el ${esc(shortDate(c.ex))}</small>${c.otherAl || c.otherTime ? `<em class="nf-warn">${[c.otherAl ? "otra aerolínea" : "", c.otherTime ? "otro horario" : ""].filter(Boolean).join(" · ")}</em>` : ""}</span><button class="btn${i === 0 && !c.otherAl ? " primary" : ""}" type="button" data-numuse="${esc(f.id)}" data-num="${esc(c.num)}">Usar</button></div>`).join("")}</div>`
+        : `<p class="hint nf-none">Sin coincidencias: no tenés otros vuelos ${esc(f.from?.iata || "")} → ${esc(f.to?.iata || "")} con número.</p>`}</div>`;
+  };
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet numsheet" role="dialog" aria-modal="true" aria-labelledby="nf-t">
+    <div class="hd"><h2 id="nf-t">${id ? "Buscar número" : "Vuelos sin número"}</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <p class="hint">Comparamos con tus otros vuelos de la misma ruta: misma aerolínea, horario parecido y fechas cercanas suben en la lista. ${id ? "" : `${withC} de ${list.length} tienen alguna coincidencia.`}</p>
+    ${list.length ? list.map(row).join("") : `<div class="empty"><b>Todos tus vuelos tienen número</b></div>`}
+  </div></div>`;
+  markLogos($("#sheet-root"));
+}
+async function useNum(btn, id, num) {
+  const f = S.real.find(x => x.id === id); if (!f) return;
+  const c = numCands(enrich(f)).find(x => x.num === num);
+  const upd = { ...f, num };
+  if (c) {
+    if (!upd.airline) upd.airline = c.airline;
+    if (!upd.alc && c.alc) upd.alc = c.alc;
+    if (!upd.dep && c.ex.dep) { upd.dep = c.ex.dep; upd.arr = c.ex.arr || ""; upd.arrOffset = c.ex.arrOffset || 0; }
+    if (!upd.aircraft && c.ex.aircraft) upd.aircraft = c.ex.aircraft;
+  }
+  btn.disabled = true;
+  try {
+    await updateMany([upd]);
+    if (numOnly) { closeSheet(); toast(`Número ${num} guardado`); }
+    else { openNumFinder(null); toast(`Número ${num} guardado`); }
+  } catch { btn.disabled = false; toast("No se pudo guardar. Probá de nuevo."); }
+}
 const DRILL = {
   airline:{ match:(f, k) => alKey(f) === k, title:k => alLabel(k) },
   airport:{ match:(f, k) => f.from?.iata === k || f.to?.iata === k, title:k => { const a = knownApt(k); return a ? `${k} · ${a.city || a.name}` : k; } },
@@ -3077,6 +3152,7 @@ function openSettings() {
   const seg = (k, t) => `<button type="button" data-theme-set="${k}" aria-pressed="${theme === k}">${t}</button>`;
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet settings" role="dialog" aria-modal="true" aria-labelledby="st-t">
     <div class="hd"><h2 id="st-t">Ajustes</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    ${(() => { const n0 = S.real.filter(f => !f.num).length; return n0 ? `<div class="box"><h4>Vuelos sin número</h4><p class="hint">${n0} ${n0 === 1 ? "vuelo no tiene" : "vuelos no tienen"} número. Buscamos coincidencias en tus otros vuelos de la misma ruta.</p><div class="acts"><button class="btn" type="button" data-numfind="">Revisar vuelos sin número</button></div></div>` : ""; })()}
     <div class="box"><h4>Copia de seguridad</h4>
       <p class="hint">${n} ${n === 1 ? "vuelo guardado" : "vuelos guardados"}. ${where} <b class="${!lb || days > 30 ? "warn" : ""}">${when}</b></p>
       <div class="acts">
@@ -3301,6 +3377,8 @@ document.addEventListener("click", e => {
   if (t.dataset.rk) { S.open = null; S.listBack = t.closest(".listsheet") ? t.closest(".listsheet").dataset.kind : null; return openDrill(t.dataset.rk, t.dataset.key); }
   if (t.dataset.open && t.closest(".drill")) { S.popList = false; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; return openDrill(S.drill.kind, S.drill.key); }
   if ("popclose" in t.dataset) return closePop();
+  if ("numfind" in t.dataset) return openNumFinder(t.dataset.numfind || null);
+  if (t.dataset.numuse) return useNum(t, t.dataset.numuse, t.dataset.num);
   if (t.id === "b-search") return openSearch("");
   if (t.dataset.sqk) return searchPick(t.dataset.sqk, t.dataset.sqv);
   if (t.dataset.tripfor) return openTripEditor("", t.dataset.tripfor);
