@@ -2271,7 +2271,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091134";
+const BUILD = "202610091200";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4625,16 +4625,16 @@ function dialog({ title, body, okText, cancelText = "Cancelar", onOk, busyText =
 $("#imp-file").addEventListener("change", async e => {
   const file = e.target.files[0]; e.target.value = "";
   if (!file) return;
-  let list;
+  let list, freshPl = [], nPlCopy = 0;
   try {
     const j = JSON.parse(await file.text());
     if (j && j.trips && typeof j.trips === "object") {     // trip notes and tags travel with the copy (merged, nothing is lost)
       for (const [n, m] of Object.entries(j.trips)) { const cur = tripMeta(n); setTripMeta(n, { notes:cur.notes && cur.notes.trim() ? cur.notes : (m.notes || ""), tags:[...cur.tags, ...(m.tags || [])] }); }
       render();
     }
-    if (j && Array.isArray(j.places)) {        // visited places travel with the copy too (merged, nothing is lost)
-      let n = 0; for (const p of j.places) if (validPlace(p) && !PLACES.some(x => x.id === p.id || samePlace(x, p))) { PLACES.push(cleanPlace(p)); n++; }
-      if (n) { savePlaces(); render(); toast(`${n} ${n === 1 ? "lugar recuperado" : "lugares recuperados"}`); }
+    if (j && Array.isArray(j.places)) {        // visited places travel with the copy too (merged on confirm, nothing is lost)
+      for (const p of j.places) { if (!validPlace(p) || (p.src === "vuelo" && !p.notes)) continue; nPlCopy++;
+        if (!PLACES.some(x => x.id === p.id || samePlace(x, p)) && !freshPl.some(x => x.id === p.id || samePlace(x, p))) freshPl.push(cleanPlace(p)); }
     }
     list = (Array.isArray(j) ? j : j.flights || []).filter(f => f && f.from && f.to && f.date && validApt(f.from) && validApt(f.to));
   } catch {
@@ -4649,22 +4649,31 @@ $("#imp-file").addEventListener("change", async e => {
   const dates = list.map(f => f.date).sort();
   const yr = d => d ? d.slice(0, 4) : "";
   const range = dates.length ? (yr(dates[0]) === yr(dates[dates.length - 1]) ? yr(dates[0]) : `${yr(dates[0])} – ${yr(dates[dates.length - 1])}`) : "";
-  if (!list.length) return dialog({ title:"La copia está vacía", body:`<p>${esc(file.name)} no tiene vuelos válidos.</p>`, cancelText:"Aceptar" });
-  if (!fresh.length && tripUpd.length) {
+  if (!list.length && !nPlCopy) return dialog({ title:"La copia está vacía", body:`<p>${esc(file.name)} no tiene vuelos ni lugares válidos.</p>`, cancelText:"Aceptar" });
+  const nP = freshPl.length, plTxt = n => `${n} ${n === 1 ? "lugar" : "lugares"}`, flTxt = n => `${n} ${n === 1 ? "vuelo" : "vuelos"}`;
+  if (!fresh.length && !nP && tripUpd.length) {
     const nT = new Set(tripUpd.map(f => f.trip)).size;
     return dialog({ title:"¿Traer los viajes de la copia?", body:`<p class="dlg-file">${esc(file.name)}</p><p>Ya tenés todos estos vuelos. La copia agrupa ${tripUpd.length} de ellos en ${nT} ${nT === 1 ? "viaje" : "viajes"}: <b>${esc([...new Set(tripUpd.map(f => f.trip))].slice(0, 4).join(", "))}</b>.</p>`,
       okText:"Traer viajes", onOk: async () => { try { await updateMany(tripUpd); toast("Viajes actualizados"); } catch { toast("No se pudo actualizar. Probá de nuevo."); } if ($(".settings")) openSettings(); } });
   }
-  if (!fresh.length) return dialog({ title:"Nada para restaurar", body:`<p>Los ${list.length} vuelos de <b>${esc(file.name)}</b> ya están en tu bitácora.</p>`, cancelText:"Aceptar" });
+  if (!fresh.length && !nP) {
+    const have = [list.length ? (list.length === 1 ? "el vuelo" : `los ${flTxt(list.length)}`) : "", nPlCopy ? (nPlCopy === 1 ? "el lugar" : `los ${plTxt(nPlCopy)}`) : ""].filter(Boolean).join(" y ");
+    return dialog({ title:"Nada para restaurar", body:`<p>Ya tenés ${have} de <b>${esc(file.name)}</b>.</p>`, cancelText:"Aceptar" });
+  }
   const dup = list.length - fresh.length;
+  const what = [fresh.length ? (fresh.length === 1 ? "el vuelo nuevo" : `los ${fresh.length} vuelos nuevos`) : "", nP ? (nP === 1 ? "el lugar nuevo" : `los ${nP} lugares nuevos`) : ""].filter(Boolean).join(" y ");
   dialog({
     title:"¿Restaurar la copia?",
     body:`<p class="dlg-file">${esc(file.name)}</p>
-      <div class="dlg-stats"><div><b>${fresh.length}</b><span>${fresh.length === 1 ? "vuelo nuevo" : "vuelos nuevos"}</span></div>${dup ? `<div><b>${dup}</b><span>ya guardados</span></div>` : ""}<div><b>${esc(range)}</b><span>años</span></div></div>
-      <p>Se van a agregar ${fresh.length === 1 ? "el vuelo nuevo" : "los " + fresh.length + " vuelos nuevos"}. No se borra ni se cambia nada de lo que ya tenés.</p>`,
+      <div class="dlg-stats">${fresh.length || !nP ? `<div><b>${fresh.length}</b><span>${fresh.length === 1 ? "vuelo nuevo" : "vuelos nuevos"}</span></div>` : ""}${nP ? `<div><b>${nP}</b><span>${nP === 1 ? "lugar nuevo" : "lugares nuevos"}</span></div>` : ""}${dup ? `<div><b>${dup}</b><span>${dup === 1 ? "vuelo ya guardado" : "vuelos ya guardados"}</span></div>` : ""}${range && fresh.length ? `<div><b>${esc(range)}</b><span>años</span></div>` : ""}</div>
+      <p>Se van a agregar ${what}. No se borra ni se cambia nada de lo que ya tenés.</p>`,
     okText:"Restaurar",
     onOk: async () => {
-      try { await saveMany(fresh); if (tripUpd.length) await updateMany(tripUpd); toast(`${fresh.length} ${fresh.length === 1 ? "vuelo restaurado" : "vuelos restaurados"}`); }
+      try {
+        if (nP) { for (const p of freshPl) if (!PLACES.some(x => x.id === p.id || samePlace(x, p))) PLACES.push(p); savePlaces(); render(); }
+        if (fresh.length) await saveMany(fresh); if (tripUpd.length) await updateMany(tripUpd);
+        toast([fresh.length ? flTxt(fresh.length) : "", nP ? plTxt(nP) : ""].filter(Boolean).join(" y ") + (fresh.length + nP === 1 ? " restaurado" : " restaurados"));
+      }
       catch { toast("No se pudo terminar de restaurar. Probá de nuevo: no se duplica nada."); }
       if ($(".settings")) openSettings();
     },
