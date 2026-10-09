@@ -825,7 +825,8 @@ body{overflow-x:clip}
 .qbtn span{color:var(--ink)}
 .qbtn:active{transform:scale(.97)}
 .qbtn:disabled{opacity:.45;cursor:default}
-.qbtn.busy svg{animation:spin 1s linear infinite}
+.qbtn .spin{transform-box:view-box;transform-origin:12px 12px}
+.qbtn.busy .spin{animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* stats */
 .ssec{grid-column:1 / -1;margin:12px 4px -4px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -958,6 +959,7 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .dvisit div{background:var(--surface);border-radius:14px;padding:10px 12px;display:grid;gap:2px}
 .dvisit span{font-size:12px;color:var(--muted)}.dvisit b{font-size:15px;font-weight:650}
 .map .land.visited{cursor:pointer}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0 2px;cursor:pointer}.chk input{width:18px;height:18px;accent-color:var(--accent)}
 .calopts{display:grid;gap:8px;margin:12px 0 2px}
 .calopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:14px;background:var(--fill);color:var(--ink);padding:12px 14px;font:inherit;cursor:pointer}
 .calopt svg{width:22px;height:22px;flex:none;color:var(--accent)}
@@ -2469,7 +2471,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091735";
+const BUILD = "202610091740";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3198,6 +3200,7 @@ function drawTripEditor() {
   if (ed.isNew && !ed.name) $("#tr-name").focus();
 }
 document.addEventListener("change", e => {
+  if (e.target.id === "set-adb-bk") { try { localStorage.setItem(KEY_BK, e.target.checked ? "1" : "0"); } catch {} openSettings(); return; }
   const c = e.target.closest && e.target.closest("[data-tripchk]"); if (!c || !tripEd) return;
   if (c.checked) tripEd.members.add(c.dataset.tripchk); else tripEd.members.delete(c.dataset.tripchk);
   c.closest(".tritem").classList.toggle("on", c.checked);
@@ -4389,6 +4392,8 @@ async function aptFrom(iata, extra) {
 /* ---------- full lookup: AeroDataBox (RapidAPI). The key lives only in this browser, never in the repo or the backups ---------- */
 const ADB_LS = "flights-adb-key";
 function adbKey() { try { return (localStorage.getItem(ADB_LS) || "").trim(); } catch { return ""; } }
+const KEY_BK = "flights-key-in-backup";
+function keyInBackup() { try { return localStorage.getItem(KEY_BK) !== "0"; } catch { return true; } }
 function setAdbKey(k) { try { k ? localStorage.setItem(ADB_LS, k.trim()) : localStorage.removeItem(ADB_LS); } catch {} }
 const adbT = t => { if (!t) return null; const s = typeof t === "string" ? t : (t.local || ""); const m = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/.exec(s); return m ? { d:m[1], t:m[2], utc: typeof t === "object" && t.utc ? Date.parse(t.utc.replace(" ", "T")) : NaN } : null; };
 const dayDiff = (a, b) => Math.round((Date.parse(b + "T12:00Z") - Date.parse(a + "T12:00Z")) / DAY);
@@ -4948,7 +4953,9 @@ async function saveMany(list) {
 
 /* ---------- export / import file ---------- */
 async function exportBackup() {
-  const data = JSON.stringify({ app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), trips:TRIPMETA, places:PLACES, flights:S.real.map(({ id, ...f }) => f) }, null, 2);
+  const bk = { app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), trips:TRIPMETA, places:PLACES, flights:S.real.map(({ id, ...f }) => f) };
+  if (keyInBackup() && adbKey()) bk.adbKey = adbKey();      // so restoring on another device brings the flight-search key too
+  const data = JSON.stringify(bk, null, 2);
   if (!S.real.length && !PLACES.length) return toast("Todavía no hay vuelos propios para exportar.");
   const filename = `flights-${today()}.json`;
   if (!S.downloads) {
@@ -5171,9 +5178,13 @@ function dialog({ title, body, okText, cancelText = "Cancelar", onOk, busyText =
 $("#imp-file").addEventListener("change", async e => {
   const file = e.target.files[0]; e.target.value = "";
   if (!file) return;
-  let list, freshPl = [], nPlCopy = 0;
+  let list, freshPl = [], nPlCopy = 0, keyNote = "";
   try {
     const j = JSON.parse(await file.text());
+    if (j && typeof j.adbKey === "string" && j.adbKey.trim() && j.adbKey.trim() !== adbKey()) {
+      const had = !!adbKey(); setAdbKey(j.adbKey);
+      keyNote = `<p>${had ? "Se actualizó" : "Se agregó"} la <b>clave de AeroDataBox</b> que venía en la copia: la búsqueda de vuelos y el estado en vivo ya funcionan en este dispositivo.</p>`;
+    }
     if (j && j.trips && typeof j.trips === "object") {     // trip notes and tags travel with the copy (merged, nothing is lost)
       for (const [n, m] of Object.entries(j.trips)) { const cur = tripMeta(n); setTripMeta(n, { notes:cur.notes && cur.notes.trim() ? cur.notes : (m.notes || ""), tags:[...cur.tags, ...(m.tags || [])] }); }
       render();
@@ -5195,16 +5206,16 @@ $("#imp-file").addEventListener("change", async e => {
   const dates = list.map(f => f.date).sort();
   const yr = d => d ? d.slice(0, 4) : "";
   const range = dates.length ? (yr(dates[0]) === yr(dates[dates.length - 1]) ? yr(dates[0]) : `${yr(dates[0])} – ${yr(dates[dates.length - 1])}`) : "";
-  if (!list.length && !nPlCopy) return dialog({ title:"La copia está vacía", body:`<p>${esc(file.name)} no tiene vuelos ni lugares válidos.</p>`, cancelText:"Aceptar" });
+  if (!list.length && !nPlCopy) return dialog({ title:keyNote ? "Clave agregada" : "La copia está vacía", body:keyNote || `<p>${esc(file.name)} no tiene vuelos ni lugares válidos.</p>`, cancelText:"Aceptar" });
   const nP = freshPl.length, plTxt = n => `${n} ${n === 1 ? "lugar" : "lugares"}`, flTxt = n => `${n} ${n === 1 ? "vuelo" : "vuelos"}`;
   if (!fresh.length && !nP && tripUpd.length) {
     const nT = new Set(tripUpd.map(f => f.trip)).size;
-    return dialog({ title:"¿Traer los viajes de la copia?", body:`<p class="dlg-file">${esc(file.name)}</p><p>Ya tenés todos estos vuelos. La copia agrupa ${tripUpd.length} de ellos en ${nT} ${nT === 1 ? "viaje" : "viajes"}: <b>${esc([...new Set(tripUpd.map(f => f.trip))].slice(0, 4).join(", "))}</b>.</p>`,
+    return dialog({ title:"¿Traer los viajes de la copia?", body:`<p class="dlg-file">${esc(file.name)}</p>${keyNote}<p>Ya tenés todos estos vuelos. La copia agrupa ${tripUpd.length} de ellos en ${nT} ${nT === 1 ? "viaje" : "viajes"}: <b>${esc([...new Set(tripUpd.map(f => f.trip))].slice(0, 4).join(", "))}</b>.</p>`,
       okText:"Traer viajes", onOk: async () => { try { await updateMany(tripUpd); toast("Viajes actualizados"); } catch { toast("No se pudo actualizar. Probá de nuevo."); } if ($(".settings")) openSettings(); } });
   }
   if (!fresh.length && !nP) {
     const have = [list.length ? (list.length === 1 ? "el vuelo" : `los ${flTxt(list.length)}`) : "", nPlCopy ? (nPlCopy === 1 ? "el lugar" : `los ${plTxt(nPlCopy)}`) : ""].filter(Boolean).join(" y ");
-    return dialog({ title:"Nada para restaurar", body:`<p>Ya tenés ${have} de <b>${esc(file.name)}</b>.</p>`, cancelText:"Aceptar" });
+    return dialog({ title:keyNote ? "Clave agregada" : "Nada para restaurar", body:`${keyNote}<p>Ya tenés ${have} de <b>${esc(file.name)}</b>.</p>`, cancelText:"Aceptar" });
   }
   const dup = list.length - fresh.length;
   const what = [fresh.length ? (fresh.length === 1 ? "el vuelo nuevo" : `los ${fresh.length} vuelos nuevos`) : "", nP ? (nP === 1 ? "el lugar nuevo" : `los ${nP} lugares nuevos`) : ""].filter(Boolean).join(" y ");
@@ -5212,7 +5223,7 @@ $("#imp-file").addEventListener("change", async e => {
     title:"¿Restaurar la copia?",
     body:`<p class="dlg-file">${esc(file.name)}</p>
       <div class="dlg-stats">${fresh.length || !nP ? `<div><b>${fresh.length}</b><span>${fresh.length === 1 ? "vuelo nuevo" : "vuelos nuevos"}</span></div>` : ""}${nP ? `<div><b>${nP}</b><span>${nP === 1 ? "lugar nuevo" : "lugares nuevos"}</span></div>` : ""}${dup ? `<div><b>${dup}</b><span>${dup === 1 ? "vuelo ya guardado" : "vuelos ya guardados"}</span></div>` : ""}${range && fresh.length ? `<div><b>${esc(range)}</b><span>años</span></div>` : ""}</div>
-      <p>Se van a agregar ${what}. No se borra ni se cambia nada de lo que ya tenés.</p>`,
+      <p>Se van a agregar ${what}. No se borra ni se cambia nada de lo que ya tenés.</p>${keyNote}`,
     okText:"Restaurar",
     onOk: async () => {
       try {
@@ -5367,7 +5378,7 @@ function openSettings() {
     <div class="qacts">
       <button class="qbtn" type="button" id="set-export" ${n || PLACES.length ? "" : "disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Descargar copia</span></button>
       <label class="qbtn" for="imp-file" role="button" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg><span>Restaurar copia</span></label>
-      <button class="qbtn" type="button" id="set-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Actualizar app</span></button>
+      <button class="qbtn" type="button" id="set-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="spin"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></g></svg><span>Actualizar app</span></button>
     </div>
     <div class="box"><h4>Copia de seguridad</h4>
       <p class="hint">${n} ${n === 1 ? "vuelo guardado" : "vuelos guardados"}. ${where} <b class="${!lb || days > 30 ? "warn" : ""}">${when}</b></p>
@@ -5379,7 +5390,8 @@ function openSettings() {
     <div class="box"><h4>Búsqueda de vuelos</h4>
       <label class="f">Clave de AeroDataBox (RapidAPI)<input id="set-adb" class="adbkey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Pegá tu clave acá" value="${esc(adbKey())}"></label>
       <p class="hint">${adbKey() ? `<b class="ontime">Activada.</b> Al escribir número y fecha se completan los horarios programados y reales, la demora, el avión y la matrícula.` : "Sin clave, solo se completan la ruta y la aerolínea."}
-      Para obtenerla: creá una cuenta gratis en <a href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox" target="_blank" rel="noopener" style="color:var(--accent-text)">RapidAPI</a>, suscribite al plan gratuito de AeroDataBox y copiá tu clave (X-RapidAPI-Key). Se guarda solo en este dispositivo: no va al repositorio ni a las copias.</p>
+      Para obtenerla: creá una cuenta gratis en <a href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox" target="_blank" rel="noopener" style="color:var(--accent-text)">RapidAPI</a>, suscribite al plan gratuito de AeroDataBox y copiá tu clave (X-RapidAPI-Key). Se guarda en este dispositivo${keyInBackup() ? " y viaja dentro de tus copias de seguridad: al restaurar una copia en otro dispositivo, la clave se agrega sola" : ""}. Nunca se sube a la web de la app.</p>
+      <label class="chk"><input type="checkbox" id="set-adb-bk" ${keyInBackup() ? "checked" : ""}> Incluir la clave en las copias de seguridad</label>
       ${adbKey() ? `<div class="acts"><button class="btn" type="button" id="set-adb-del">Quitar clave</button></div>` : ""}
     </div>
     <div class="box"><h4>Apariencia</h4>
