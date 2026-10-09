@@ -1025,6 +1025,22 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
 .ac-row b{font-weight:600;text-align:right}
 .ac-row small{color:var(--muted);font-weight:500}
 .aptcard .btn{margin-top:8px;justify-content:center}
+.brand .mark{background:linear-gradient(160deg,color-mix(in srgb,#0087E0 72%,#fff),color-mix(in srgb,#0087E0 85%,#000))!important;color:#fff!important}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .brand .mark{background:#000!important;color:#0087E0!important}}
+:root[data-theme="dark"] .brand .mark{background:#000!important;color:#0087E0!important}
+/* trip notes and tags */
+.tmeta{display:flex;flex-direction:column;gap:12px;background:var(--surface);border-radius:16px;padding:14px}
+.tmeta .lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tm-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent-text);background:color-mix(in srgb,var(--accent) 13%,transparent);border-radius:999px;padding:4px 6px 4px 10px}
+.tag button{border:0;background:transparent;color:inherit;font-size:15px;line-height:1;padding:0 2px;cursor:pointer;opacity:.7}
+.tm-chips input{flex:1;min-width:130px;border:0;background:var(--surface-2);border-radius:999px;padding:6px 12px;font-size:14px;color:var(--ink)}
+.tm-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tm-sug button{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:3px 9px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.tmeta textarea{width:100%;min-height:96px;margin-top:6px;border:0;background:var(--surface-2);border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);resize:vertical}
+.tmeta .saved{font-size:12px;color:var(--muted);min-height:1em}
+.ttags{display:inline-flex;gap:4px;flex-wrap:wrap;margin-left:2px}
+.ttags i{font-style:normal;font-size:11px;font-weight:600;color:var(--accent-text);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:999px;padding:1px 7px;white-space:nowrap}
 </style>
 
 </head>
@@ -1149,7 +1165,8 @@ const PLANE_D = "M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V2
 function iconPNG(mode, size) {
   const c = document.createElement("canvas"); c.width = c.height = size; const x = c.getContext("2d");
   const g = x.createLinearGradient(0, 0, size * .4, size);
-  g.addColorStop(0, mix(ACCENT, "#ffffff", mode === "dark" ? .3 : .25)); g.addColorStop(1, mix(ACCENT, "#000000", mode === "dark" ? .05 : .15));
+  const IC = "#0087E0";   // the app icon keeps its own blue, whatever colour is chosen in Settings
+  g.addColorStop(0, mix(IC, "#ffffff", mode === "dark" ? .3 : .25)); g.addColorStop(1, mix(IC, "#000000", mode === "dark" ? .05 : .15));
   if (mode === "dark") { x.fillStyle = "#000"; x.fillRect(0, 0, size, size); }
   else { x.fillStyle = g; x.fillRect(0, 0, size, size); }
   x.save(); x.translate(size / 2, size / 2); x.rotate(Math.PI / 4); const k = size * .74 / 24; x.scale(k, k); x.translate(-12, -12);
@@ -1774,7 +1791,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261007024848";
+const BUILD = "20261009030035";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const hasLogo = code => !!code && LOGO_CODES.has(code);
 function alIcon(code, name, size) {
@@ -2026,7 +2043,7 @@ function renderList() {
       const legs = tm.get(f.trip) || [];
       // every box gets the trip title (a trip can be split by another flight or by the change of year)
       const part = j - i < legs.length ? `${j - i} de ${legs.length} vuelos` : `${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"}`;
-      const head = `<button type="button" class="tripttl" data-tripview="${esc(f.trip)}"><b>${esc(f.trip)}</b><small>${part}${legs.length ? " · " + esc(shortDate(legs[0])) + (legs.length > 1 ? " – " + esc(shortDate(legs[legs.length - 1])) : "") : ""}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
+      const head = `<button type="button" class="tripttl" data-tripview="${esc(f.trip)}"><b>${esc(f.trip)}</b>${tagChips(f.trip)}<small>${part}${legs.length ? " · " + esc(shortDate(legs[0])) + (legs.length > 1 ? " – " + esc(shortDate(legs[legs.length - 1])) : "") : ""}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
       out += `<div class="tripbox">${head}${list.slice(i, j).map(x => flightRow(x, fw)).join("")}</div>`;
       i = j;
     }
@@ -2105,10 +2122,51 @@ async function saveTrip(oldName, newName, ids) {
     const byId = new Map(changed.map(f => [f.id, f]));
     const arr = lsRead().map(x => byId.has(x.id) ? { id:x.id, ...clean(byId.get(x.id)) } : x);
     if (!lsWrite(arr)) throw { code:"local" };
-    S.real = arr; render();
+    S.real = arr;
   }
+  if (oldName && oldName !== newName && TRIPMETA[oldName]) {
+    const om = TRIPMETA[oldName]; delete TRIPMETA[oldName];
+    if (newName) { const nm = tripMeta(newName); setTripMeta(newName, { notes:[nm.notes, om.notes].filter(x => x && x.trim()).join("\n\n"), tags:[...nm.tags, ...om.tags] }); }
+    else setTripMeta("__none__", {});
+  }
+  if (S.storage !== "db") render();
   return changed.length;
 }
+const TRIPMETA_KEY = "flights-trips";
+let TRIPMETA = (() => { try { return JSON.parse(localStorage.getItem(TRIPMETA_KEY) || "{}") || {}; } catch { return {}; } })();
+const tripMeta = n => TRIPMETA[n] || { notes:"", tags:[] };
+function setTripMeta(n, m) {
+  const tags = [...new Set((m.tags || []).map(t => String(t).trim()).filter(Boolean))].slice(0, 20), notes = String(m.notes || "").slice(0, 5000);
+  if (!notes.trim() && !tags.length) delete TRIPMETA[n]; else TRIPMETA[n] = { notes, tags };
+  try { localStorage.setItem(TRIPMETA_KEY, JSON.stringify(TRIPMETA)); } catch {}
+}
+const allTags = () => { const c = new Map(); for (const [n, m] of Object.entries(TRIPMETA)) for (const t of m.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c].sort((a, b) => b[1] - a[1]).map(e => e[0]); };
+const tagChips = n => { const t = tripMeta(n).tags; return t.length ? `<span class="ttags">${t.slice(0, 4).map(x => `<i>${esc(x)}</i>`).join("")}</span>` : ""; };
+function tripMetaHTML(n) {
+  const m = tripMeta(n), sug = allTags().filter(t => !m.tags.includes(t)).slice(0, 8);
+  return `<div class="tmeta" data-trip="${esc(n)}">
+    <div><span class="lbl">Etiquetas</span><div class="tm-chips">${m.tags.map(t => `<span class="tag">${esc(t)}<button type="button" data-tagdel="${esc(t)}" aria-label="Quitar ${esc(t)}">×</button></span>`).join("")}<input id="tag-in" placeholder="Agregar etiqueta…" autocomplete="off" enterkeyhint="done" aria-label="Agregar etiqueta"></div>
+      ${sug.length ? `<div class="tm-sug">${sug.map(t => `<button type="button" data-tagadd="${esc(t)}">+ ${esc(t)}</button>`).join("")}</div>` : ""}</div>
+    <div><span class="lbl">Comentarios</span><textarea id="trip-notes" placeholder="Recuerdos, lugares, con quién fuiste…">${esc(m.notes)}</textarea><div class="saved" id="trip-saved"></div></div>
+  </div>`;
+}
+function bindTripMeta(n) {
+  const tin = $("#tag-in"), ta = $("#trip-notes"); if (!tin || !ta) return;
+  let busy = false;
+  const addTag = v => { if (busy) return; v = v.replace(/,/g, " ").trim(); tin.value = ""; if (!v) return; busy = true; const m = tripMeta(n); if (!m.tags.includes(v)) setTripMeta(n, { ...m, tags:[...m.tags, v] }); openDrill("trip", n); render(); setTimeout(() => $("#tag-in")?.focus(), 0); };
+  tin.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(tin.value); } });
+  tin.addEventListener("blur", () => { if (!busy && tin.isConnected && tin.value.trim()) setTimeout(() => addTag(tin.value), 0); });
+  let t; const save = () => { setTripMeta(n, { ...tripMeta(n), notes:ta.value }); const s = $("#trip-saved"); if (s) s.textContent = "Guardado"; };
+  ta.addEventListener("input", () => { clearTimeout(t); const s = $("#trip-saved"); if (s) s.textContent = ""; t = setTimeout(save, 500); });
+  ta.addEventListener("blur", () => { clearTimeout(t); save(); });
+}
+document.addEventListener("click", e => {
+  const d = e.target.closest && e.target.closest("[data-tagdel],[data-tagadd]"); if (!d) return;
+  const box = d.closest(".tmeta"); if (!box) return; const n = box.dataset.trip, m = tripMeta(n);
+  if (d.dataset.tagdel) setTripMeta(n, { ...m, tags:m.tags.filter(x => x !== d.dataset.tagdel) });
+  else if (!m.tags.includes(d.dataset.tagadd)) setTripMeta(n, { ...m, tags:[...m.tags, d.dataset.tagadd] });
+  openDrill("trip", n); render();
+});
 let tripEd = null;
 function openTripEditor(name, seedId) {
   const members = new Set(name ? (tripMap().get(name) || []).map(f => f.id) : []);
@@ -2206,7 +2264,7 @@ function drawSearch() {
   const res = [];
   // trips
   const tm = tripMap();
-  res.push(["Viajes", [...tm.keys()].filter(n => hit(norm(n))).map(n => sitem("trip", n, "✈︎", n, tripSub(n)))]);
+  res.push(["Viajes", [...tm.keys()].filter(n => hit(norm([n, ...tripMeta(n).tags, tripMeta(n).notes].join(" ")))).map(n => sitem("trip", n, "✈︎", n, [tripSub(n), tripMeta(n).tags.join(", ")].filter(Boolean).join(" · ")))]);
   // countries
   const cc = new Map(); for (const f of fl) for (const c of new Set([f.from?.cc, f.to?.cc])) if (c) cc.set(c, (cc.get(c) || 0) + 1);
   res.push(["Países", [...cc].filter(([c]) => hit(norm(country(c) + " " + c))).sort((a, b) => b[1] - a[1]).map(([c, n]) => sitem("country", c, `<span class="fl-ic" aria-hidden="true">${flag(c)}</span>`, country(c), cnt(n)))]);
@@ -2317,9 +2375,11 @@ function openDrill(kind, key) {
     ${S.listBack ? `<button type="button" class="backbtn" data-list="${S.listBack}">‹ ${esc(LIST_TITLE[S.listBack])}</button>` : ""}
     <div class="hd">${icon}<div class="dtt"><small>${DRILL_LABEL[kind]}${S.year !== "all" && kind !== "trip" ? " · " + esc(S.year) : ""}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div>${kind === "trip" ? `<button class="btn" type="button" data-tripedit="${esc(key)}">Editar</button>` : ""}<button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     <div class="dstats"><div><b>${list.length}</b><span>${list.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${fmt(km)}</b><span>km</span></div><div><b>${fmt(Math.round(mins / 60))}</b><span>horas</span></div><div><b>${yrs.length > 1 ? esc(yrs[0]) + "–" + esc(yrs[yrs.length - 1].slice(2)) : esc(yrs[0] || "—")}</b><span>${yrs.length > 1 ? "años" : "año"}</span></div></div>
+    ${kind === "trip" ? tripMetaHTML(key) : ""}
     <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
   </div></div>`;
   markLogos($("#sheet-root"));
+  if (kind === "trip") bindTripMeta(key);
 }
 function count(arr) { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m.entries()].sort((a, b) => b[1] - a[1]); }
 
@@ -2376,7 +2436,7 @@ function renderStats() {
   const topAl = count(past.map(alKey));
   const topAc = count(past.map(f => f.aircraft));
   { const tm = [...tripMap().entries()].sort((a, b) => b[1].length - a[1].length || b[1][0].depT - a[1][0].depT);   // most flights first
-    html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.map(([n, l]) => `<li><button type="button" class="rk" data-tripview="${esc(n)}"><div class="nm"><span><b>${esc(n)}</b></span><small>${esc(shortDate(l[0]))}${l.length > 1 ? " – " + esc(shortDate(l[l.length - 1])) : ""} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>`
+    html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.map(([n, l]) => `<li><button type="button" class="rk" data-tripview="${esc(n)}"><div class="nm"><span><b>${esc(n)}</b> ${tagChips(n)}</span><small>${esc(shortDate(l[0]))}${l.length > 1 ? " – " + esc(shortDate(l[l.length - 1])) : ""} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>`
       : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`); }
   html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
   const noAc = past.filter(f => !f.aircraft).length;
@@ -3017,7 +3077,7 @@ async function saveMany(list) {
 
 /* ---------- export / import file ---------- */
 async function exportBackup() {
-  const data = JSON.stringify({ app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), flights:S.real.map(({ id, ...f }) => f) }, null, 2);
+  const data = JSON.stringify({ app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), trips:TRIPMETA, flights:S.real.map(({ id, ...f }) => f) }, null, 2);
   if (!S.real.length) return toast("Todavía no hay vuelos propios para exportar.");
   const filename = `flights-${today()}.json`;
   if (!S.downloads) {
@@ -3052,6 +3112,10 @@ $("#imp-file").addEventListener("change", async e => {
   let list;
   try {
     const j = JSON.parse(await file.text());
+    if (j && j.trips && typeof j.trips === "object") {     // trip notes and tags travel with the copy (merged, nothing is lost)
+      for (const [n, m] of Object.entries(j.trips)) { const cur = tripMeta(n); setTripMeta(n, { notes:cur.notes && cur.notes.trim() ? cur.notes : (m.notes || ""), tags:[...cur.tags, ...(m.tags || [])] }); }
+      render();
+    }
     list = (Array.isArray(j) ? j : j.flights || []).filter(f => f && f.from && f.to && f.date && validApt(f.from) && validApt(f.to));
   } catch {
     return dialog({ title:"No se pudo leer el archivo", body:"<p>Tiene que ser una copia <b>.json</b> descargada desde Flights.</p>", cancelText:"Aceptar" });
