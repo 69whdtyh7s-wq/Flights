@@ -88,6 +88,7 @@ button{cursor:pointer}
 .map .grat{fill:none;stroke:var(--grat);stroke-width:.6}
 .map .land{fill:var(--land);stroke:var(--sea);stroke-width:.5}
 .map .land.visited{fill:var(--land-visited)}
+.map .land.under{display:none}
 .map .arc{fill:none;stroke-linecap:round}
 .map .arc.past{stroke:var(--route)}
 .map .arc.up{stroke:var(--sky);stroke-dasharray:5 5}
@@ -1816,7 +1817,7 @@ function redrawGeo() {
   gLayer.select(".sphere").attr("d", geoPath({ type:"Sphere" }));
   if (mapView === "globo") { const [cx, cy] = proj.translate(); gLayer.select(".atmo").attr("cx", cx).attr("cy", cy).attr("r", proj.scale() * 1.11); }
   gLayer.select(".grat").attr("d", geoPath(d3.geoGraticule10()));
-  if (!updateLOD(true)) gLayer.select(".lands").selectAll("path").attr("d", geoPath);
+  if (!updateLOD(true)) gLayer.selectAll(".lands path, .lands-hi path").attr("d", geoPath);
   drawBorders();
   renderMap();
   scheduleRaster(dragging);
@@ -1891,6 +1892,7 @@ function initMap() {
   satImg = gLayer.append("image").attr("class","sat").attr("x", 0).attr("y", 0).attr("width", W).attr("height", H).attr("preserveAspectRatio", "none").style("display", "none");
   gLayer.append("path").attr("class","grat").attr("vector-effect","non-scaling-stroke").attr("d", geoPath(d3.geoGraticule10()));
   gLayer.append("g").attr("class","lands");
+  gLayer.append("g").attr("class","lands-hi");
   gLayer.append("path").attr("class","bord").attr("vector-effect","non-scaling-stroke");
   gLayer.append("path").attr("class","bord-v").attr("vector-effect","non-scaling-stroke");
   gArcs = gLayer.append("g"); gApts = svgSel.append("g").attr("class","aptlayer"); gPlc = svgSel.append("g").attr("class","plclayer");
@@ -1934,28 +1936,52 @@ function loadHi() {
 function updateLOD(geoChanged) {
   if (!gLayer || !svgSel) return false;
   const globe = mapView === "globo";
-  let w = globe && dragging ? (WORLD_LO || world) : (WORLD_MID || WORLD_LO || world), feats = null, box = null;
+  const base = globe && dragging ? (WORLD_LO || world) : (WORLD_MID || WORLD_LO || world);
+  let feats = null, box = null;
   const rr = svgSel.node().getBoundingClientRect(), ex0 = zoom.extent().call(svgSel.node()), pxu = rr.width ? rr.width / (ex0[1][0] - ex0[0][0]) : 1;
   if (!globe && curK * pxu >= HI_K) {   // by real size on screen, so a phone (map stretched to fill it) switches earlier
     if (!WORLD_HI) loadHi();
     else {
-      w = WORLD_HI;
       const t = d3.zoomTransform(svgSel.node()), ext = zoom.extent().call(svgSel.node());
       const x0 = (ext[0][0] - t.x) / t.k, x1 = (ext[1][0] - t.x) / t.k, y0 = (ext[0][1] - t.y) / t.k, y1 = (ext[1][1] - t.y) / t.k;
-      const mx = (x1 - x0) * .6, my = (y1 - y0) * .6, pts = [];
+      const mx = (x1 - x0) * 1.2, my = (y1 - y0) * 1.2, pts = [];
       for (const fx of [0, .5, 1]) for (const fy of [0, .5, 1]) { const q = proj.invert([x0 - mx + fx * (x1 - x0 + 2 * mx), y0 - my + fy * (y1 - y0 + 2 * my)]); if (q && isFinite(q[0]) && isFinite(q[1])) pts.push(q); }
       if (pts.length) {
         box = [Math.min(...pts.map(q => q[0])), Math.min(...pts.map(q => q[1])), Math.max(...pts.map(q => q[0])), Math.max(...pts.map(q => q[1]))];
         if (box[2] - box[0] > 300) box = null;
       }
-      if (box) feats = w.features.filter(f => { const b = f._gb || (f._gb = d3.geoBounds(f)); return b[0][0] > b[1][0] || !(b[1][0] < box[0] || b[0][0] > box[2] || b[1][1] < box[1] || b[0][1] > box[3]); });
+      feats = box ? WORLD_HI.features.filter(f => { const b = f._gb || (f._gb = d3.geoBounds(f)); return b[0][0] > b[1][0] || !(b[1][0] < box[0] || b[0][0] > box[2] || b[1][1] < box[1] || b[0][1] > box[3]); }) : WORLD_HI.features;
     }
   }
-  const key = (w && w.id) + "|" + (box ? box.map(v => Math.round(v * 2)).join(",") : "all") + "|" + mapView;
-  if (!geoChanged && key === lodKey && world === w) return true;
+  const key = (base && base.id) + "|" + (feats ? (box ? box.map(v => Math.round(v * 2)).join(",") : "allhi") : "none") + "|" + mapView;
+  if (!geoChanged && key === lodKey) return true;
   lodKey = key;
-  useWorld(w, feats, box, true);
+  setBase(base, geoChanged);
+  setHi(feats, box);
   return true;
+}
+/* the whole world is always drawn (medium detail); when zoomed in, the detailed shapes of the countries near the screen go on top.
+   So nothing ever disappears while panning: past the detailed area you just see the medium version until the gesture ends */
+let BASE = null;
+function setBase(w, force) {
+  if (!w) return;
+  if (BASE !== w || force) {
+    BASE = w;
+    gLayer.select(".lands").selectAll("path").data(w.features).join("path")
+      .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : "")).attr("d", geoPath);
+    if (!w.borders) { const keep = world; world = w; buildBorders(); w.borders = BORDERS; world = keep; }
+  }
+}
+function setHi(feats, box) {
+  const hi = gLayer.select(".lands-hi"), on = !!(feats && feats.length);
+  hi.selectAll("path").data(on ? feats : [], d => d.id + "|" + (d.cc || "") + "|" + (d._i ??= Math.random())).join("path")
+    .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : "")).attr("d", geoPath);
+  const covered = new Set(on ? feats.map(f => f.cc).filter(Boolean) : []);
+  gLayer.select(".lands").selectAll("path").classed("under", d => !!d.cc && covered.has(d.cc));
+  world = on ? WORLD_HI : BASE;
+  const bb = box || [-180, -90, 180, 90], inBox = b => !(b.bb[2] < bb[0] || b.bb[0] > bb[2] || b.bb[3] < bb[1] || b.bb[1] > bb[3]);
+  BORDERS = on ? WORLD_HI.borders.filter(inBox).concat(box ? BASE.borders.filter(b => !inBox(b)) : []) : BASE.borders;
+  drawBorders();
 }
 let WORLD_N = 0;
 function makeWorld(raw) {
@@ -1966,15 +1992,7 @@ function makeWorld(raw) {
   return { id:++WORLD_N, type:"FeatureCollection", borders, features: raw.map(([id, coords]) => ({ type:"Feature", id, cc: /^[A-Z]{2}$/.test(id) ? id : (ISO_N2A[id] || null), properties:{}, geometry:{ type:"MultiPolygon", coordinates:coords } })) };
 }
 /* the light map while the globe is being turned, the detailed one the rest of the time */
-function useWorld(w, feats, box, force) {
-  if (!w || (!force && world === w && gLayer.select(".lands").selectAll("path").size())) return;
-  world = w;
-  gLayer.select(".lands").selectAll("path").data(feats || world.features).join("path")
-    .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : "")).attr("d", geoPath);
-  if (!w.borders) { const keep = world; buildBorders(); w.borders = BORDERS; world = keep; }
-  BORDERS = box ? w.borders.filter(b => !(b.bb[2] < box[0] || b.bb[0] > box[2] || b.bb[3] < box[1] || b.bb[1] > box[3])) : w.borders;
-  drawBorders();
-}
+function useWorld(w) { setBase(w, true); setHi(null, null); }
 const ISO_N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","31":"AZ","32":"AR","36":"AU","40":"AT","44":"BS","50":"BD","51":"AM","56":"BE","64":"BT","68":"BO","70":"BA","72":"BW","76":"BR","84":"BZ","90":"SB","96":"BN","100":"BG","104":"MM","108":"BI","112":"BY","116":"KH","120":"CM","124":"CA","140":"CF","144":"LK","148":"TD","152":"CL","156":"CN","158":"TW","170":"CO","178":"CG","180":"CD","188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","204":"BJ","208":"DK","214":"DO","218":"EC","222":"SV","226":"GQ","231":"ET","232":"ER","233":"EE","238":"FK","242":"FJ","246":"FI","250":"FR","254":"GF","260":"TF","262":"DJ","266":"GA","268":"GE","270":"GM","275":"PS","276":"DE","288":"GH","300":"GR","304":"GL","320":"GT","324":"GN","328":"GY","332":"HT","340":"HN","348":"HU","352":"IS","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","384":"CI","388":"JM","392":"JP","398":"KZ","400":"JO","404":"KE","408":"KP","410":"KR","414":"KW","417":"KG","418":"LA","422":"LB","426":"LS","428":"LV","430":"LR","434":"LY","440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","466":"ML","478":"MR","484":"MX","496":"MN","498":"MD","499":"ME","504":"MA","508":"MZ","512":"OM","516":"NA","524":"NP","528":"NL","540":"NC","548":"VU","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","624":"GW","626":"TL","630":"PR","634":"QA","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","688":"RS","694":"SL","703":"SK","704":"VN","705":"SI","706":"SO","710":"ZA","716":"ZW","724":"ES","728":"SS","729":"SD","732":"EH","740":"SR","748":"SZ","752":"SE","756":"CH","760":"SY","762":"TJ","764":"TH","768":"TG","780":"TT","784":"AE","788":"TN","792":"TR","795":"TM","800":"UG","804":"UA","807":"MK","818":"EG","826":"GB","834":"TZ","840":"US","854":"BF","858":"UY","860":"UZ","862":"VE","887":"YE","894":"ZM"};
 /* land borders only (edges shared by two countries), so coastlines are not outlined */
 let BORDERS = [], visitedCC = new Set(), gPlc = null;
@@ -2116,7 +2134,7 @@ function renderMap() {
     }
   }
   if (visited.has("AR")) visited.add("FK");   // Islas Malvinas shaded together with Argentina (map only)
-  gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc));
   const vkey = [...visited].sort().join(",");
   if (vkey !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
   const selIds = S.open ? [S.open] : S.focusIds;
@@ -2152,7 +2170,7 @@ function renderPlacesMap() {
   const ps = placesShown();
   const visited = new Set(ps.map(p => p.cc).filter(Boolean));
   if (visited.has("AR")) visited.add("FK");
-  gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc));
   if ([...visited].sort().join(",") !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
   const sel = S.openPlace, group = !sel && S.placeSet ? S.placeSet : null;   // one place selected, or a group from the search (a country, a continent)
   const isSel = p => p.id === sel || (group && group.has(p.id));
@@ -2229,7 +2247,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009110324";
+const BUILD = "202610091110";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
