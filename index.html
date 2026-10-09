@@ -936,12 +936,12 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 :root{--place:#F2840F}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--place:#FF9F0A}}
 :root[data-theme="dark"]{--place:#FF9F0A}
-.map .plc{fill:#fff;stroke:var(--place);stroke-width:1.6px;cursor:pointer}
+.map .plc{fill:#fff;stroke:var(--route);stroke-width:1.6px;cursor:pointer}
 .map .plc.dim,.map .plcl.dim{opacity:.5}
-#mapcard[data-type="satelite"] .map .plc,#mapcard[data-type="noche"] .map .plc{fill:var(--place);stroke:#fff}
+#mapcard[data-type="satelite"] .map .plc,#mapcard[data-type="noche"] .map .plc{fill:var(--route);stroke:#fff}
 .map .plcl{font-family:var(--f-body);font-weight:600;font-size:9.5px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 #mapcard[data-type="satelite"] .map .plcl,#mapcard[data-type="noche"] .map .plcl{fill:#fff;stroke:rgba(0,0,0,.6)}
-.legend i.pl{width:10px;height:10px;border:2px solid var(--place);border-radius:50%;background:#fff;box-sizing:border-box}
+.legend i.pl{width:10px;height:10px;border:2px solid var(--route);border-radius:50%;background:#fff;box-sizing:border-box}
 .mapfoot .layerseg{margin-left:0;margin-right:auto}
 @media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
 .mapctl #z-layer.on{color:var(--place)!important}
@@ -985,7 +985,7 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .plc-gh > span:last-child{margin-left:auto;color:var(--muted);font-weight:600}
 .plc-row{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:9px 14px;border-top:1px solid var(--line);color:var(--ink)}
 .plc-row:hover,.plc-row.on{background:color-mix(in srgb,var(--place) 9%,var(--surface-2))}
-.plc-dot{width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--place);box-sizing:border-box}
+.plc-dot{width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--route);box-sizing:border-box}
 .plc-t{display:flex;flex-direction:column;min-width:0}
 .plc-t b{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plc-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
