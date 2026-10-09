@@ -944,6 +944,11 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .mapfoot .layerseg{margin-left:0;margin-right:auto}
 @media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
 .mapctl #z-layer.on{color:var(--place)!important}
+.calopts{display:grid;gap:8px;margin:12px 0 2px}
+.calopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:14px;background:var(--fill);color:var(--ink);padding:12px 14px;font:inherit;cursor:pointer}
+.calopt svg{width:22px;height:22px;flex:none;color:var(--accent)}
+.calopt b{display:block;font-size:15.5px;font-weight:600}.calopt small{display:block;font-size:12.5px;color:var(--muted)}
+.calopt:active{transform:scale(.98)}
 .dlg-list{margin:6px 0 10px;padding-left:18px;text-align:left}.dlg-list li{margin:3px 0}
 .plc-all{float:right;border:0;background:transparent;color:var(--accent);font:inherit;font-weight:600;padding:0}
 .plc-edit{margin-left:auto;border:0;background:transparent;color:var(--accent);font:inherit;font-size:16px;font-weight:600;padding:6px 2px}
@@ -2282,7 +2287,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091250";
+const BUILD = "202610091254";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4777,7 +4782,7 @@ async function exportBackup() {
   try { await S.downloads.save({ filename, data }); markBackup(); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo descargar el archivo."); }
 }
 /* ---------- add a flight to the calendar (.ics: Apple Calendar, Google Calendar, Outlook) ---------- */
-function flightICS(f) {
+function flightICS(f, raw) {
   const esc2 = t => String(t || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
   const utc = ms => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const enc = new TextEncoder();
@@ -4801,11 +4806,13 @@ function flightICS(f) {
     f.status === "cancelled" && "Estado: cancelado", f.status === "diverted" && "Estado: desviado",
     f.notes && `Notas: ${f.notes}`,
   ].filter(x => x !== false && x != null && x !== undefined).join("\n").replace(/\n{3,}/g, "\n\n");
+  const summary = `✈︎ ${num ? num + " " : ""}${f.from?.city || f.from?.iata || ""} → ${f.to?.city || f.to?.iata || ""}`;
+  if (raw) return { summary, location:aptLine(f.from), desc };
   const d8 = (date, add = 0) => { const d = new Date(date + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + add); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
   const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Flights//Bitacora de vuelos//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
     `UID:${f.id || "f" + f.date}-${(num || "vuelo").replace(/\W/g, "")}@flights`, `DTSTAMP:${utc(Date.now())}`,
     ...(timed ? [`DTSTART:${utc(f.depT)}`, `DTEND:${utc(Math.max(f.arrT, f.depT + 30 * 60000))}`] : [`DTSTART;VALUE=DATE:${d8(f.date)}`, `DTEND;VALUE=DATE:${d8(f.date, 1)}`]),
-    `SUMMARY:${esc2(`✈︎ ${num ? num + " " : ""}${f.from?.city || f.from?.iata || ""} → ${f.to?.city || f.to?.iata || ""}`)}`,
+    `SUMMARY:${esc2(summary)}`,
     `LOCATION:${esc2(aptLine(f.from))}`,
     ...(validApt(f.from) ? [`GEO:${(+f.from.lat).toFixed(5)};${(+f.from.lon).toFixed(5)}`] : []),
     `DESCRIPTION:${esc2(desc)}`, "TRANSP:OPAQUE", "CATEGORIES:Vuelo",
@@ -4814,12 +4821,47 @@ function flightICS(f) {
     "END:VEVENT", "END:VCALENDAR"];
   return L.map(fold).join("\r\n") + "\r\n";
 }
-async function addToCalendar(id) {
+function googleCalURL(f) {
+  const utc = ms => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const d8 = (date, add = 0) => { const d = new Date(date + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + add); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
+  const ev = flightICS(f, true);
+  const timed = !!f.dep && Number.isFinite(f.depT);
+  const dates = timed ? `${utc(f.depT)}/${utc(Math.max(f.arrT, f.depT + 30 * 60000))}` : `${d8(f.date)}/${d8(f.date, 1)}`;
+  return "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text:ev.summary, dates, details:ev.desc, location:ev.location }).toString();
+}
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+function addToCalendar(id) {
   const f = all().find(x => x.id === id); if (!f) return;
-  const data = flightICS(f), filename = `vuelo-${(f.num || "sin-numero").toLowerCase()}-${f.date}.ics`;
-  if (S.downloads) { try { await S.downloads.save({ filename, data, mimeType:"text/calendar" }); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo crear el evento."); } return; }
-  if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
-    // iPhone/iPad: opening the event shows the system "Add to Calendar" window with every detail
+  const ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>';
+  dialog({ title:"Agregar al calendario", body:`<p>${esc(f.num || "Vuelo")} · ${esc(f.from?.iata || "")} → ${esc(f.to?.iata || "")} · ${esc(niceDate(f.date))}</p>
+    <div class="calopts"><button type="button" class="calopt" data-calgo="ics">${ico}<span><b>${IS_IOS ? "Calendario del iPhone" : "Calendario"}</b><small>${IS_IOS ? "Apple Calendar, con avisos" : "Apple Calendar, Outlook… (archivo .ics)"}</small></span></button>
+    <button type="button" class="calopt" data-calgo="google">${ico}<span><b>Google Calendar</b><small>Se abre con todo completado</small></span></button></div>`, cancelText:"Cancelar", icon:ico.replace('stroke-width="2"', 'stroke-width="2.2"') });
+  document.querySelectorAll("#dialog-root [data-calgo]").forEach(b => b.onclick = () => { document.getElementById("dialog-root").innerHTML = ""; (b.dataset.calgo === "google" ? calGoogle : calICS)(f); });
+}
+function calGoogle(f) {
+  const u = googleCalURL(f);
+  const a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener"; document.body.append(a); a.click(); a.remove();
+}
+async function calICS(f) {
+  const data = flightICS(f), filename = `vuelo-${(f.num || "sin-numero").toLowerCase().replace(/[^a-z0-9]/g, "")}-${f.date}.ics`;
+  if (S.downloads) { try { await S.downloads.save({ filename, data }); toast("Evento descargado: abrilo para agregarlo a tu calendario"); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo crear el evento."); } return; }
+  if (IS_IOS) {
+    // iPhone/iPad: the app's own offline helper serves the event as a real .ics, which iOS opens in its "Add to Calendar" window
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller && window.caches) {
+        const path = new URL("evento/" + filename, location.href).pathname;
+        const c = await caches.open("flights-cal");
+        for (const k of await c.keys()) await c.delete(k);           // only the last event is kept, on this device
+        await c.put(path, new Response(data, { headers:{ "Content-Type":"text/calendar; charset=utf-8" } }));
+        location.href = path;
+        return;
+      }
+    } catch {}
+    // no offline helper (first visit, private mode): share the file; "Calendar" or "Save to Files" from there
+    try {
+      const file = new File([data], filename, { type:"text/calendar" });
+      if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ files:[file], title:filename }); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
     location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(data);
     return;
   }
@@ -4829,10 +4871,10 @@ async function addToCalendar(id) {
   toast("Evento descargado: abrilo para agregarlo a tu calendario");
 }
 /* small centred dialog (iOS alert style) */
-function dialog({ title, body, okText, cancelText = "Cancelar", onOk, busyText = "Restaurando…" }) {
+function dialog({ title, body, okText, cancelText = "Cancelar", onOk, busyText = "Restaurando…", icon }) {
   const root = document.getElementById("dialog-root");
   root.innerHTML = `<div class="dlg-scrim"><div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-b">
-    <div class="dlg-in"><span class="dlg-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/></svg></span><h3 id="dlg-t">${title}</h3><div id="dlg-b">${body}</div></div>
+    <div class="dlg-in"><span class="dlg-ic" aria-hidden="true">${icon || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>`}</span><h3 id="dlg-t">${title}</h3><div id="dlg-b">${body}</div></div>
     <div class="dlg-btns${okText ? "" : " one"}">${cancelText ? `<button type="button" id="dlg-no">${cancelText}</button>` : ""}${okText ? `<button type="button" id="dlg-ok" class="ok">${okText}</button>` : ""}</div>
   </div></div>`;
   const close = () => { root.innerHTML = ""; document.removeEventListener("keydown", onKey); };

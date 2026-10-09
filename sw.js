@@ -1,5 +1,5 @@
 // Flights service worker: the whole app works offline. It never stores flight data (that lives in the browser's localStorage).
-const CACHE = "flights-202610091250";          // this version's page
+const CACHE = "flights-202610091254";          // this version's page
 const STATIC = "flights-static-v1";      // logos, flags, map textures, airport lists, d3: kept across versions
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 const ASSETS = ["./d3.min.js", "./airports.json", "./airlines.json", "./world.json", "./world-mid.json", "./tex/earth-day.jpg", "./tex/earth-night.jpg"];
@@ -9,12 +9,17 @@ self.addEventListener("install", e => {
     caches.open(STATIC).then(c => Promise.all(ASSETS.map(u => c.match(u, { ignoreSearch:true }).then(hit => hit || c.add(u).catch(() => {}))))),
   ]).then(() => self.skipWaiting()));
 });
-self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== STATIC).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== STATIC && k !== "flights-cal").map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 const timeout = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error("timeout")), ms); p.then(r => { clearTimeout(t); ok(r); }, e => { clearTimeout(t); no(e); }); });
 self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // a calendar event made by the page (never leaves the device): served as a real .ics so iOS shows "Add to Calendar"
+  if (url.origin === self.location.origin && /\/evento\/[^/]+\.ics$/.test(url.pathname)) {
+    e.respondWith(caches.open("flights-cal").then(c => c.match(url.pathname)).then(hit => hit ? hit.text().then(t => new Response(t, { headers:{ "Content-Type":"text/calendar; charset=utf-8", "Content-Disposition":"inline; filename=\"" + url.pathname.split("/").pop() + "\"" } })) : fetch(req)));
+    return;
+  }
   if (req.mode === "navigate") { // newest page when online; the saved one when offline or the network is too slow
     e.respondWith(timeout(fetch(req, { cache:"no-cache" }), 4000).then(r => { if (r.ok) { const c = r.clone(); caches.open(CACHE).then(x => x.put("./index.html", c)); } return r; })
       .catch(() => caches.match("./index.html", { ignoreSearch:true }).then(hit => hit || caches.match("./", { ignoreSearch:true }))));
