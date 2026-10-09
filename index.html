@@ -730,6 +730,77 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* stats */
+.ssec{grid-column:1 / -1;margin:12px 4px -4px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ssec small{font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}
+.scard h3.hidden-h{display:none}
+.sic{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent-text);flex:none;align-self:center}
+.sic svg{width:17px;height:17px}
+.tiles6 > *{position:relative}
+.tiles6 .ti{display:block;width:22px;height:22px;color:var(--accent-text);margin-bottom:4px}
+.tiles6 .ti svg{width:22px;height:22px}
+.tiles6 button.tbtn{border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tiles6 button.tbtn:hover{background:var(--fill)}
+.tiles6 b{line-height:1.1}
+.pvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pvi{display:flex;align-items:center;gap:14px;background:var(--surface-2);border-radius:16px;padding:12px 14px;min-width:0}
+.pvic{position:relative;flex:none;width:58px;height:58px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent-text)}
+.pvic > span svg{width:28px;height:28px}
+.pvi.moon .pvic{background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}
+.pvi.sun .pvic{color:#E8A10C;background:color-mix(in srgb,#F5B829 16%,transparent)}
+.pring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.pring circle{fill:none;stroke-width:3}
+.pring .bg{stroke:color-mix(in srgb,currentColor 14%,transparent)}
+.pring .fg{stroke:currentColor;stroke-linecap:round}
+.pvt{display:flex;flex-direction:column;min-width:0}
+.pvt b{font-family:var(--f-round);font-size:26px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.pvt span{font-size:13.5px;font-weight:600}
+.pvt small{font-size:12px;color:var(--muted);margin-top:2px}
+.segm.sm{align-self:flex-start;max-width:280px;width:100%}
+.segm.sm button{padding:5px 8px;font-size:13px}
+.mbars{display:flex;align-items:flex-end;gap:4px;height:112px}
+.mb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%;min-width:0}
+.mb .bar{width:100%;max-width:26px;border-radius:6px 6px 2px 2px;background:color-mix(in srgb,var(--route) 45%,transparent);min-height:2px}
+.mb.top .bar{background:var(--route)}
+.mb .vv{font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.mb .yy{font-size:11px;font-weight:600;color:var(--muted)}
+.mb.now .yy{color:var(--accent-text)}
+.mb.top .vv{color:var(--ink)}
+.sbar{display:flex;height:14px;border-radius:999px;overflow:hidden;gap:2px}
+.sbar i,.slegend i{display:block}
+.p0{background:var(--route)}.p1{background:color-mix(in srgb,var(--route) 55%,transparent)}.p2{background:color-mix(in srgb,var(--route) 28%,transparent)}.p3{background:color-mix(in srgb,var(--ink) 25%,transparent)}
+.slegend{display:flex;flex-direction:column;gap:2px}
+.slegend > div{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.slegend > div:last-child{border-bottom:0}
+.slegend i{width:12px;height:12px;border-radius:4px}
+.slegend span{font-size:14px;display:flex;flex-direction:column}
+.slegend span small{font-size:11.5px;color:var(--muted)}
+.slegend b{font-family:var(--f-round);font-size:17px;font-weight:700;display:flex;align-items:baseline;gap:6px}
+.slegend b small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:600}
+.stabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px}
+.stabs::-webkit-scrollbar{display:none}
+.stabs button{flex:none;border:0;border-radius:999px;background:var(--fill);padding:7px 14px;font-weight:600;font-size:14px;color:var(--ink)}
+.stabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.recgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));column-gap:22px}
+.rec2{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;width:100%;font:inherit;color:var(--ink)}
+button.rec2{cursor:pointer}
+button.rec2:hover .rk2{color:var(--accent-text)}
+.rec2 .ri{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--surface-2);color:var(--accent-text)}
+.rec2 .ri svg{width:17px;height:17px}
+.rec2 .rk2{font-size:13.5px;color:var(--muted);font-weight:500}
+.rec2 b{display:flex;flex-direction:column;align-items:flex-end;font-weight:700;font-size:14.5px;text-align:right}
+.rec2 b small{font-size:12px;color:var(--muted);font-weight:500}
+.rec2 .chev-r{color:var(--muted)}
+.recs .rec2:last-child{border-bottom:0}
+.punct{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
+.pvic.big{width:110px;height:110px;background:transparent}
+.pvic.big b{font-family:var(--f-round);font-size:28px;font-weight:800}
+.pvic.big.ontime{color:var(--ok)}.pvic.big.late{color:var(--danger)}
+@media (max-width:560px){.punct{grid-template-columns:1fr;justify-items:center}.punct .recgrid{width:100%}}
+.flagrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.flagrow .more-n{font-size:12px;font-weight:600;color:var(--muted)}
+.nextbtn{border:0;background:transparent;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
+.nextbtn .chev-r{margin-left:auto;color:var(--muted)}
 /* year dropdown */
 .ydd{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 14px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer;white-space:nowrap}
 .ydd.on{background:var(--ink);color:var(--bg)}
@@ -1957,7 +2028,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009033956";
+const BUILD = "20261009034403";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2796,17 +2867,42 @@ function openDrill(kind, key) {
 }
 function count(arr) { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m.entries()].sort((a, b) => b[1] - a[1]); }
 
+/* ---------- stats ---------- */
+const SI = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${extra}>${d}</svg>`;
+const ICON = {
+  plane: SI('<path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>'),
+  globe: SI('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9M12 3c-2.6 2.6-3.8 5.6-3.8 9s1.2 6.4 3.8 9"/>'),
+  moon: SI('<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/><path d="M14.5 8.5v.01M17 11v.01"/>'),
+  clock: SI('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  speed: SI('<path d="M4.5 18a8.5 8.5 0 1 1 15 0"/><path d="m12 13 4-4"/><circle cx="12" cy="13" r="1.2"/>'),
+  tz: SI('<circle cx="12" cy="12" r="9"/><path d="M12 3v18M7.5 4.2C9 8 9 16 7.5 19.8M16.5 4.2C15 8 15 16 16.5 19.8"/>'),
+  ruler: SI('<rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10 8v4M13.5 8v3M17 8v4"/>'),
+  pin: SI('<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>'),
+  flag: SI('<path d="M5 21V4M5 4h11l-2 3.5L16 11H5"/>'),
+  tower: SI('<path d="M9 21l1-9h4l1 9M8 12h8M10 12V8h4v4M9 8l-1-3h8l-1 3M12 5V3"/>'),
+  ticket: SI('<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v8a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2z"/><path d="M14 6v12" stroke-dasharray="2 2"/>'),
+  trophy: SI('<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>'),
+  cal: SI('<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
+  chart: SI('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  seat: SI('<path d="M7 4v9a2 2 0 0 0 2 2h7l2 5M7 13h9M9 20h4"/>'),
+  sun: SI('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  star: SI('<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'),
+  compass: SI('<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>'),
+};
+const WEEKDAYS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"];
+const MON_SHORT = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 function renderStats() {
   const allF = all(), fl = filtered();
   const past = fl.filter(f => f.past), upAll = allF.filter(f => !f.past).sort((a, b) => a.depT - b.depT);
-  const card = (title, body, cls = "") => `<section class="scard ${cls}"><h3>${title}</h3>${body}</section>`;
+  const card = (title, body, cls = "", icon = "") => `<section class="scard ${cls}"><h3>${icon ? `<span class="sic">${ICON[icon]}</span>` : ""}${title}</h3>${body}</section>`;
+  const sec = (t, sub) => `<h3 class="ssec">${t}${sub ? `<small>${sub}</small>` : ""}</h3>`;
   let html = `<h2 class="stitle">Stats${S.year !== "all" ? ` <span>${esc(S.year)}</span>` : ""}</h2>`;
   const nx = upAll[0];
   if (nx) {
     const r = relDays(nx.depT), d = new Date(nx.depT);
-    html += card("Próximo vuelo", `<div class="next"><div class="cd">${r <= 0 ? "HOY" : r}<small>${r <= 0 ? "" : r === 1 ? "día" : "días"}</small></div>
+    html += card("Próximo vuelo", `<button type="button" class="next nextbtn" data-fopen="${esc(nx.id)}"><div class="cd">${r <= 0 ? "HOY" : r}<small>${r <= 0 ? "" : r === 1 ? "día" : "días"}</small></div>
       <div><div class="rt">${esc(nx.from?.city || nx.from?.iata)} → ${esc(nx.to?.city || nx.to?.iata)}</div>
-      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div></div></div>`, "wide");
+      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div></div><span class="chev-r" aria-hidden="true">›</span></button>`, "wide", "plane");
   }
   if (!past.length) {
     html += card("Todavía no hay datos", `<p class="hint">Cuando tengas vuelos volados ${S.year === "all" ? "" : "en " + esc(S.year) + " "}vas a ver acá el resumen, los rankings de aerolíneas, aeropuertos, rutas y aviones, y los países visitados.</p>`, "wide");
@@ -2815,66 +2911,138 @@ function renderStats() {
   const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
   const aptSet = new Set(), ccSet = new Set(), alSet = new Set();
   for (const f of past) { for (const a of [f.from, f.to]) if (a) { aptSet.add(a.iata); if (a.cc) ccSet.add(a.cc); } const k = alKey(f); if (k) alSet.add(k); }
-  const tile = (v, u, k, list) => list ? `<button type="button" class="tbtn" data-list="${list}"><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}<span class="chev-r" aria-hidden="true">›</span></span></button>` : `<div><b>${v}${u ? `<small>${u}</small>` : ""}</b><span>${k}</span></div>`;
-  html += card("Resumen", `<div class="tiles6">${tile(fmt(past.length), "", "vuelos")}${tile(km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "", "km recorridos")}${tile(fmt(Math.round(mins / 60)), "", "horas en el aire")}${tile(fmt(aptSet.size), "", "aeropuertos", "airport")}${tile(fmt(ccSet.size), "", "países", "country")}${tile(fmt(alSet.size), "", "aerolíneas", "airline")}</div>`, "phone-only");
-  html += card("En perspectiva", `<div class="fun">
-    <div><b>${fmt(km / 40075, 1)}</b><span>vueltas al mundo</span></div>
-    <div><b>${fmt(km / 384400 * 100, 1)}%</b><span>del camino a la Luna</span></div>
-    <div><b>${fmt(mins / 1440, 1)}</b><span>días en el aire</span></div>
-    <div><b>${fmt(km / past.length)}</b><span>km por vuelo</span></div>
-    <div><b>${(m => Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0"))(Math.round(mins / past.length))}</b><span>duración media</span></div>
-    <div><b>${fmt(past.filter(f => f.from?.cc && f.to?.cc && f.from.cc !== f.to.cc).length)}</b><span>internacionales</span></div></div>`, "wide");
+
+  /* ---- summary ---- */
+  html += sec("Resumen");
+  const tile = (icon, v, k, list) => `<${list ? `button type="button" class="tbtn" data-list="${list}"` : "div"}><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}${list ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</span></${list ? "button" : "div"}>`;
+  html += `<section class="scard wide"><div class="tiles6">${tile("plane", fmt(past.length), past.length === 1 ? "vuelo" : "vuelos")}${tile("ruler", km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "km recorridos")}${tile("clock", fmt(Math.round(mins / 60)), "horas en el aire")}${tile("tower", fmt(aptSet.size), "aeropuertos", "airport")}${tile("flag", fmt(ccSet.size), ccSet.size === 1 ? "país" : "países", "country")}${tile("ticket", fmt(alSet.size), alSet.size === 1 ? "aerolínea" : "aerolíneas", "airline")}</div></section>`;
+
+  /* ---- in perspective ---- */
+  const laps = km / 40075, moon = km / 384400, days = mins / 1440;
+  const speedFl = past.filter(f => !f.estimated && f.mins > 0), spd = speedFl.length ? speedFl.reduce((s, f) => s + f.km, 0) / (speedFl.reduce((s, f) => s + f.mins, 0) / 60) : 0;
+  let tzh = 0; for (const f of past) { try { if (f.from?.tz && f.to?.tz) tzh += Math.abs(tzOffsetMin(f.depT, f.to.tz) - tzOffsetMin(f.depT, f.from.tz)) / 60; } catch {} }
+  const ring = (frac) => { const r = 15.5, c = 2 * Math.PI * r; return `<svg class="pring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="${r}" class="bg"/><circle cx="18" cy="18" r="${r}" class="fg" stroke-dasharray="${(c * Math.min(1, frac)).toFixed(1)} ${c.toFixed(1)}"/></svg>`; };
+  const pv = (icon, big, label, sub, frac, cls = "") => `<div class="pvi ${cls}"><div class="pvic">${frac != null ? ring(frac) : ""}<span>${ICON[icon]}</span></div><div class="pvt"><b>${big}</b><span>${label}</span>${sub ? `<small>${sub}</small>` : ""}</div></div>`;
+  html += sec("En perspectiva");
+  html += `<section class="scard wide"><div class="pvgrid">
+    ${pv("globe", fmt(laps, laps < 10 ? 1 : 0), laps >= 1 && laps < 1.05 ? "vuelta al mundo" : "vueltas al mundo", laps < 1 ? `Te falta ${fmt(40075 - km)} km para la primera` : `${Math.round((laps % 1) * 100)}% de la vuelta ${Math.floor(laps) + 1}`, laps % 1 || (laps >= 1 ? 1 : 0), "earth")}
+    ${pv("moon", moon < 1 ? fmt(moon * 100, 1) + "%" : fmt(moon, 2), moon < 1 ? "del camino a la Luna" : "viajes a la Luna", moon < 1 ? `Faltan ${fmt(384400 - km)} km para llegar` : moon < 2 ? `${Math.round((2 - moon) / 2 * 100)}% más y volvés a la Tierra` : `${fmt(moon / 2, 1)} idas y vueltas`, moon < 1 ? moon : moon % 1, "moon")}
+    ${pv("clock", fmt(days, 1), days >= 1 && days < 1.05 ? "día en el aire" : "días en el aire", `${fmt(Math.round(mins / 60))} h · unas ${fmt(Math.round(mins / 120))} películas`, null, "time")}
+    ${pv("speed", fmt(spd), "km/h de media", `Promedio por vuelo: ${fmt(km / past.length)} km y ${hm(Math.round(mins / past.length))}`, null, "speed")}
+    ${tzh ? pv("tz", fmt(Math.round(tzh)), "horas de cambio de huso", "Suma del jet lag de todos tus vuelos", null, "tz") : ""}
+    ${pv("sun", fmt(km / 149597870 * 100, 3) + "%", "del camino al Sol", "Para dimensionar: el Sol está a 150 millones de km", null, "sun")}
+  </div></section>`;
+
+  /* ---- activity charts (interactive) ---- */
+  html += sec("Actividad", "Tocá las barras");
+  const metric = S.statMetric || "n";
+  const val = l => metric === "km" ? l.reduce((s, f) => s + f.km, 0) : metric === "h" ? l.reduce((s, f) => s + f.mins, 0) / 60 : l.length;
+  const vfmt = v => metric === "n" ? fmt(v) : v >= 10000 ? fmt(v / 1000, v >= 100000 ? 0 : 1) + " mil" : fmt(v);
+  const unitL = metric === "km" ? "km" : metric === "h" ? "horas" : "vuelos";
+  const seg = `<div class="segm sm" role="group" aria-label="Medida">${[["n", "Vuelos"], ["km", "Km"], ["h", "Horas"]].map(([k, t]) => `<button type="button" data-smetric="${k}" aria-pressed="${metric === k}">${t}</button>`).join("")}</div>`;
   const years = [...new Set(allF.map(f => f.year).filter(Boolean))].sort();
   if (years.length) {
-    const per = years.map(y => ({ y, p: allF.filter(f => f.year === y && f.past).length, u: allF.filter(f => f.year === y && !f.past).length }));
-    const mx = Math.max(...per.map(x => x.p + x.u));
-    html += card("Vuelos por año", `<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${[...per].reverse().map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.p} volados${x.u ? ", " + x.u + " próximos" : ""}">
-      <span class="vv">${x.p + x.u}</span><span class="stack" style="height:${((x.p + x.u) / mx * 90).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div><p class="hint">Tocá un año para filtrar toda la app.</p>`, "wide");
+    const per = years.map(y => ({ y, p: val(allF.filter(f => f.year === y && f.past)), u: val(allF.filter(f => f.year === y && !f.past)) }));
+    const mx = Math.max(1, ...per.map(x => x.p + x.u));
+    html += card(`Por año`, `${seg}<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${[...per].reverse().map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${vfmt(x.p)} ${unitL}${x.u ? " + " + vfmt(x.u) + " próximos" : ""}">
+      <span class="vv">${vfmt(x.p + x.u)}</span><span class="stack" style="height:${((x.p + x.u) / mx * 90).toFixed(1)}px"><i style="flex:${x.p}"></i>${x.u ? `<i class="u" style="flex:${x.u}"></i>` : ""}</span><span class="yy">${x.y}</span></button>`).join("")}</div></div><p class="hint">Tocá un año para filtrar toda la app${S.year !== "all" ? "; tocalo de nuevo para ver todos" : ""}.</p>`, "wide", "chart");
   }
+  const dObj = f => { const [y, m, d] = (f.date || "").split("-").map(Number); return new Date(y, m - 1, d); };
+  const bars = (labels, groups, hot) => {
+    const vs = groups.map(val), mx = Math.max(1, ...vs), best = vs.indexOf(Math.max(...vs));
+    return `<div class="mbars">${labels.map((l, i) => `<div class="mb${i === best && vs[i] ? " top" : ""}${hot === i ? " now" : ""}" title="${esc(l)}: ${vfmt(vs[i])} ${unitL}"><span class="vv">${vs[i] ? vfmt(vs[i]) : ""}</span><span class="bar" style="height:${(vs[i] / mx * 70).toFixed(1)}px"></span><span class="yy">${esc(l)}</span></div>`).join("")}</div>`;
+  };
+  const byMon = Array.from({ length:12 }, (_, i) => past.filter(f => +(f.date || "").slice(5, 7) === i + 1));
+  const byWd = Array.from({ length:7 }, (_, i) => past.filter(f => f.date && (dObj(f).getDay() + 6) % 7 === i));
+  const slots = [["Madrugada", 0, 6], ["Mañana", 6, 12], ["Tarde", 12, 18], ["Noche", 18, 24]];
+  const byHour = slots.map(([, a, b]) => past.filter(f => HHMM.test(f.dep || "") && +f.dep.slice(0, 2) >= a && +f.dep.slice(0, 2) < b));
+  const topM = byMon.map(val).indexOf(Math.max(...byMon.map(val))), topW = byWd.map(val).indexOf(Math.max(...byWd.map(val)));
+  html += card("Por mes", bars(MON_SHORT, byMon, new Date().getMonth()) + `<p class="hint">Tu mes con más ${unitL}: <b>${MONTH_FULL[topM]}</b>.</p>`, "", "cal");
+  html += card("Por día de la semana", bars(WEEKDAYS, byWd) + `<p class="hint">Volás más los <b>${["lunes", "martes", "miércoles", "jueves", "viernes", "sábados", "domingos"][topW]}</b>.</p>`, "", "cal");
+  if (byHour.some(l => l.length)) html += card("Hora de salida", bars(slots.map(x => x[0]), byHour) + `<p class="hint">Según la hora local de salida.</p>`, "", "sun");
+
+  /* ---- types of flights ---- */
+  html += sec("Tus vuelos");
+  const split = (title, icon, parts) => { const tot = parts.reduce((s, p) => s + p[1], 0); if (!tot) return ""; return card(title, `<div class="sbar">${parts.filter(p => p[1]).map(([l, n], i) => `<i class="p${i}" style="flex:${n}" title="${esc(l)}: ${n}"></i>`).join("")}</div>
+    <div class="slegend">${parts.map(([l, n, sub], i) => n ? `<div><i class="p${i}"></i><span>${esc(l)}${sub ? `<small>${esc(sub)}</small>` : ""}</span><b>${n}<small>${Math.round(n / tot * 100)}%</small></b></div>` : "").join("")}</div>`, "", icon); };
+  const nat = past.filter(f => f.from?.cc && f.to?.cc && f.from.cc === f.to.cc).length;
+  html += split("Nacionales e internacionales", "flag", [["Nacionales", nat], ["Internacionales", past.length - nat]]);
+  html += split("Distancia", "ruler", [["Cortos", past.filter(f => f.km < 1500).length, "menos de 1.500 km"], ["Medios", past.filter(f => f.km >= 1500 && f.km < 4000).length, "1.500 – 4.000 km"], ["Largos", past.filter(f => f.km >= 4000).length, "más de 4.000 km"]]);
+  const cl = past.filter(f => f.cls);
+  if (cl.length) html += split("Clase", "ticket", Object.entries(CLASSES).map(([k, t]) => [t, cl.filter(f => f.cls === k).length]));
+  const seats = past.map(f => (String(f.seat || "").toUpperCase().match(/[A-L]$/) || [])[0]).filter(Boolean);
+  if (seats.length) html += split("Asiento", "seat", [["Ventanilla", seats.filter(x => "AFKL".includes(x)).length], ["Pasillo", seats.filter(x => "CDGH".includes(x)).length], ["Medio", seats.filter(x => "BEJ".includes(x)).length]]) .replace("</section>", `<p class="hint">Aproximado según la letra del asiento.</p></section>`);
+
+  /* ---- top lists with tabs ---- */
+  html += sec("Rankings", "Tocá uno para ver sus vuelos");
+  const tabs = [["airline", "Aerolíneas"], ["airport", "Aeropuertos"], ["country", "Países"], ["route", "Rutas"], ["aircraft", "Aviones"]];
+  const tab = tabs.some(t => t[0] === S.statTab) ? S.statTab : "airline";
+  const aptName = new Map(); for (const f of past) for (const a of [f.from, f.to]) if (a) aptName.set(a.iata, a);
+  const lists = {
+    airline: () => rankList(count(past.map(alKey)), k => alIconK(k, "sm") + esc(alLabel(k)), "airline"),
+    airport: () => rankList(count(past.flatMap(f => [f.from?.iata, f.to?.iata])), k => `<b>${esc(k)}</b>${esc(aptName.get(k)?.city || "")}`, "airport"),
+    country: () => rankList(count(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])])), k => `<span class="fl-ic sm" aria-hidden="true">${flag(k)}</span>${esc(country(k))}`, "country"),
+    route: () => rankList(count(past.map(f => routeKey(f))), k => `<b>${esc(k)}</b>`, "route"),
+    aircraft: () => { const e = count(past.map(f => f.aircraft)), no = past.filter(f => !f.aircraft).length; return (e.length ? rankList(e, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (no ? `<p class="hint">${no} ${no === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""); },
+  };
+  html += card("", `<div class="stabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-stab="${k}" aria-selected="${tab === k}">${t}</button>`).join("")}</div>${lists[tab]()}`, "wide ranks", "trophy").replace("<h3>", `<h3 class="hidden-h">`);
+
+  /* ---- records ---- */
+  html += sec("Récords");
   const byKm = [...past].sort((a, b) => b.km - a.km), lg = byKm[0], sh = byKm[byKm.length - 1];
   const byMin = [...past].sort((a, b) => b.mins - a.mins)[0];
-  const perYear = count(past.map(f => f.year))[0];
+  const rec = (icon, k, v, sub, id) => `<${id ? `button type="button" data-fopen="${esc(id)}"` : "div"} class="rec2"><span class="ri">${ICON[icon]}</span><span class="rk2">${k}</span><b>${v}${sub ? `<small>${sub}</small>` : ""}</b>${id ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</${id ? "button" : "div"}>`;
+  const ext = (cmp, pick) => { let best = null; for (const f of past) for (const a of [f.from, f.to]) if (validApt(a) && (!best || cmp(+a[pick], +best.a[pick]))) best = { a, f }; return best; };
+  const N = ext((x, y) => x > y, "lat"), Sx = ext((x, y) => x < y, "lat"), E = ext((x, y) => x > y, "lon"), Wx = ext((x, y) => x < y, "lon");
+  const perDay = count(past.map(f => f.date))[0], perMonth = count(past.map(f => (f.date || "").slice(0, 7)))[0], perYear = count(past.map(f => f.year))[0];
+  const sorted = [...past].sort((a, b) => a.depT - b.depT), first = sorted[0], last = sorted[sorted.length - 1];
   const nights = past.filter(f => +f.arrOffset > 0).length;
-  const rec = (k, v, sub) => `<div class="rec"><span>${k}</span><b>${v}${sub ? `<small>${sub}</small>` : ""}</b></div>`;
-  html += card("Récords", `<div class="recs">
-    ${rec("Vuelo más largo", `${esc(lg.from?.iata)} → ${esc(lg.to?.iata)}`, `${fmt(lg.km)} km · ${esc(lg.date)}`)}
-    ${byMin && byMin !== lg ? rec("Más tiempo en el aire", `${esc(byMin.from?.iata)} → ${esc(byMin.to?.iata)}`, hm(byMin.mins)) : ""}
-    ${past.length > 1 ? rec("Vuelo más corto", `${esc(sh.from?.iata)} → ${esc(sh.to?.iata)}`, `${fmt(sh.km)} km`) : ""}
-    ${perYear ? rec("Año con más vuelos", esc(perYear[0]), `${perYear[1]} vuelos`) : ""}
-    ${nights ? rec("Llegadas al día siguiente", fmt(nights)) : ""}
-  </div>`);
+  const route = f => `${esc(f.from?.iata)} → ${esc(f.to?.iata)}`;
+  html += card("", `<div class="recgrid">
+    ${rec("ruler", "Vuelo más largo", route(lg), `${fmt(lg.km)} km · ${esc(shortDate(lg))}`, lg.id)}
+    ${byMin && byMin !== lg ? rec("clock", "Más tiempo en el aire", route(byMin), `${hm(byMin.mins)} · ${esc(shortDate(byMin))}`, byMin.id) : ""}
+    ${past.length > 1 ? rec("ruler", "Vuelo más corto", route(sh), `${fmt(sh.km)} km · ${esc(shortDate(sh))}`, sh.id) : ""}
+    ${first ? rec("star", "Primer vuelo", route(first), esc(shortDate(first)), first.id) : ""}
+    ${last && last !== first ? rec("plane", "Último vuelo", route(last), esc(shortDate(last)), last.id) : ""}
+    ${perDay && perDay[1] > 1 ? rec("cal", "Más vuelos en un día", `${perDay[1]} vuelos`, esc(shortDate({ date:perDay[0] }))) : ""}
+    ${perMonth && perMonth[1] > 1 ? rec("cal", "Mes con más vuelos", `${MONTH_FULL[+perMonth[0].slice(5, 7) - 1]} ${perMonth[0].slice(0, 4)}`, `${perMonth[1]} vuelos`) : ""}
+    ${S.year === "all" && perYear ? rec("chart", "Año con más vuelos", esc(perYear[0]), `${perYear[1]} vuelos`) : ""}
+    ${nights ? rec("moon", "Llegadas al día siguiente", fmt(nights), nights === 1 ? "vuelo nocturno" : "vuelos nocturnos") : ""}
+    ${N ? rec("compass", "Más al norte", esc(N.a.city || N.a.iata), `${esc(N.a.iata)} · ${fmt(Math.abs(N.a.lat), 1)}° ${N.a.lat >= 0 ? "N" : "S"}`, N.f.id) : ""}
+    ${Sx && Sx.a.iata !== N.a.iata ? rec("compass", "Más al sur", esc(Sx.a.city || Sx.a.iata), `${esc(Sx.a.iata)} · ${fmt(Math.abs(Sx.a.lat), 1)}° ${Sx.a.lat >= 0 ? "N" : "S"}`, Sx.f.id) : ""}
+    ${E ? rec("compass", "Más al este", esc(E.a.city || E.a.iata), `${esc(E.a.iata)} · ${fmt(Math.abs(E.a.lon), 1)}° ${E.a.lon >= 0 ? "E" : "O"}`, E.f.id) : ""}
+    ${Wx && Wx.a.iata !== E.a.iata ? rec("compass", "Más al oeste", esc(Wx.a.city || Wx.a.iata), `${esc(Wx.a.iata)} · ${fmt(Math.abs(Wx.a.lon), 1)}° ${Wx.a.lon >= 0 ? "E" : "O"}`, Wx.f.id) : ""}
+  </div>`, "wide", "trophy").replace("<h3>", `<h3 class="hidden-h">`);
+
+  /* ---- punctuality ---- */
   { const dl = past.map(f => ({ f, d: delayMin(f.arr, f.arrReal) ?? delayMin(f.dep, f.depReal) })).filter(x => x.d != null);
     if (dl.length) {
       const onT = dl.filter(x => x.d < 15).length, late = dl.filter(x => x.d >= 15), worst = dl.reduce((a, b) => b.d > a.d ? b : a);
-      const tot = late.reduce((s, x) => s + x.d, 0), avg = late.length ? Math.round(tot / late.length) : 0;
-      html += card(`Puntualidad <span>${dl.length}</span>`, `<div class="recs">
-        ${rec("A tiempo", `<span class="${onT / dl.length >= .8 ? "ontime" : onT / dl.length >= .6 ? "warn-d" : "late"}">${Math.round(onT / dl.length * 100)}%</span>`, `${onT} de ${dl.length} vuelos (menos de 15 min)`)}
-        ${late.length ? rec("Demora promedio", hm(avg), `en los ${late.length} ${late.length === 1 ? "vuelo demorado" : "vuelos demorados"}`) : ""}
-        ${worst.d >= 15 ? rec("Mayor demora", `<span class="late">${hm(worst.d)}</span>`, `${esc(worst.f.num || "")} · ${esc(worst.f.from?.iata)} → ${esc(worst.f.to?.iata)} · ${esc(worst.f.date)}`) : ""}
-        ${tot >= 60 ? rec("Tiempo total de demoras", hm(tot)) : ""}
-      </div>${dl.length < past.length ? `<p class="hint">Con horarios reales en ${dl.length} de ${past.length} vuelos.</p>` : ""}`);
+      const tot = late.reduce((s, x) => s + x.d, 0), avg = late.length ? Math.round(tot / late.length) : 0, pct = Math.round(onT / dl.length * 100);
+      html += sec("Puntualidad", `${dl.length} ${dl.length === 1 ? "vuelo" : "vuelos"} con horario real`);
+      html += `<section class="scard wide"><div class="punct"><div class="pvic big ${pct >= 80 ? "ontime" : pct >= 60 ? "warn-d" : "late"}">${ring(pct / 100)}<b>${pct}%</b></div><div class="recgrid">
+        ${rec("clock", "A tiempo", `${onT} de ${dl.length}`, "llegaron con menos de 15 min de demora")}
+        ${late.length ? rec("clock", "Demora promedio", hm(avg), `en los ${late.length} ${late.length === 1 ? "vuelo demorado" : "vuelos demorados"}`) : ""}
+        ${worst.d >= 15 ? rec("clock", "Mayor demora", `<span class="late">${hm(worst.d)}</span>`, `${route(worst.f)} · ${esc(shortDate(worst.f))}`, worst.f.id) : ""}
+        ${tot >= 60 ? rec("clock", "Tiempo total esperando", hm(tot)) : ""}
+      </div></div></section>`;
     } }
-  const aptName = new Map(); for (const f of past) for (const a of [f.from, f.to]) if (a) aptName.set(a.iata, a);
-  const topApt = count(past.flatMap(f => [f.from?.iata, f.to?.iata]));
-  const topRoute = count(past.map(f => routeKey(f)));
-  const topAl = count(past.map(alKey));
-  const topAc = count(past.map(f => f.aircraft));
+
+  /* ---- trips & places ---- */
+  html += sec("Viajes y lugares");
   { const tm = tripList();   // newest first; trips with the same name stay separate
-    html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.map(({ id, name, legs:l }) => `<li><button type="button" class="rk" data-tripview="${esc(id)}"><div class="nm"><span><b>${esc(name)}</b> ${tagChips(id)}</span><small>${esc(tripDates(l))} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>`
-      : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`); }
-  html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
-  const noAc = past.filter(f => !f.aircraft).length;
+    html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.slice(0, S.rankOpen.has("trips") ? 999 : 6).map(({ id, name, legs:l }) => `<li><button type="button" class="rk" data-tripview="${esc(id)}"><div class="nm"><span><b>${esc(name)}</b> ${tagChips(id)}</span><small>${esc(tripDates(l))} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>${tm.length > 6 ? `<button type="button" class="more" data-more="trips">${S.rankOpen.has("trips") ? "Ver menos" : `Ver todos (${tm.length})`}</button>` : ""}`
+      : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`, "", "pin"); }
   { const ps = placesAll();
     if (ps.length) {
       const cs = count(ps.map(p => p.cc).filter(Boolean)), flownCC = new Set(past.flatMap(f => [f.from?.cc, f.to?.cc]).filter(Boolean));
       const notFlown = cs.filter(([c]) => !flownCC.has(c)).length;
-      html += card(`Lugares visitados <span>${ps.length}</span>`, `<div class="recs">
-        ${rec("Países", fmt(cs.length), notFlown ? `${notFlown} sin llegar en avión` : "")}
-        ${cs.length ? rec("Con más lugares", esc(country(cs[0][0])), `${cs[0][1]} ${cs[0][1] === 1 ? "lugar" : "lugares"}`) : ""}
-      </div><button type="button" class="more" data-layer="lugares">Ver en el mapa</button>`);
+      html += card(`Lugares visitados <span>${ps.length}</span>`, `<div class="flagrow">${cs.slice(0, 18).map(([c, n]) => `<span class="fl-ic" title="${esc(country(c))}: ${n}" aria-label="${esc(country(c))}">${flag(c)}</span>`).join("")}${cs.length > 18 ? `<span class="more-n">+${cs.length - 18}</span>` : ""}</div>
+        <div class="recs">${rec("flag", "Países", fmt(cs.length), notFlown ? `${notFlown} sin llegar en avión` : "")}${cs.length ? rec("pin", "Con más lugares", esc(country(cs[0][0])), `${cs[0][1]} ${cs[0][1] === 1 ? "lugar" : "lugares"}`) : ""}</div>
+        <button type="button" class="more" data-layer="lugares">Ver en el mapa</button>`, "", "globe");
     } }
-  html += card(`Aviones <span>${topAc.length}</span>`, (topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (noAc ? `<p class="hint">${noAc} ${noAc === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""));
   $("#stats").innerHTML = html;
+  markLogos($("#stats"));
 }
 
 function render() {
@@ -4168,6 +4336,9 @@ document.addEventListener("click", e => {
     else { const tr = buildTrips(all()).find(x => x.id === id); S.focusTrip = id; S.focusIds = tr ? tr.legs.map(l => l.id) : null; }
     S.open = null; render(); if (S.focusIds && phoneMap() && sheetState === "full") { sheetState = "mid"; layoutSheet(); } focusSelection(); return;
   }
+  if (t.dataset.smetric) { S.statMetric = t.dataset.smetric; return renderStats(); }
+  if (t.dataset.stab) { S.statTab = t.dataset.stab; return renderStats(); }
+  if (t.dataset.fopen) return searchPick("flight", t.dataset.fopen);
   if (t.dataset.more) { const k = t.dataset.more; S.rankOpen.has(k) ? S.rankOpen.delete(k) : S.rankOpen.add(k); return renderStats(); }
   if (t.dataset.list === "search") return openSearch(searchQ);
   if (t.dataset.list) { S.open = null; return openList(t.dataset.list); }
