@@ -778,6 +778,19 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* places stats */
+.contgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.contc{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface-2);border:0;text-align:left;font:inherit;color:var(--muted);min-width:0}
+.contc.on{color:var(--ink);background:color-mix(in srgb,var(--place) 10%,var(--surface-2));cursor:pointer}
+.contc .cn{font-size:13px;font-weight:600}
+.contc b{font-family:var(--f-round);font-size:24px;font-weight:700}
+.contc.on b{color:var(--place)}
+.contc small{font-size:12px;color:var(--muted)}
+.flagrow.big{gap:10px}
+.rank .nm span .fl-ic.sm{margin-right:8px}
+.flagb{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:transparent;padding:4px;width:76px;font:inherit;color:var(--ink);cursor:pointer}
+.flagb .fl-ic{width:44px;height:33px;border-radius:5px}
+.flagb small{font-size:11px;color:var(--muted);text-align:center;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
 /* repeated flights review */
 .dupcard{background:var(--surface);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
 .duphd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -872,6 +885,24 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .flagrow .more-n{font-size:12px;font-weight:600;color:var(--muted)}
 .nextbtn{border:0;background:transparent;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
 .nextbtn .chev-r{margin-left:auto;color:var(--muted)}
+/* flights / places pill, next to the year */
+.filters{gap:8px}
+.layerpill{display:inline-flex;background:var(--fill);border-radius:999px;padding:3px;gap:2px;flex:none}
+.layerpill button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;border-radius:999px;height:30px;padding:0 12px;font-weight:600;font-size:14px;color:var(--ink)}
+.layerpill button svg{width:16px;height:16px}
+.layerpill button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.layerpill button[data-layer="lugares"][aria-pressed="true"] svg{color:var(--place)}
+.layerpill button[data-layer="vuelos"][aria-pressed="true"] svg{color:var(--route)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .layerpill button[aria-pressed="true"]{background:#636366}}
+:root[data-theme="dark"] .layerpill button[aria-pressed="true"]{background:#636366}
+.ydd .ys{display:none}
+@media (max-width:699px){
+  .ydd .yl{display:none}.ydd .ys{display:inline}
+  .layerpill button{padding:0 8px;height:28px}.layerpill button span{display:none}
+  body[data-view="vuelos"] #filters.filters{right:212px;padding-left:10px;gap:6px}
+  body[data-view="vuelos"] #filters .ydd{padding:0 9px 0 11px}
+  body[data-view="vuelos"] #filters .layerpill{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+}
 /* year dropdown */
 .ydd{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 14px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer;white-space:nowrap}
 .ydd.on{background:var(--ink);color:var(--bg)}
@@ -1305,12 +1336,10 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
       <button type="button" id="z-in" aria-label="Acercar">+</button>
       <button type="button" id="z-out" aria-label="Alejar">−</button>
       <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
-      <button type="button" id="z-layer" class="show-phone" aria-label="Capa del mapa: vuelos o lugares" title="Vuelos / Lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></button>
       <button type="button" id="z-type" class="show-phone" aria-label="Tipo de mapa" title="Tipo de mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
       <button type="button" id="z-fit" aria-label="Mapa a pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="mapfoot">
-      <div class="maptype layerseg" role="group" aria-label="Capa del mapa"><button type="button" data-layer="vuelos">Vuelos</button><button type="button" data-layer="lugares">Lugares</button></div>
       <div class="legend" id="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
       <div class="maptype" role="group" aria-label="Tipo de mapa"><button type="button" data-maptype="estandar">Estándar</button><button type="button" data-maptype="satelite">Satélite</button><button type="button" data-maptype="noche">Noche</button></div>
     </div>
@@ -2188,7 +2217,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009103516";
+const BUILD = "20261009103900";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2229,7 +2258,8 @@ function renderFilters() {
   const n = y => isPlaces() ? placesAll().filter(p => p.auto ? p.years.has(y) : placeYear(p) === y).length : all().filter(f => f.year === y).length;
   const unit = isPlaces() ? ["lugar", "lugares"] : ["vuelo", "vuelos"], tot = isPlaces() ? placesAll().length : all().length;
   YEAR_OPTS = [{ v:"all", l:"Todos los años", s:`${tot} ${tot === 1 ? unit[0] : unit[1]}` }, ...years.map(y => { const k = n(y); return { v:y, l:y, s:`${k} ${k === 1 ? unit[0] : unit[1]}` }; })];
-  $("#filters").innerHTML = `<button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? "Todos los años" : esc(S.year)}${CHEV_DOWN}</button>`;
+  $("#filters").innerHTML = `<button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? `<span class="yl">Todos los años</span><span class="ys">Todos</span>` : esc(S.year)}${CHEV_DOWN}</button>
+    <div class="layerpill" role="group" aria-label="Vuelos o lugares"><button type="button" data-layer="vuelos" aria-pressed="${!isPlaces()}" title="Vuelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span>Vuelos</span></button><button type="button" data-layer="lugares" aria-pressed="${isPlaces()}" title="Lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Lugares</span></button></div>`;
 }
 /* ---------- year dropdown: tap to open, or press and slide to an option and let go (it scrolls near the edges) ---------- */
 const CHEV_DOWN = `<svg class="ydd-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
@@ -2298,7 +2328,20 @@ document.addEventListener("keydown", e => { const b = e.target.closest && e.targ
 window.addEventListener("resize", () => ddClose());
 document.addEventListener("scroll", e => { if (ddMenu && !ddMenu.el.contains(e.target)) ddClose(); }, true);
 
+function renderPlaceBoard() {
+  const ps = placesShown(), ccs = count(ps.map(p => p.cc).filter(Boolean)), conts = new Set(ps.map(p => continent(p.cc)).filter(k => k && k !== "AN"));
+  const own = ps.filter(p => !p.auto).length;
+  const cell = (k, v, s) => `<div><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+  $("#board").innerHTML =
+    cell("Lugares", fmt(ps.length), `${own} agregados · ${ps.length - own} de vuelos`) +
+    cell("Países", fmt(ccs.length), ccs.length ? ccs.slice(0, 3).map(([c]) => country(c)).join(", ") + (ccs.length > 3 ? "…" : "") : "—") +
+    cell("Continentes", `${conts.size}<small>/6</small>`, [...conts].map(k => CONT_NAME[k]).join(", ") || "—") +
+    cell("Del mundo", `${fmt(ccs.length / 195 * 100, 1)}<small>%</small>`, "de los 195 países") +
+    cell("Ciudades", fmt(new Set(ps.map(p => norm(p.name) + p.cc)).size), "distintas") +
+    cell("Años", fmt(new Set(ps.flatMap(p => p.auto ? [...p.years] : [placeYear(p)]).filter(Boolean)).size), "con lugares");
+}
 function renderBoard() {
+  if (isPlaces()) return renderPlaceBoard();
   const past = filtered().filter(f => f.past);
   const km = past.reduce((s, f) => s + f.km, 0), mins = past.reduce((s, f) => s + f.mins, 0);
   const apts = new Set();
@@ -3172,8 +3215,73 @@ const ICON = {
 const WEEKDAYS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"];
 const MON_SHORT = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 let statsDirty = true;
+/* statistics of the places layer */
+function renderPlaceStats() {
+  const all = placesAll(), ps = placesShown();
+  const card = (title, body, cls = "", icon = "") => `<section class="scard ${cls}"><h3>${icon ? `<span class="sic">${ICON[icon]}</span>` : ""}${title}</h3>${body}</section>`;
+  const sec = (t, sub) => `<h3 class="ssec">${t}${sub ? `<small>${sub}</small>` : ""}</h3>`;
+  let html = `<h2 class="stitle">Stats · Lugares${S.year !== "all" ? ` <span>${esc(S.year)}</span>` : ""}</h2>`;
+  if (!ps.length) { $("#stats").innerHTML = html + card("Todavía no hay lugares", `<p class="hint">Las ciudades de tus vuelos aparecen solas; agregá también pueblos y lugares a los que fuiste por tierra o por mar.</p>`, "wide"); return; }
+  const ccs = count(ps.map(p => p.cc).filter(Boolean)), conts = count(ps.map(p => continent(p.cc)).filter(Boolean));
+  const own = ps.filter(p => !p.auto), flown = new Set(all.filter(p => p.auto).map(p => p.cc));
+  const tile = (icon, v, k) => `<div><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}</span></div>`;
+  html += sec("Resumen");
+  html += `<section class="scard wide"><div class="tiles6">${tile("pin", fmt(ps.length), ps.length === 1 ? "lugar" : "lugares")}${tile("flag", fmt(ccs.length), ccs.length === 1 ? "país" : "países")}${tile("globe", `${conts.filter(([k]) => k !== "AN").length}/6`, "continentes")}${tile("compass", fmt(ccs.length / 195 * 100, 1) + "%", "de los países del mundo")}${tile("plane", fmt(ps.length - own.length), "ciudades de tus vuelos")}${tile("star", fmt(own.length), "agregados a mano")}</div></section>`;
+  // continents
+  html += sec("Continentes");
+  const CONTS = ["EU", "AS", "AF", "NA", "SA", "OC"], cmap = new Map(conts);
+  html += `<section class="scard wide"><div class="contgrid">${CONTS.map(k => { const n = cmap.get(k) || 0, c = new Set(ps.filter(p => continent(p.cc) === k).map(p => p.cc)).size;
+    return `<${n ? `button type="button" data-sqk="placecont" data-sqv="${k}"` : "div"} class="contc${n ? " on" : ""}"><span class="cn">${CONT_NAME[k]}</span><b>${n ? fmt(n) : "—"}</b><small>${n ? `${n === 1 ? "lugar" : "lugares"} · ${c} ${c === 1 ? "país" : "países"}` : "Sin visitar"}</small></${n ? "button" : "div"}>`; }).join("")}</div></section>`;
+  // by year
+  const yrs = [...new Set(all.flatMap(p => p.auto ? [...p.years] : [placeYear(p)]).filter(Boolean))].sort();
+  if (yrs.length) {
+    const per = yrs.map(y => ({ y, n: all.filter(p => p.auto ? p.years.has(y) : placeYear(p) === y).length, nu: all.filter(p => !p.auto && placeYear(p) === y).length }));
+    const mx = Math.max(1, ...per.map(x => x.n));
+    html += sec("Actividad", "Tocá las barras");
+    html += card("Lugares por año", `<div class="ybars-wrap"><div class="ybars" style="min-width:${per.length * 36}px">${[...per].reverse().map(x => `<button class="c" type="button" data-year="${x.y}" aria-pressed="${S.year === x.y}" title="${x.y}: ${x.n} lugares"><span class="vv">${x.n}</span><span class="stack" style="height:${(x.n / mx * 90).toFixed(1)}px"><i style="flex:1"></i></span><span class="yy">${x.y}</span></button>`).join("")}</div></div><p class="hint">Cada lugar cuenta en los años en que estuviste. Tocá un año para filtrar.</p>`, "wide", "chart");
+    const firsts = new Map(); for (const p of all) { const ys = (p.auto ? [...p.years] : [placeYear(p)]).filter(Boolean).sort(); if (ys[0]) for (const c of [p.cc]) if (c && (!firsts.has(c) || ys[0] < firsts.get(c))) firsts.set(c, ys[0]); }
+    const newPer = yrs.map(y => [y, [...firsts.values()].filter(v => v === y).length]);
+    const mx2 = Math.max(1, ...newPer.map(x => x[1]));
+    html += card("Países nuevos por año", `<div class="mbars">${newPer.slice(-12).map(([y, n]) => `<div class="mb${n === mx2 && n ? " top" : ""}" title="${y}: ${n} países nuevos"><span class="vv">${n || ""}</span><span class="bar" style="height:${(n / mx2 * 70).toFixed(1)}px"></span><span class="yy">${y.slice(2)}</span></div>`).join("")}</div><p class="hint">El primer año en que estuviste en cada país.</p>`, "", "flag");
+  }
+  // how you got there
+  const split = (title, icon, parts) => { const tot = parts.reduce((a, p) => a + p[1], 0); if (!tot) return ""; return card(title, `<div class="splitbar">${parts.filter(p => p[1]).map(([l, n], i) => `<i class="p${i}" style="flex:${n}" title="${esc(l)}: ${n}"></i>`).join("")}</div>
+    <div class="slegend">${parts.map(([l, n, sub], i) => n ? `<div><i class="p${i}"></i><span>${esc(l)}${sub ? `<small>${esc(sub)}</small>` : ""}</span><b>${n}<small>${Math.round(n / tot * 100)}%</small></b></div>` : "").join("")}</div>`, "", icon); };
+  html += split("Cómo llegaste", "plane", [["En avión", ps.filter(p => p.auto).length, "ciudades de tus vuelos"], ["Por tierra o mar", own.length, "lugares agregados a mano"]]);
+  const notFlown = ccs.filter(([c]) => !flown.has(c)).length;
+  html += split("Países", "flag", [["Con vuelos", ccs.length - notFlown, "llegaste en avión"], ["Solo por tierra o mar", notFlown, "nunca volaste ahí"]]);
+  // rankings
+  html += sec("Rankings", "Tocá uno para verlo en el mapa");
+  const max = ccs.length ? ccs[0][1] : 1, open = S.rankOpen.has("pcountry");
+  html += card(`Países <span>${ccs.length}</span>`, `<ol class="rank">${ccs.slice(0, open ? 999 : 8).map(([c, n]) => `<li><button type="button" class="rk" data-sqk="placecountry" data-sqv="${esc(c)}"><div class="nm"><span><span class="fl-ic sm" aria-hidden="true">${flag(c)}</span>${esc(country(c))}</span><div class="bar"><i style="width:${(n / max * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></button></li>`).join("")}</ol>${ccs.length > 8 ? `<button type="button" class="more" data-more="pcountry">${open ? "Ver menos" : `Ver todos (${ccs.length})`}</button>` : ""}`, "", "trophy");
+  const regions = count(own.map(p => (p.sub || "").split(",")[0].trim()).filter(r => r && !ccs.some(([c]) => country(c) === r))).slice(0, 8);
+  if (regions.length) html += card("Regiones", `<ol class="rank">${regions.map(([r, n]) => `<li><div class="rk" style="display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px"><div class="nm"><span>${esc(r)}</span><div class="bar"><i style="width:${(n / regions[0][1] * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></div></li>`).join("")}</ol><p class="hint">De los lugares agregados a mano.</p>`, "", "pin");
+  // records
+  html += sec("Récords");
+  const rec = (icon, k, v, sub, id) => `<${id ? `button type="button" data-sqk="place" data-sqv="${esc(id)}"` : "div"} class="rec2"><span class="ri">${ICON[icon]}</span><span class="rk2">${k}</span><b>${v}${sub ? `<small>${sub}</small>` : ""}</b>${id ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</${id ? "button" : "div"}>`;
+  const ext = (cmp, key) => ps.reduce((a, b) => !a || cmp(+b[key], +a[key]) ? b : a, null);
+  const N = ext((x, y) => x > y, "lat"), So = ext((x, y) => x < y, "lat"), E = ext((x, y) => x > y, "lon"), Wo = ext((x, y) => x < y, "lon");
+  const dated = ps.filter(p => p.auto ? p.date : p.date).sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  const deg = (v, pos, neg) => `${fmt(Math.abs(v), 1)}° ${v >= 0 ? pos : neg}`;
+  let far = null; for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) { const d = haversine(ps[i], ps[j]); if (!far || d > far[2]) far = [ps[i], ps[j], d]; }
+  html += card("", `<div class="recgrid">
+    ${N ? rec("compass", "Más al norte", esc(N.name), `${esc(country(N.cc))} · ${deg(N.lat, "N", "S")}`, N.id) : ""}
+    ${So && So !== N ? rec("compass", "Más al sur", esc(So.name), `${esc(country(So.cc))} · ${deg(So.lat, "N", "S")}`, So.id) : ""}
+    ${E ? rec("compass", "Más al este", esc(E.name), `${esc(country(E.cc))} · ${deg(E.lon, "E", "O")}`, E.id) : ""}
+    ${Wo && Wo !== E ? rec("compass", "Más al oeste", esc(Wo.name), `${esc(country(Wo.cc))} · ${deg(Wo.lon, "E", "O")}`, Wo.id) : ""}
+    ${far && far[2] > 0 ? rec("ruler", "Los dos más lejanos", `${esc(far[0].name)} – ${esc(far[1].name)}`, `${fmt(far[2])} km`) : ""}
+    ${dated[0] ? rec("star", "El más antiguo", esc(dated[0].name), esc(placeDate(dated[0].date)), dated[0].id) : ""}
+    ${dated.length > 1 ? rec("cal", "El más reciente", esc(dated[dated.length - 1].name), esc(placeDate(dated[dated.length - 1].date)), dated[dated.length - 1].id) : ""}
+    ${ccs[0] ? rec("flag", "País con más lugares", esc(country(ccs[0][0])), `${ccs[0][1]} ${ccs[0][1] === 1 ? "lugar" : "lugares"}`) : ""}
+  </div>`, "wide", "trophy").replace("<h3>", `<h3 class="hidden-h">`);
+  // flags
+  html += sec("Banderas", `${ccs.length} ${ccs.length === 1 ? "país" : "países"}`);
+  html += `<section class="scard wide"><div class="flagrow big">${ccs.map(([c, n]) => `<button type="button" class="flagb" data-sqk="placecountry" data-sqv="${esc(c)}" title="${esc(country(c))}: ${n}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><small>${esc(country(c))}</small></button>`).join("")}</div></section>`;
+  $("#stats").innerHTML = html;
+}
 function renderStats() {
   statsDirty = false;
+  if (isPlaces()) return renderPlaceStats();
   const allF = all(), fl = filtered();
   const past = fl.filter(f => f.past), upAll = allF.filter(f => !f.past).sort((a, b) => a.depT - b.depT);
   const card = (title, body, cls = "", icon = "") => `<section class="scard ${cls}"><h3>${icon ? `<span class="sic">${ICON[icon]}</span>` : ""}${title}</h3>${body}</section>`;
