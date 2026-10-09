@@ -820,10 +820,10 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 :root{--place:#E8534A}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--place:#FF6B61}}
 :root[data-theme="dark"]{--place:#FF6B61}
-.map .plc{fill:var(--place);stroke:#fff;stroke-width:1.8px;cursor:pointer}
-.map .plc.sel{stroke-width:2.6px}
+.map .plc{fill:var(--place);stroke:#fff;stroke-width:1.4px;cursor:pointer}
+.map .plc.sel{stroke-width:2px}
 .map .plc.dim,.map .plcl.dim{opacity:.4}
-.map .plcl{font-family:var(--f-body);font-weight:600;font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.map .plcl{font-family:var(--f-body);font-weight:600;font-size:9.5px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 #mapcard[data-type="satelite"] .map .plcl,#mapcard[data-type="noche"] .map .plcl{fill:#fff;stroke:rgba(0,0,0,.6)}
 .legend i.pl{width:10px;height:10px;border:0;border-radius:50%;background:var(--place);box-shadow:0 0 0 1.5px #fff}
 .mapfoot .layerseg{margin-left:0;margin-right:auto}
@@ -1887,13 +1887,17 @@ function sizeApts() {
   const t = d3.zoomTransform(svgSel.node()), k = t.k;
   gApts.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => d.r).style("stroke-width", "1.6px");
   if (gPlc) {
-    gPlc.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => d.r);
+    // same size on screen on any device: dots of 3.5 px (5 px selected) and names of 10.5 px
+    const rr = svgSel.node().getBoundingClientRect(), ext = zoom.extent().call(svgSel.node()), u = rr.width ? (ext[1][0] - ext[0][0]) / rr.width : 1;
+    gPlc.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => (d.sel ? 5 : 3.5) * u).style("stroke-width", 1.3 * u + "px");
+    gPlc.selectAll("text").style("font-size", 10.5 * u + "px").style("stroke-width", 2.6 * u + "px");
+    gPlc.selectAll("circle").each(d => { d.r = (d.sel ? 5 : 3.5) * u; d.u = u; });
     // names: the selected one first, then the rest only where they do not overlap another name
-    const boxes = [], fit = d => { const x = t.applyX(d.p[0]), y = t.applyY(d.p[1]) - (d.r + 4), w = d.name.length * 6.3 + 6, b = [x - w / 2, y - 12, x + w / 2, y + 2];
+    const boxes = [], fit = d => { const x = t.applyX(d.p[0]), y = t.applyY(d.p[1]) - (d.r + 3 * (d.u || 1)), uu = d.u || 1, w = (d.name.length * 6 + 5) * uu, b = [x - w / 2, y - 11 * uu, x + w / 2, y + 2 * uu];
       if (boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) return false; boxes.push(b); return true; };
     const show = new Set(); [...gPlc.selectAll("text").data()].sort((a, b) => b.sel - a.sel).forEach(d => { if (fit(d)) show.add(d.id); });
     gPlc.selectAll("text").style("display", d => show.has(d.id) ? null : "none")
-      .attr("x", d => t.applyX(d.p[0])).attr("y", d => t.applyY(d.p[1]) - (d.r + 4));
+      .attr("x", d => t.applyX(d.p[0])).attr("y", d => t.applyY(d.p[1]) - (d.r + 3 * (d.u || 1)));
   }
   const showCodes = k >= 3 || !!(S.open || S.focusIds);
   gApts.selectAll("text").style("display", showCodes ? null : "none")
@@ -1922,7 +1926,7 @@ function fitRoutes(animate) {
 }
 function focusSelection() {
   if (!svgSel || !zoom) return;
-  if (isPlaces()) return focusPlaces(S.openPlace);
+  if (isPlaces() && S.openPlace) return focusPlaces(S.openPlace);
   const ids = S.open ? [S.open] : S.focusIds;
   const phone = phoneMap();
   if (!ids && !phone) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
@@ -2015,7 +2019,7 @@ function renderPlacesMap() {
   gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
   if ([...visited].sort().join(",") !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
   const sel = S.openPlace;
-  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: p.id === sel ? 6.5 : 4.6, sel: p.id === sel, dim: !!sel && p.id !== sel }))
+  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: p.id === sel ? 5 : 3.5, sel: p.id === sel, dim: !!sel && p.id !== sel }))
     .sort((a, b) => a.sel - b.sel);
   gPlc.selectAll("circle").data(ds, d => d.id).join("circle").attr("class", d => "plc" + (d.dim ? " dim" : "") + (d.sel ? " sel" : ""))
     .selectAll("title").data(d => [d]).join("title").text(d => d.name + (d.cc ? " · " + country(d.cc) : ""));
@@ -2088,7 +2092,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009035103";
+const BUILD = "20261009035300";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2136,7 +2140,7 @@ let YEAR_OPTS = [], JUMP_OPTS = [], ddMenu = null;
 function ddClose() { if (ddMenu) { ddMenu.el.remove(); cancelAnimationFrame(ddMenu.raf); ddMenu = null; } document.querySelectorAll(".ydd[aria-expanded]").forEach(b => b.removeAttribute("aria-expanded")); }
 function ddPick(kind, v) {
   ddClose();
-  if (kind === "year") { S.year = v; S.open = null; render(); if (isPlaces()) focusPlaces(); else focusSelection(); return; }
+  if (kind === "year") { S.year = v; S.open = null; render(); focusSelection(); return; }
   if (kind === "jump") { const h = document.getElementById("yr-" + v); if (h) h.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); }
 }
 function ddOpen(btn) {
@@ -2640,7 +2644,7 @@ const isPlaces = () => LAYER === "lugares";
 function setLayer(l) {
   LAYER = l === "lugares" ? "lugares" : "vuelos"; try { localStorage.setItem("flights-layer", LAYER); } catch {}
   S.open = null; S.focusIds = null; S.openPlace = null; closeAptCard(); S.year = "all";
-  render(); if (isPlaces()) focusPlaces(); else focusSelection();
+  render();   // same map view in both layers: no zoom when switching
 }
 /* every city of your flown flights is a visited place too (one per city, even with several airports) */
 function flightPlaces() {
