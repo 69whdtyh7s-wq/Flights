@@ -1,8 +1,8 @@
 // Flights service worker: the whole app works offline. It never stores flight data (that lives in the browser's localStorage).
-const CACHE = "flights-20261009034403";          // this version's page
+const CACHE = "flights-20261009034922";          // this version's page
 const STATIC = "flights-static-v1";      // logos, flags, map textures, airport lists, d3: kept across versions
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
-const ASSETS = ["./d3.min.js", "./airports.json", "./airlines.json", "./world.json", "./tex/earth-day.jpg", "./tex/earth-night.jpg"];
+const ASSETS = ["./d3.min.js", "./airports.json", "./airlines.json", "./world.json", "./world-mid.json", "./tex/earth-day.jpg", "./tex/earth-night.jpg"];
 self.addEventListener("install", e => {
   e.waitUntil(Promise.all([
     caches.open(CACHE).then(c => c.addAll(CORE)),
