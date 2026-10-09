@@ -2282,7 +2282,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091241";
+const BUILD = "202610091244";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4463,7 +4463,8 @@ function findDates(low) {
 }
 async function extractLocal(text, signal) {
   await Promise.all([loadAptDB(), loadAlDB()]);
-  text = String(text).replace(/\r/g, "").replace(/[   ]/g, " ");
+  // text copied from a web page comes with tabs and many empty lines between table cells: one cell per line, no blank lines
+  text = String(text).replace(/\r/g, "").replace(/[\u00a0\u2007\u202f]/g, " ").split("\n").map(l => l.replace(/\t+/g, "  ").replace(/\s+$/, "")).filter(l => l.trim()).join("\n");
   const deacc = t => t.toLowerCase().replace(/[áàâä]/g, "a").replace(/[éèêë]/g, "e").replace(/[íìîï]/g, "i").replace(/[óòôö]/g, "o").replace(/[úùûü]/g, "u");
   const low = deacc(text);   // same length as text: positions match
   const lines = []; { let p0 = 0; for (const l of text.split("\n")) { lines.push(p0); p0 += l.length + 1; } }
@@ -4521,7 +4522,7 @@ async function extractLocal(text, signal) {
     for (const [en, es] of Object.entries(EN)) { const i = cityIdx.get(deacc(es)); if (i) cityIdx.set(en, i); }
     // a word that is a city, or an airline in this text ("Iberia"), is not read as an airport name
     for (const k of [...nameIdx.keys()]) if (cityIdx.has(k) || alWords.has(k)) nameIdx.delete(k);
-    for (const k of [...cityIdx.keys()]) if (alWords.has(k)) cityIdx.delete(k);
+    for (const k of [...cityIdx.keys()]) if (alWords.has(k) || /^(hola|hello|total|mayor|salida|llegada|vuelo|reserva|terminal|puerta|asiento|clase|tarifa|precio|santa|victoria|libertad|esperanza|concepcion|trinidad|providencia|paz)$/.test(k)) cityIdx.delete(k);
     const scan = (idx, kind) => { for (const [k, iata] of idx) { if (!low.includes(k)) continue; const re = new RegExp("(^|[^a-z0-9])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![a-z0-9])", "g"); while ((m = re.exec(low))) { const pos = m.index + m[1].length; if (!/[A-ZÁÉÍÓÚÑÜ]/.test(text[pos])) continue; named.push({ pos, end:pos + k.length, line:lineOf(pos), iata, kind }); } } };
     scan(nameIdx, 1); scan(cityIdx, 2);
     // longest match wins where two overlap ("buenos aires" over "aires"); airport name over city
@@ -4540,7 +4541,9 @@ async function extractLocal(text, signal) {
   }
   // ---- legs: two places on one line, or two lines with one place each ----
   const legs = [];
-  { const byLine = new Map(); for (const p of places) { if (!byLine.has(p.line)) byLine.set(p.line, []); byLine.get(p.line).push(p); }
+  // codes pair with codes first; names and cities only pair among themselves (an address line never pairs with an airport code)
+  for (const pool of [places.filter(p => p.kind === 0), places.filter(p => p.kind > 0)]) {
+    const byLine = new Map(); for (const p of pool) { if (!byLine.has(p.line)) byLine.set(p.line, []); byLine.get(p.line).push(p); }
     let pend = null;
     for (const [ln, ps] of [...byLine].sort((x, y) => x[0] - y[0])) {
       const u = ps.filter((p, i) => i === 0 || p.iata !== ps[i - 1].iata);
@@ -4549,6 +4552,7 @@ async function extractLocal(text, signal) {
       else pend = u[0];
     }
   }
+  legs.sort((x, y) => x.l0 - y.l0 || x.l1 - y.l1);
   // ---- dates, times and details ----
   const dates = findDates(low).map(d => ({ ...d, line:lineOf(d.pos) }));
   const times = [];
@@ -4578,14 +4582,14 @@ async function extractLocal(text, signal) {
 
   // ---- assemble ----
   const near = (x, lg) => x.line < lg.l0 ? lg.l0 - x.line : x.line > lg.l1 ? x.line - lg.l1 : 0;
-  // each flight number goes to its closest leg (one number per leg)
+  // anything else (times, seats, dates) belongs to the closest leg; on a tie, to the one above (details usually follow the route)
+  const owner = x => { let best = null, bd = 1e9; for (const lg of legs) { const d = near(x, lg) + (x.line < lg.l0 ? 0.5 : 0); if (d < bd) { bd = d; best = lg; } } return bd <= 6 ? best : null; };
+  // each flight number goes to its closest leg (one number per leg), preferring legs with times and airport codes
   const pairsNL = [];
-  for (const n of nums) for (const lg of legs) pairsNL.push([near(n, lg) + (n.line > lg.l1 ? 0.1 : 0), n, lg]);
+  for (const n of nums) for (const lg of legs) pairsNL.push([near(n, lg) + (n.line < lg.l0 ? 0.5 : 0) - (times.some(t => owner(t) === lg) ? 1 : 0) - (lg.a.kind === 0 ? 0.5 : 0), n, lg]);
   pairsNL.sort((x, y) => x[0] - y[0]);
   const usedN = new Set();
   for (const [d, n, lg] of pairsNL) { if (d > 4 || usedN.has(n) || lg.n) continue; lg.n = n; usedN.add(n); }
-  // anything else (times, seats, dates) belongs to the closest leg; on a tie, to the one above (details usually follow the route)
-  const owner = x => { let best = null, bd = 1e9; for (const lg of legs) { const d = near(x, lg) + (x.line < lg.l0 ? 0.5 : 0); if (d < bd) { bd = d; best = lg; } } return bd <= 6 ? best : null; };
   const out = [];
   for (const lg of legs) {
     if (signal && signal.aborted) throw { code:"cancelled" };
