@@ -1790,6 +1790,7 @@ function homeCenter() {
 const MAP_TYPES = ["estandar", "satelite", "noche"];
 const TEX_URL = { satelite:"tex/earth-day.jpg", noche:"tex/earth-night.jpg" };
 let mapType = "estandar";
+let hiFailed = false, hiProj = "";
 let satImg = null, satHi = null, dragging = false, rasterJob = 0, satURL = null, rasterQueued = false, hiJob = 0, hiURL = null, hiT = null;
 const texCache = {};
 function loadTex(t) {
@@ -1834,7 +1835,7 @@ async function rasterize(low) {
   c.toBlob(b => {
     if (!b || job !== rasterJob) return;
     const url = URL.createObjectURL(b);
-    satImg.attr("href", url).style("display", null);
+    satImg.attr("href", url).style("display", hiFailed ? null : "none");
     if (satURL) URL.revokeObjectURL(satURL); satURL = url;
   }, "image/png");
 }
@@ -1896,7 +1897,7 @@ async function rasterHi() {
   bx0 = Math.max(0, bx0); by0 = Math.max(0, by0); bx1 = Math.min(W, bx1); by1 = Math.min(H, by1);
   if (bx1 <= bx0 || by1 <= by0) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1), scr = t.k * pxu * dpr;        // output px per map unit
-  if (t.k * pxu * (window.devicePixelRatio || 1) <= Math.min(2, window.devicePixelRatio || 1) * 1.05) { satHi.style("display", "none"); return; }   // the base picture already has a pixel per screen pixel
+  const pk = mapView + "|" + proj.rotate().map(v => v.toFixed(2)) + "|" + proj.scale().toFixed(2);
   const cw = Math.min(2400, Math.round((bx1 - bx0) * scr)), ch = Math.min(2400, Math.round((by1 - by0) * scr));
   const sx = (bx1 - bx0) / cw, sy = (by1 - by0) / ch;
   const globe = mapView === "globo", round = mapView === "plano";
@@ -1931,39 +1932,46 @@ async function rasterHi() {
   const src = TILE_SRC[type];
   let z = Math.ceil(Math.log2(360 / (256 * dlon)) - 0.35);              // up to ~1.3x enlargement is invisible and needs a quarter of the tiles
   z = Math.max(0, Math.min(src.max, z));
-  const useTiles = z >= 3 && navigator.onLine !== false;   // the built-in picture (4096 px) is about level 3-4: past that, real tiles
+  const useTiles = navigator.onLine !== false;
   const n = 2 ** z, N = LON.length;
   const merc = lat => { const s2 = Math.sin(Math.max(-85.05, Math.min(85.05, lat)) * Math.PI / 180); return (0.5 - Math.log((1 + s2) / (1 - s2)) / (4 * Math.PI)) * n; };
-  // 1) at once: the built-in picture, smoothed, drawn sharp for the screen
   const c = document.createElement("canvas"); c.width = cw; c.height = ch;
-  const ctx = c.getContext("2d"), out = ctx.createImageData(cw, ch), O = out.data, td = tex.d, tw = tex.w, th = tex.h;
-  for (let o = 0; o < N; o++) {
-    const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue;
-    const j4 = o * 4;
-    const fu = ((((lon + 180) % 360) + 360) % 360) / 360 * tw - .5, fv = Math.max(0, Math.min(th - 1.001, (90 - lat) / 180 * th - .5));
-    const u0 = Math.floor(fu), v0 = Math.floor(fv), au = fu - u0, av = fv - v0, ua = (u0 + tw) % tw, ub = (u0 + 1 + tw) % tw, v1 = Math.min(th - 1, v0 + 1);
-    const i00 = (v0 * tw + ua) * 4, i01 = (v0 * tw + ub) * 4, i10 = (v1 * tw + ua) * 4, i11 = (v1 * tw + ub) * 4;
-    for (let k = 0; k < 3; k++) O[j4 + k] = (td[i00 + k] * (1 - au) + td[i01 + k] * au) * (1 - av) + (td[i10 + k] * (1 - au) + td[i11 + k] * au) * av;
-    O[j4 + 3] = 255;
-  }
-  let committing = false, again = false, lastC = 0, credit = false;
-  const commit = () => {
-    if (job !== hiJob) return;
-    if (committing) { again = true; return; }
-    committing = true; lastC = performance.now();
+  const ctx = c.getContext("2d"), out = ctx.createImageData(cw, ch), O = out.data;
+  // the built-in picture: only when the detailed one can't be had (no internet)
+  const fillBuiltIn = only => {
+    const td = tex.d, tw = tex.w, th = tex.h;
+    for (let o = 0; o < N; o++) {
+      const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue;
+      const j4 = o * 4; if (only && O[j4 + 3]) continue;
+      const fu = ((((lon + 180) % 360) + 360) % 360) / 360 * tw - .5, fv = Math.max(0, Math.min(th - 1.001, (90 - lat) / 180 * th - .5));
+      const u0 = Math.floor(fu), v0 = Math.floor(fv), au = fu - u0, av = fv - v0, ua = (u0 + tw) % tw, ub = (u0 + 1 + tw) % tw, v1 = Math.min(th - 1, v0 + 1);
+      const i00 = (v0 * tw + ua) * 4, i01 = (v0 * tw + ub) * 4, i10 = (v1 * tw + ua) * 4, i11 = (v1 * tw + ub) * 4;
+      for (let k = 0; k < 3; k++) O[j4 + k] = (td[i00 + k] * (1 - au) + td[i01 + k] * au) * (1 - av) + (td[i10 + k] * (1 - au) + td[i11 + k] * au) * av;
+      O[j4 + 3] = 255;
+    }
+  };
+  // one swap when the new picture is complete: the previous sharp one stays until then (no flicker, never the low-res one)
+  const commit = png => new Promise(res => {
     ctx.putImageData(out, 0, 0);
     c.toBlob(b => {
-      committing = false;
-      if (!b || job !== hiJob || !TEX_URL[mapType]) return;
+      if (!b || job !== hiJob || !TEX_URL[mapType]) return res();
       const url = URL.createObjectURL(b);
-      satHi.attr("href", url).attr("x", bx0).attr("y", by0).attr("width", bx1 - bx0).attr("height", by1 - by0).style("display", null);
-      if (hiURL) URL.revokeObjectURL(hiURL); hiURL = url;
-      if (again) { again = false; commit(); }
-    }, "image/jpeg", 0.88);
+      const im = new Image();
+      im.onload = im.onerror = () => {
+        if (job !== hiJob || !TEX_URL[mapType]) { URL.revokeObjectURL(url); return res(); }
+        satHi.attr("href", url).attr("x", bx0).attr("y", by0).attr("width", bx1 - bx0).attr("height", by1 - by0).style("display", null);
+        if (hiURL) URL.revokeObjectURL(hiURL); hiURL = url; hiProj = pk; res();
+      };
+      im.src = url;          // decoded before it is shown, so the swap is instant
+    }, png ? "image/png" : "image/jpeg", 0.9);
+  });
+  const cr = document.getElementById("mapcredit");
+  const failBack = async () => {
+    hiFailed = true; if (satImg && satImg.attr("href")) satImg.style("display", null);
+    fillBuiltIn(false); await commit(false);
+    if (cr) cr.hidden = true;
   };
-  commit();
-  if (!useTiles) { const cr = document.getElementById("mapcredit"); if (cr) cr.hidden = true; return; }
-  // 2) the detailed tiles, painted in as each one arrives (cached ones appear immediately)
+  if (!useTiles) return failBack();
   const slotOf = new Map(), keys = [], pxTile = new Int32Array(N).fill(-1), pxUV = new Uint16Array(N);
   for (let o = 0; o < N; o++) {
     const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue;
@@ -1977,24 +1985,28 @@ async function rasterHi() {
   for (let k = 1; k <= keys.length; k++) counts[k] += counts[k - 1];
   const order = new Int32Array(counts[keys.length]), fill = counts.slice(0, keys.length);
   for (let o = 0; o < N; o++) if (pxTile[o] >= 0) order[fill[pxTile[o]]++] = o;
-  let pending = 0, got = 0, timer = null;
-  const paintTile = (sl, d) => {
-    for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], i = pxUV[o] * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; }
-    got++;
-    if (!credit) { credit = true; const cr = document.getElementById("mapcredit"); if (cr) { cr.textContent = src.credit; cr.hidden = false; } }
-  };
-  const flush = () => { timer = null; commit(); };
-  // nearest the middle of the screen first
-  const cxT = keys.reduce((a, k) => a + k[0], 0) / keys.length, cyT = keys.reduce((a, k) => a + k[1], 0) / keys.length;
-  const ord = keys.map((k, sl) => sl).sort((a, b) => Math.hypot(keys[a][0] - cxT, keys[a][1] - cyT) - Math.hypot(keys[b][0] - cxT, keys[b][1] - cyT));
-  await Promise.all(ord.map(sl => { pending++; return loadTile(type, z, keys[sl][0], keys[sl][1]).then(d => {
-    pending--; if (job !== hiJob || !d) return;
-    paintTile(sl, d);
-    if (!timer) timer = setTimeout(flush, performance.now() - lastC > 400 ? 60 : 300);
-  }); }));
+  let got = 0;
+  const datas = await Promise.all(keys.map(([tx, ty]) => loadTile(type, z, tx, ty)));
   if (job !== hiJob) return;
-  clearTimeout(timer); commit();
-  if (!got && !rasterHi.warned) { rasterHi.warned = true; toast("No se pudo cargar el detalle del mapa (imágenes satelitales): se usa la imagen básica."); }
+  datas.forEach((d, sl) => {
+    if (!d) return; got++;
+    for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], i = pxUV[o] * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; O[j4 + 3] = 255; }
+  });
+  if (!got) {
+    if (!rasterHi.warned) { rasterHi.warned = true; toast("No se pudo cargar el detalle del mapa (imágenes satelitales): se usa la imagen básica."); }
+    return failBack();
+  }
+  hiFailed = false; if (satImg) satImg.style("display", "none");
+  // a few tiles missing: use the one-level-up tile for those spots (a bit softer, never the old low-res picture)
+  if (got < keys.length && z > 0) {
+    const miss = datas.map((d, sl) => d ? -1 : sl).filter(sl => sl >= 0);
+    const parents = await Promise.all(miss.map(sl => loadTile(type, z - 1, keys[sl][0] >> 1, keys[sl][1] >> 1)));
+    if (job !== hiJob) return;
+    miss.forEach((sl, m) => { const d = parents[m]; if (!d) return; const ox = (keys[sl][0] & 1) * 128, oy = (keys[sl][1] & 1) * 128;
+      for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], uv = pxUV[o], u = ox + ((uv & 255) >> 1), v = oy + ((uv >> 8) >> 1), i = (v * 256 + u) * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; O[j4 + 3] = 255; } });
+  }
+  await commit(false);
+  if (cr) { cr.textContent = src.credit; cr.hidden = false; }
 }
 function makeProjection() {
   if (mapView === "globo") {
@@ -2022,7 +2034,11 @@ function redrawGeo() {
   drawBorders();
   renderMap();
   scheduleRaster(dragging);
-  if (TEX_URL[mapType]) { if (satHi) satHi.style("display", "none"); if (!dragging) scheduleHi(); }
+  if (TEX_URL[mapType]) {
+    const pk = mapView + "|" + proj.rotate().map(v => v.toFixed(2)) + "|" + proj.scale().toFixed(2);
+    if (satHi && pk !== hiProj) satHi.style("display", "none");      // the picture no longer matches: outlines only until the new one is ready
+    if (!dragging) scheduleHi();
+  }
 }
 function setMapView(v) {
   mapView = v;
@@ -2471,7 +2487,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091740";
+const BUILD = "202610091746";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
