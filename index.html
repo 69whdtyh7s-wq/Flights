@@ -2113,8 +2113,9 @@ function renderPlacesMap() {
   if (visited.has("AR")) visited.add("FK");
   gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
   if ([...visited].sort().join(",") !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
-  const sel = S.openPlace;
-  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: p.id === sel ? 5 : 3.5, sel: p.id === sel, dim: !!sel && p.id !== sel }))
+  const sel = S.openPlace, group = !sel && S.placeSet ? S.placeSet : null;   // one place selected, or a group from the search (a country, a continent)
+  const isSel = p => p.id === sel || (group && group.has(p.id));
+  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: isSel(p) ? 5 : 3.5, sel: isSel(p), dim: !!(sel || group) && !isSel(p) }))
     .sort((a, b) => a.sel - b.sel);
   gPlc.selectAll("circle").data(ds, d => d.id).join("circle").attr("class", d => "plc" + (d.dim ? " dim" : "") + (d.sel ? " sel" : ""))
     .selectAll("title").data(d => [d]).join("title").text(d => d.name + (d.cc ? " · " + country(d.cc) : ""));
@@ -2126,7 +2127,7 @@ function renderPlacesMap() {
 }
 function focusPlaces(id) {
   if (!svgSel || !zoom) return;
-  const ps = id ? placesAll().filter(p => p.id === id) : placesShown();
+  const ps = Array.isArray(id) ? placesAll().filter(p => id.includes(p.id)) : id ? placesAll().filter(p => p.id === id) : placesShown();
   if (!ps.length) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
   const pts = ps.map(p => [+p.lon, +p.lat]);
   if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
@@ -2187,7 +2188,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009103239";
+const BUILD = "20261009103516";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2811,7 +2812,7 @@ let LAYER = (() => { try { return localStorage.getItem("flights-layer") === "lug
 const isPlaces = () => LAYER === "lugares";
 function setLayer(l) {
   LAYER = l === "lugares" ? "lugares" : "vuelos"; try { localStorage.setItem("flights-layer", LAYER); } catch {}
-  S.open = null; S.focusIds = null; S.openPlace = null; closeAptCard(); S.year = "all";
+  S.open = null; S.focusIds = null; S.openPlace = null; S.placeSet = null; closeAptCard(); S.year = "all";
   render();   // same map view in both layers: no zoom when switching
 }
 /* every city of your flown flights is a visited place too (one per city, even with several airports) */
@@ -2951,7 +2952,7 @@ function openSearch(q) {
   searchQ = q || "";
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet searchsheet" role="dialog" aria-modal="true" aria-label="Buscar">
     <div class="sbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
-      <input id="sq" type="search" value="${esc(searchQ)}" placeholder="Vuelos, viajes, ciudades, países, continentes…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar">
+      <input id="sq" type="search" value="${esc(searchQ)}" placeholder="${isPlaces() ? "Lugares, países, continentes…" : "Vuelos, viajes, ciudades, países, continentes…"}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar">
       <button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     <div id="sres"></div>
   </div></div>`;
@@ -2981,6 +2982,7 @@ function drawSearch() {
   const box = $("#sres"); if (!box) return;
   const q = norm(searchQ).trim(), toks = q.split(/\s+/).filter(Boolean);
   const fl = all();
+  if (!toks.length && isPlaces()) { box.innerHTML = `<p class="hint">Buscá un lugar, un país o un continente para verlo en el mapa.</p>`; return; }
   if (!toks.length) {
     const tn = tripList().slice(0, 6);
     box.innerHTML = `<p class="hint">Buscá por número de vuelo, ciudad, aeropuerto, país, continente, aerolínea, avión, viaje, año o mes (ej.: “nov 2024”).</p>`
@@ -2989,6 +2991,17 @@ function drawSearch() {
   }
   const hit = hay => toks.every(t => hay.includes(t));
   const res = [];
+  if (isPlaces()) {   // in the places layer the search finds places, and shows them on the map
+    const ps = placesAll(), ph = p => norm([p.name, p.sub, country(p.cc), CONT_NAME[continent(p.cc)], CONT_ALIAS[continent(p.cc)], p.notes, p.date, p.auto ? [...p.years].join(" ") : placeYear(p), p.auto ? p.iatas.join(" ") : ""].filter(Boolean).join(" "));
+    const cm = new Map(); for (const p of ps) { const k = continent(p.cc); if (k) cm.set(k, (cm.get(k) || 0) + 1); }
+    res.push(["Continentes", [...cm].filter(([k]) => hit(norm(CONT_NAME[k] + " " + CONT_ALIAS[k]))).sort((a, b) => b[1] - a[1]).map(([k, n]) => sitem("placecont", k, "🌍", CONT_NAME[k], `${n} ${n === 1 ? "lugar" : "lugares"}`))]);
+    const cc = new Map(); for (const p of ps) if (p.cc) cc.set(p.cc, (cc.get(p.cc) || 0) + 1);
+    res.push(["Países", [...cc].filter(([c]) => hit(norm(country(c) + " " + c))).sort((a, b) => b[1] - a[1]).map(([c, n]) => sitem("placecountry", c, `<span class="fl-ic" aria-hidden="true">${flag(c)}</span>`, country(c), `${n} ${n === 1 ? "lugar" : "lugares"}`))]);
+    res.push(["Lugares", ps.filter(p => hit(ph(p))).sort((a, b) => a.name.localeCompare(b.name, "es")).slice(0, 60).map(p => sitem("place", p.id, "📍", p.name, [p.sub || country(p.cc), p.auto ? `${p.n} ${p.n === 1 ? "vuelo" : "vuelos"}` : placeDate(p.date)].filter(Boolean).join(" · ")))]);
+    const html = res.filter(([, items]) => items.length).map(([t, items]) => sgroup(t, items.join(""))).join("");
+    box.innerHTML = html || `<div class="empty"><b>Sin resultados</b><span>No encontramos lugares con “${esc(searchQ)}”.</span></div>`;
+    return;
+  }
   // trips
   const tl = tripList().filter(t => hit(norm([t.name, ...tripMeta(t.id).tags, tripMeta(t.id).notes, tripDates(t.legs)].join(" "))));
   const twins = [...new Set(tl.map(t => norm(t.name)))].map(k => tl.filter(t => norm(t.name) === k)).filter(g => tripsNamed(g[0].name).length > 1);
@@ -3035,6 +3048,17 @@ function tripSub(id) { const l = tripMap().get(id) || []; return l.length ? `${c
 const sgroup = (t, body) => `<section class="sq-g"><h3>${t}</h3><div class="sq-list">${body}</div></section>`;
 const sitem = (k, v, icon, title, sub) => `<button type="button" class="sq-it" data-sqk="${k}" data-sqv="${esc(v)}"><span class="sq-ic">${icon}</span><span class="sq-tx"><b>${esc(title)}</b><small>${esc(sub)}</small></span><span class="chev-r" aria-hidden="true">›</span></button>`;
 function searchPick(k, v) {
+  if (k === "place" || k === "placecountry" || k === "placecont") {
+    closeSheet(); if (S.year !== "all") S.year = "all";
+    const ids = k === "place" ? [v] : placesAll().filter(p => k === "placecountry" ? p.cc === v : continent(p.cc) === v).map(p => p.id);
+    S.openPlace = k === "place" ? v : null; S.placeSet = k === "place" ? null : new Set(ids);
+    if (isPhone() && document.body.dataset.view !== "vuelos") setView("vuelos", false);
+    render();
+    if (phoneMap()) { sheetState = "peek"; layoutSheet(); }
+    setTimeout(() => focusPlaces(k === "place" ? v : ids), 60);
+    if (k === "place") setTimeout(() => { const r = svgSel.node().getBoundingClientRect(); showPlaceCard(v, r.left + r.width / 2, r.top + r.height / 2); }, 650);
+    return;
+  }
   if (k === "year") { closeSheet(); S.year = v; S.open = null; render(); focusSelection(); toast("Mostrando " + v); return; }
   if (k === "flight") {
     const f = all().find(x => x.id === v); if (!f) return;
@@ -4470,7 +4494,7 @@ function showPlaceCard(id, x, y) {
   else { let lx = x + 14, ty = y - 20; if (lx + w > vw - 10) lx = x - w - 14; lx = Math.max(10, Math.min(vw - w - 10, lx)); ty = Math.max(10, Math.min(vh - h - 10, ty)); el.style.left = lx + "px"; el.style.top = ty + "px"; }
 }
 document.addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-aptclose]"); if (b) { closeAptCard(); if (S.openPlace) { S.openPlace = null; renderMap(); renderList(); } return; }
+  const b = e.target.closest && e.target.closest("[data-aptclose]"); if (b) { closeAptCard(); if (S.openPlace || S.placeSet) { S.openPlace = null; S.placeSet = null; renderMap(); renderList(); } return; }
   const card = document.getElementById("aptcard");
   if (card && !card.contains(e.target) && !e.target.closest("#map")) closeAptCard();
   if (card && e.target.closest("#aptcard [data-rk]")) setTimeout(closeAptCard, 0);
@@ -4670,7 +4694,7 @@ function setSheet(st, refocus) {
   document.getElementById("map").addEventListener("click", e => {
     if (aptAt(e)) return;                                   // tapped an airport: its card opens instead
     closeAptCard();
-    if (S.openPlace) { S.openPlace = null; renderMap(); renderList(); }
+    if (S.openPlace || S.placeSet) { S.openPlace = null; S.placeSet = null; renderMap(); renderList(); }
     if (phoneMap() && sheetState !== "peek") setSheet("peek", !!(S.open || S.focusIds));
   });
   const relayout = () => requestAnimationFrame(() => layoutSheet());
