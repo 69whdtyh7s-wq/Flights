@@ -928,7 +928,20 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .sheet .scard{box-shadow:none}
 
 #mapcard[data-view="globo"] .map .sphere{fill:var(--sea);stroke:var(--line);stroke-width:1}
-#mapcard[data-view="globo"] .map{background:var(--surface)}
+/* globe: deep space behind it, with stars and a soft blue atmosphere */
+#mapcard[data-view="globo"] .map{background-color:#04060c;
+  background-image:radial-gradient(ellipse at 50% 50%,rgba(40,70,140,.28),transparent 62%),
+    radial-gradient(1.2px 1.2px at 23px 41px,rgba(255,255,255,.85),transparent),radial-gradient(1px 1px at 97px 13px,rgba(255,255,255,.6),transparent),
+    radial-gradient(1px 1px at 151px 88px,rgba(255,255,255,.7),transparent),radial-gradient(1.4px 1.4px at 61px 133px,rgba(255,255,255,.9),transparent),
+    radial-gradient(1px 1px at 183px 161px,rgba(255,255,255,.5),transparent),radial-gradient(1px 1px at 9px 179px,rgba(255,255,255,.65),transparent),
+    radial-gradient(1px 1px at 131px 199px,rgba(200,215,255,.7),transparent),radial-gradient(1.3px 1.3px at 211px 57px,rgba(255,240,220,.8),transparent),
+    radial-gradient(1px 1px at 77px 241px,rgba(255,255,255,.55),transparent),radial-gradient(1px 1px at 233px 223px,rgba(255,255,255,.7),transparent);
+  background-size:100% 100%,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px,251px 263px}
+#mapcard[data-view="globo"] .map .sphere{stroke:rgba(140,190,255,.35);stroke-width:1}
+.map .atmo{display:none;pointer-events:none}
+#mapcard[data-view="globo"] .map .atmo{display:block}
+#mapcard[data-view="globo"] .map .aptl,#mapcard[data-view="globo"] .map .plcl{stroke:#04060c}
+#mapcard[data-view="globo"] .legend{color:var(--ink)}
 #mapcard[data-view="globo"] .map .grat{stroke:color-mix(in srgb,var(--line) 60%,transparent)}
 #mapcard[data-view="globo"] .map{cursor:grab}
 
@@ -1688,6 +1701,7 @@ function isVisible(lon, lat) {
 function redrawGeo() {
   if (!gLayer) return;
   gLayer.select(".sphere").attr("d", geoPath({ type:"Sphere" }));
+  if (mapView === "globo") { const [cx, cy] = proj.translate(); gLayer.select(".atmo").attr("cx", cx).attr("cy", cy).attr("r", proj.scale() * 1.11); }
   gLayer.select(".grat").attr("d", geoPath(d3.geoGraticule10()));
   if (!updateLOD(true)) gLayer.select(".lands").selectAll("path").attr("d", geoPath);
   drawBorders();
@@ -1757,6 +1771,9 @@ function initMap() {
   makeProjection();
   svgSel = d3.select("#map");
   gLayer = svgSel.append("g");
+  const defs = svgSel.append("defs"), atg = defs.append("radialGradient").attr("id", "atmo-g");
+  [[0, "rgba(120,180,255,0)"], [.86, "rgba(120,180,255,0)"], [.905, "rgba(120,180,255,.45)"], [1, "rgba(120,180,255,0)"]].forEach(([o, c]) => atg.append("stop").attr("offset", o).attr("stop-color", c));
+  gLayer.append("circle").attr("class", "atmo").attr("fill", "url(#atmo-g)");
   gLayer.append("path").attr("class","sphere").attr("d", geoPath({ type:"Sphere" }));
   satImg = gLayer.append("image").attr("class","sat").attr("x", 0).attr("y", 0).attr("width", W).attr("height", H).attr("preserveAspectRatio", "none").style("display", "none");
   gLayer.append("path").attr("class","grat").attr("vector-effect","non-scaling-stroke").attr("d", geoPath(d3.geoGraticule10()));
@@ -2092,7 +2109,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009035300";
+const BUILD = "20261009035413";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
