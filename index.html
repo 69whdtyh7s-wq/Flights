@@ -2171,7 +2171,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009094330";
+const BUILD = "20261009094928";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2334,11 +2334,12 @@ function closePop() { if (!S.open) return; S.open = null; S.confirmDel = null; r
   document.addEventListener("pointerup", () => { if (!d) return; clampPop(d.el); const r = d.el.getBoundingClientRect(); popPos = [r.left, r.top]; d = null; });
   window.addEventListener("resize", () => { const el = document.getElementById("flpop"); if (!el) return; if (!popMode()) { render(); return; } if (popPos) clampPop(el); });
 })();
-function flightRow(f, noDetail, noDays) {
+function flightRow(f, noDetail, noDays, loose) {
   const d = new Date(f.depT);
   const day = f.date ? +f.date.slice(8,10) : d.getDate(), mon = f.date ? MONTHS[+f.date.slice(5,7)-1] : "";
   let pill = "";
   if (f.demo) pill = `<span class="pill ex">Ejemplo</span>`;
+  if (loose) pill += ` <span class="pill ex" title="Este vuelo cae dentro del viaje pero no está agregado a él">Sin viaje</span>`;
   if (!f.past) {
     const r = relDays(f.depT);
     const txt = r <= 0 ? (Date.now() >= f.depT ? "En vuelo" : "Hoy") : r === 1 ? "Mañana" : `En ${r} días`;
@@ -2587,7 +2588,9 @@ function renderList() {
       let k = tripKey(f);
       if (!k) { out += flightRow(f, fw); i++; continue; }
       while (pm.has(k)) k = pm.get(k);                      // start from the outermost trip
-      const inK = x => { let t = tripKey(x); while (t) { if (t === k) return true; t = pm.get(t); } return false; };
+      const kl = tm.get(k) || [], ka = kl.length ? kl[0].depT : 0, kb = kl.length ? kl[kl.length - 1].depT : 0;
+      // a flight with no trip that happens during this trip stays inside its box instead of splitting it
+      const inK = x => { let t = tripKey(x); if (!t) return x.depT >= ka && x.depT <= kb; while (t) { if (t === k) return true; t = pm.get(t); } return false; };
       let j = i; while (j < list.length && inK(list[j])) j++;
       const legs = tm.get(k) || [];
       const own = list.slice(i, j).filter(x => tripKey(x) === k).length;
@@ -2600,7 +2603,7 @@ function renderList() {
         let h = "", prev = null;
         for (let a = 0; a < arr.length; ) {
           let ck = tripKey(arr[a]); while (ck && pm.get(ck) !== outer && ck !== outer) ck = pm.get(ck);
-          if (!ck || ck === outer) { const x = arr[a]; h += flightRow(x, fw, S.tab === "up" && !!x.date && x.date === prev); prev = x.date; a++; continue; }
+          if (!ck || ck === outer) { const x = arr[a]; h += flightRow(x, fw, S.tab === "up" && !!x.date && x.date === prev, !ck); prev = x.date; a++; continue; }
           prev = null;
           const inC = x => { let t = tripKey(x); while (t) { if (t === ck) return true; t = pm.get(t); } return false; };
           let b2 = a; while (b2 < arr.length && inC(arr[b2])) b2++;
@@ -2617,8 +2620,11 @@ function renderList() {
     return out;
   };
   if (S.tab === "up") { el.innerHTML = rowsHTML(items); return; }
+  // a trip that crosses New Year stays whole, under the year it ends; so do loose flights that happen during it
+  const gtm = tripMap(), gpm = tripParents(gtm), roots = [...gtm].filter(([id]) => !gpm.has(id)).map(([id, l]) => ({ id, a:l[0].depT, b:l[l.length - 1].depT, y:l[l.length - 1].year }));
+  const gYear = f => { let k = tripKey(f); if (k) { while (gpm.has(k)) k = gpm.get(k); const r = roots.find(x => x.id === k); return r ? r.y : f.year; } const r = roots.find(x => f.depT >= x.a && f.depT <= x.b); return r ? r.y : f.year; };
   const groups = [];
-  for (const t of items) { const g = groups[groups.length - 1]; if (g && g.y === t.year) g.items.push(t); else groups.push({ y:t.year, items:[t] }); }
+  for (const t of items) { const y = gYear(t), g = groups[groups.length - 1]; if (g && g.y === y) g.items.push(t); else groups.push({ y, items:[t] }); }
   JUMP_OPTS = groups.map(g => ({ v:g.y, l:g.y || "Sin fecha", s:`${nFl(g.items)} ${nFl(g.items) === 1 ? "vuelo" : "vuelos"}` }));
   let html = groups.length > 1 ? `<div class="yjump"><button class="ydd sm" type="button" data-ydd="jump" aria-haspopup="listbox">Ir a un año${CHEV_DOWN}</button></div>` : "";
   for (const g of groups) {
