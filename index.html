@@ -2187,7 +2187,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009103032";
+const BUILD = "20261009103239";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3605,26 +3605,43 @@ function showPlaceSugg(v, geo) {
   const box = $("#s-pl"); if (!box) return;
   const local = cityHits(v);
   const dup = (x, l) => l.some(g => samePlace(g, x) || (g.cc === x.cc && norm(g.name) === norm(x.name)));
-  plcHits = [...local.slice(0, 3), ...geo.filter(g => !dup(g, local.slice(0, 3)))];
-  plcHits = [...plcHits, ...local.slice(3).filter(l => !dup(l, plcHits))].slice(0, 8);
+  const strong = local.filter(l => norm(l.name).startsWith(norm(v))).slice(0, 2);   // only clear matches go before the online results
+  plcHits = [...strong, ...geo.filter(g => !dup(g, strong))];
+  plcHits = [...plcHits, ...local.filter(l => !dup(l, plcHits))].slice(0, 8);
   box.hidden = !plcHits.length;
   box.innerHTML = plcHits.map((p, i) => `<button type="button" class="sg" role="option" data-i="${i}" data-name="${esc(p.name)}"><span class="sg-code">📍</span><span class="sg-txt"><b>${esc(p.name)}</b><small>${esc(p.sub || "")}</small></span>${p.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(p.cc)}</span>` : ""}</button>`).join("");
   box.querySelectorAll(".sg").forEach(o => o.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); pickPlace(+o.dataset.i); }));
 }
+/* online search: Photon (OpenStreetMap, made for typing: "cadaq" already finds Cadaqués, any town or village), Nominatim as backup */
+const PLACE_RANK = { city:0, town:1, village:2, hamlet:3, suburb:4, locality:4, island:4, state:6, country:7 };
 async function geoSearch(v) {
   plcCtl?.abort(); const my = plcCtl = new AbortController();
+  const done = geo => { if (my !== plcCtl || ($("#pl-q")?.value || "").trim() !== v) return; plcGeo[norm(v)] = geo; showPlaceSugg(v, geo); };
+  try {
+    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(v)}&limit=10`, { signal:my.signal });
+    if (!r.ok) throw 0;
+    const j = await r.json();
+    const geo = (j.features || []).map(f => {
+      const p = f.properties || {}, c = (f.geometry || {}).coordinates || [], cc = (p.countrycode || "").toUpperCase();
+      const region = p.state || p.county || "";
+      const kind = p.osm_key === "place" ? (PLACE_RANK[p.osm_value] ?? 5) : 5;
+      return { name:p.name || "", sub:[region && region !== p.name ? region : "", country(cc) || p.country || ""].filter(Boolean).join(", "), cc, lat:+c[1], lon:+c[0], kind };
+    }).filter(p => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lon))
+      .sort((a, b) => a.kind - b.kind)                                   // towns and villages before streets or shops with the same name
+      .filter((p, i, a) => a.findIndex(q => norm(q.name) === norm(p.name) && q.cc === p.cc && Math.abs(q.lat - p.lat) < .2) === i)
+      .slice(0, 6);
+    return done(geo);
+  } catch (e) { if (e && e.name === "AbortError") return; }
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=es&q=${encodeURIComponent(v)}`, { signal:my.signal });
-    if (!r.ok || my !== plcCtl) return;
+    if (!r.ok) return;
     const j = await r.json();
-    if (($("#pl-q")?.value || "").trim() !== v) return;
-    const geo = (Array.isArray(j) ? j : []).map(x => {
+    done((Array.isArray(j) ? j : []).map(x => {
       const a = x.address || {}, cc = (a.country_code || "").toUpperCase();
       const name = x.name || a.city || a.town || a.village || (x.display_name || "").split(",")[0];
       const region = a.state || a.region || a.province || a.county || "";
       return { name, sub:[region && region !== name ? region : "", country(cc) || a.country || ""].filter(Boolean).join(", "), cc, lat:+x.lat, lon:+x.lon };
-    }).filter(p => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lon));
-    plcGeo[norm(v)] = geo; showPlaceSugg(v, geo);
+    }).filter(p => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lon)));
   } catch {}
 }
 function pickPlace(i) {
