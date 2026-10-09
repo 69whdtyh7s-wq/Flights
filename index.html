@@ -730,6 +730,20 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* year dropdown */
+.ydd{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 14px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer;white-space:nowrap}
+.ydd.on{background:var(--ink);color:var(--bg)}
+.ydd.sm{height:32px;font-size:13.5px}
+.ydd-ch{width:14px;height:14px;opacity:.7;transition:transform .15s}
+.ydd[aria-expanded] .ydd-ch{transform:rotate(180deg)}
+.ydd-menu{position:fixed;z-index:60;min-width:190px;overflow-y:auto;overscroll-behavior:contain;padding:6px;border-radius:16px;background:color-mix(in srgb,var(--surface) 94%,transparent);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 18px 50px rgba(0,0,0,.25),0 0 0 1px var(--line);animation:popin .14s ease-out}
+.ydd-o{display:grid;grid-template-columns:minmax(0,1fr) 18px;grid-template-rows:auto auto;column-gap:10px;width:100%;border:0;background:transparent;text-align:left;padding:8px 12px;border-radius:10px;color:var(--ink);-webkit-user-select:none;user-select:none}
+.ydd-o b{font-weight:600;font-size:15.5px;grid-column:1}
+.ydd-o small{grid-column:1;font-size:12px;color:var(--muted)}
+.ydd-o svg{grid-column:2;grid-row:1 / span 2;align-self:center;width:18px;height:18px;color:var(--accent)}
+.ydd-o.hot,.ydd-o:hover{background:var(--fill)}
+.ydd-o.hot{background:var(--accent);color:var(--accent-ink)}.ydd-o.hot small,.ydd-o.hot svg{color:var(--accent-ink)}
 .adbkey{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 /* visited places layer */
 :root{--place:#E8534A}
@@ -934,6 +948,8 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
   body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:226px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
   body[data-view="vuelos"] #filters .chip{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12);height:36px;display:inline-flex;align-items:center}
   body[data-view="vuelos"] #filters .chip.c,body[data-view="vuelos"] #filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  body[data-view="vuelos"] #filters .ydd{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+  body[data-view="vuelos"] #filters .ydd.on{background:var(--ink);color:var(--bg)}
   html:has(body[data-view="vuelos"]),body[data-view="vuelos"]{background:var(--sea);min-height:100dvh;min-height:var(--fullh,100dvh)}
   body[data-view="vuelos"] #mapcard{display:block!important;position:fixed;inset:0 0 auto 0;height:max(100%,100lvh,100dvh,var(--fullh,100%));z-index:1;margin:0;width:auto;max-width:none;border:0;border-radius:0;box-shadow:none}
   body[data-view="vuelos"] #mapcard .map{width:100%;height:100%;min-height:0;display:block;border-radius:0}
@@ -1922,7 +1938,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009033057";
+const BUILD = "20261009033305";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -1958,9 +1974,77 @@ function renderFilters() {
   const lg = $("#legend"); if (lg) lg.innerHTML = isPlaces() ? `<span><i class="pl"></i>Lugares visitados</span>` : `<span><i></i>Volados</span><span><i class="up"></i>Próximos</span>`;
   const zl = $("#z-layer"); if (zl) zl.classList.toggle("on", isPlaces());
   if (S.year !== "all" && !years.includes(S.year)) S.year = "all";
-  $("#filters").innerHTML = `<span class="lbl">Año</span>` + ["all", ...years].map(y =>
-    `<button class="chip" type="button" data-year="${y}" aria-pressed="${S.year === y}">${y === "all" ? "Todos" : y}</button>`).join("");
+  const n = y => isPlaces() ? placesAll().filter(p => p.auto ? p.years.has(y) : placeYear(p) === y).length : all().filter(f => f.year === y).length;
+  const unit = isPlaces() ? ["lugar", "lugares"] : ["vuelo", "vuelos"], tot = isPlaces() ? placesAll().length : all().length;
+  YEAR_OPTS = [{ v:"all", l:"Todos los años", s:`${tot} ${tot === 1 ? unit[0] : unit[1]}` }, ...years.map(y => { const k = n(y); return { v:y, l:y, s:`${k} ${k === 1 ? unit[0] : unit[1]}` }; })];
+  $("#filters").innerHTML = `<button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? "Todos los años" : esc(S.year)}${CHEV_DOWN}</button>`;
 }
+/* ---------- year dropdown: tap to open, or press and slide to an option and let go (it scrolls near the edges) ---------- */
+const CHEV_DOWN = `<svg class="ydd-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+let YEAR_OPTS = [], JUMP_OPTS = [], ddMenu = null;
+function ddClose() { if (ddMenu) { ddMenu.el.remove(); cancelAnimationFrame(ddMenu.raf); ddMenu = null; } document.querySelectorAll(".ydd[aria-expanded]").forEach(b => b.removeAttribute("aria-expanded")); }
+function ddPick(kind, v) {
+  ddClose();
+  if (kind === "year") { S.year = v; S.open = null; render(); if (isPlaces()) focusPlaces(); else focusSelection(); return; }
+  if (kind === "jump") { const h = document.getElementById("yr-" + v); if (h) h.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); }
+}
+function ddOpen(btn) {
+  ddClose();
+  const kind = btn.dataset.ydd, opts = kind === "year" ? YEAR_OPTS : JUMP_OPTS, cur = kind === "year" ? S.year : null;
+  const el = document.createElement("div"); el.className = "ydd-menu"; el.setAttribute("role", "listbox");
+  el.innerHTML = opts.map(o => `<button type="button" class="ydd-o${o.v === cur ? " cur" : ""}" role="option" data-ddv="${esc(o.v)}"><b>${esc(o.l)}</b>${o.s ? `<small>${esc(o.s)}</small>` : ""}${o.v === cur ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>` : ""}</button>`).join("");
+  document.body.appendChild(el);
+  const r = btn.getBoundingClientRect(), vh = window.innerHeight, vw = window.innerWidth;
+  const below = vh - r.bottom - 12, above = r.top - 12, down = below >= Math.min(320, el.scrollHeight) || below >= above;
+  el.style.maxHeight = Math.max(160, Math.min(420, down ? below : above)) + "px";
+  el.style.left = Math.max(8, Math.min(vw - el.offsetWidth - 8, r.left)) + "px";
+  el.style.top = down ? (r.bottom + 6) + "px" : (r.top - 6 - el.offsetHeight) + "px";
+  const c = el.querySelector(".cur"); if (c) el.scrollTop = c.offsetTop - el.clientHeight / 2 + c.offsetHeight / 2;
+  btn.setAttribute("aria-expanded", "true");
+  ddMenu = { el, btn, kind, raf:0, vy:0 };
+  el.addEventListener("click", e => { const o = e.target.closest("[data-ddv]"); if (o) ddPick(kind, o.dataset.ddv); });
+}
+function ddHover(x, y) {
+  const m = ddMenu; if (!m) return null;
+  const r = m.el.getBoundingClientRect(), edge = 36;
+  m.vy = y < r.top + edge ? -Math.min(18, (r.top + edge - y) / 3) : y > r.bottom - edge ? Math.min(18, (y - (r.bottom - edge)) / 3) : 0;   // scroll while the finger rests near an edge
+  if (m.vy && !m.raf) { const step = () => { if (!ddMenu || !ddMenu.vy) { if (ddMenu) ddMenu.raf = 0; return; } ddMenu.el.scrollTop += ddMenu.vy; ddHover(ddMenu.lx, ddMenu.ly); ddMenu.raf = requestAnimationFrame(step); }; m.raf = requestAnimationFrame(step); }
+  m.lx = x; m.ly = y;
+  const inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+  const o = inside ? document.elementFromPoint(x, Math.max(r.top + 1, Math.min(r.bottom - 1, y)))?.closest?.(".ydd-o") : null;
+  m.el.querySelectorAll(".ydd-o.hot").forEach(b => { if (b !== o) b.classList.remove("hot"); });
+  if (o && !o.classList.contains("hot")) { o.classList.add("hot"); if (navigator.vibrate) try { navigator.vibrate(4); } catch {} }
+  return o;
+}
+let ddDrag = null;
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest && e.target.closest(".ydd");
+  if (!b) { if (ddMenu && !e.target.closest(".ydd-menu")) ddClose(); return; }
+  e.preventDefault();
+  if (ddMenu && ddMenu.btn === b) { ddClose(); return; }
+  ddOpen(b);
+  ddDrag = { x:e.clientX, y:e.clientY, moved:false, id:e.pointerId };
+  try { b.setPointerCapture(e.pointerId); } catch {}
+});
+document.addEventListener("pointermove", e => {
+  if (!ddDrag || e.pointerId !== ddDrag.id || !ddMenu) return;
+  if (!ddDrag.moved && Math.hypot(e.clientX - ddDrag.x, e.clientY - ddDrag.y) > 8) ddDrag.moved = true;
+  if (ddDrag.moved) { e.preventDefault(); ddHover(e.clientX, e.clientY); }
+}, { passive:false });
+const ddEnd = e => {
+  if (!ddDrag || e.pointerId !== ddDrag.id) return;
+  const d = ddDrag; ddDrag = null;
+  if (!ddMenu) return;
+  ddMenu.vy = 0;
+  if (!d.moved) return;                                    // a plain tap: the menu stays open to choose
+  const o = e.type === "pointerup" ? ddHover(e.clientX, e.clientY) : null;
+  if (o) ddPick(ddMenu.kind, o.dataset.ddv); else ddMenu.el.querySelectorAll(".hot").forEach(x => x.classList.remove("hot"));
+};
+document.addEventListener("pointerup", ddEnd); document.addEventListener("pointercancel", ddEnd);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && ddMenu) ddClose(); });
+document.addEventListener("keydown", e => { const b = e.target.closest && e.target.closest(".ydd"); if (b && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown")) { e.preventDefault(); ddOpen(b); ddMenu?.el.querySelector(".cur, .ydd-o")?.focus(); } });
+window.addEventListener("resize", () => ddClose());
+document.addEventListener("scroll", e => { if (ddMenu && !ddMenu.el.contains(e.target)) ddClose(); }, true);
 
 function renderBoard() {
   const past = filtered().filter(f => f.past);
@@ -2234,7 +2318,8 @@ function renderList() {
   if (S.tab === "up") { el.innerHTML = rowsHTML(items); return; }
   const groups = [];
   for (const t of items) { const g = groups[groups.length - 1]; if (g && g.y === t.year) g.items.push(t); else groups.push({ y:t.year, items:[t] }); }
-  let html = groups.length > 1 ? `<div class="yjump" aria-label="Ir a un año">${groups.map(g => `<button type="button" data-jump="${esc(g.y)}">${esc(g.y || "—")}<span>${nFl(g.items)}</span></button>`).join("")}</div>` : "";
+  JUMP_OPTS = groups.map(g => ({ v:g.y, l:g.y || "Sin fecha", s:`${nFl(g.items)} ${nFl(g.items) === 1 ? "vuelo" : "vuelos"}` }));
+  let html = groups.length > 1 ? `<div class="yjump"><button class="ydd sm" type="button" data-ydd="jump" aria-haspopup="listbox">Ir a un año${CHEV_DOWN}</button></div>` : "";
   for (const g of groups) {
     const legs = g.items;
     const km = legs.reduce((s, x) => s + x.km, 0), mins = legs.reduce((s, x) => s + x.mins, 0);
