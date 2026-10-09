@@ -778,6 +778,20 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* repeated flights review */
+.dupcard{background:var(--surface);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.duphd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.duphd b{font-size:17px;font-weight:700}
+.duphd span{font-size:13px;color:var(--muted)}
+.duphd .pill{margin-left:auto}
+.duptbl{overflow-x:auto;margin-inline:-14px;padding-inline:14px}
+.duptbl table{border-collapse:collapse;width:100%;font-size:13px}
+.duptbl th,.duptbl td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.duptbl thead th{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.duptbl tbody th{font-weight:600;color:var(--muted);white-space:nowrap;font-size:12.5px}
+.duptbl tr.diff td{background:color-mix(in srgb,var(--sky) 10%,transparent)}
+.duptbl .res{background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
+.duptbl thead .res{color:var(--accent-text)}
 /* settings: quick actions */
 .qacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .qbtn{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:0;border-radius:18px;background:var(--surface);color:var(--accent-text);font:inherit;font-size:13.5px;font-weight:600;text-align:center;padding:10px;cursor:pointer;box-shadow:var(--card-shadow);line-height:1.2}
@@ -2171,7 +2185,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009095315";
+const BUILD = "20261009095609";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3266,13 +3280,46 @@ function renderStats() {
   markLogos($("#stats"));
 }
 
+/* ---------- review repeated flights: see every copy, then merge them or mark them as different flights ---------- */
+function openDupReview() {
+  const groups = dupGroups();
+  if (!groups.length) { closeSheet(); toast("No hay vuelos repetidos"); return; }
+  const FIELDS = [["num","Número"],["airline","Aerolínea"],["dep","Sale"],["arr","Llega"],["aircraft","Avión"],["reg","Matrícula"],["seat","Asiento"],["cls","Clase"],["trip","Viaje"],["notes","Notas"]];
+  const val = (f, k) => k === "cls" ? (CLASSES[f.cls] || "") : String(f[k] || "");
+  const card = (g, gi) => {
+    const m = mergedCopy(g).keep, f0 = g[0];
+    const rows = FIELDS.filter(([k]) => g.some(f => val(f, k)) || val(m, k)).map(([k, t]) => {
+      const vs = g.map(f => val(f, k)), diff = new Set(vs.filter(Boolean)).size > 1 || (vs.some(v => !v) && vs.some(Boolean));
+      return `<tr class="${diff ? "diff" : ""}"><th>${t}</th>${vs.map(v => `<td>${v ? esc(v) : `<span class="muted">—</span>`}</td>`).join("")}<td class="res">${val(m, k) ? esc(val(m, k)) : `<span class="muted">—</span>`}</td></tr>`;
+    }).join("");
+    return `<section class="dupcard" data-dg="${gi}">
+      <div class="duphd"><b>${esc(f0.num || "Sin número")}</b><span>${esc(f0.date.split("-").reverse().join("/"))} · ${esc(f0.from?.iata || "?")} → ${esc(f0.to?.iata || "?")}</span><span class="pill ex">${g.length} copias</span></div>
+      <div class="duptbl"><table><thead><tr><th></th>${g.map((_, i) => `<th>Copia ${i + 1}</th>`).join("")}<th class="res">Fusionado</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="acts"><button class="btn primary" type="button" data-dupmerge="${gi}">Fusionar</button><button class="btn" type="button" data-dupkeep="${gi}">Son vuelos distintos</button></div>
+    </section>`;
+  };
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet dupsheet" role="dialog" aria-modal="true" aria-labelledby="dp-t">
+    <div class="hd"><h2 id="dp-t">Vuelos repetidos <span class="cnt">${groups.length}</span></h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <p class="hint">Estos vuelos tienen el mismo número y la misma fecha. Al fusionar queda un solo vuelo con todos los datos (columna <b>Fusionado</b>); las filas marcadas son las que no coinciden. Si de verdad son vuelos distintos, marcalos y no se vuelven a señalar.</p>
+    ${groups.length > 1 ? `<div class="acts"><button class="btn primary" type="button" data-dupmerge="all">Fusionar los ${groups.length}</button></div>` : ""}
+    ${groups.map(card).join("")}
+  </div></div>`;
+  const root = $("#sheet-root");
+  root.querySelectorAll("[data-dupmerge]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const sel = b.dataset.dupmerge === "all" ? groups : [groups[+b.dataset.dupmerge]];
+    try { const n = await removeDuplicates(sel); toast(sel.length > 1 ? `${sel.length} vuelos fusionados` : "Vuelo fusionado"); if (S.storage === "db") setTimeout(openDupReview, 700); else openDupReview(); }
+    catch { b.disabled = false; toast("No se pudo fusionar. Probá de nuevo."); }
+  });
+  root.querySelectorAll("[data-dupkeep]").forEach(b => b.onclick = () => { ignoreDup(groups[+b.dataset.dupkeep]); toast("Marcados como vuelos distintos"); openDupReview(); });
+}
 let dupWarned = false;
 function render() {
   if (S.loaded && !dupWarned && S.real.length) {
     dupWarned = true;
     setTimeout(() => { const g = dupGroups(), n = g.reduce((s, x) => s + x.length - 1, 0); if (!n || document.querySelector(".dlg-scrim")) return;
-      dialog({ title:"Vuelos repetidos", body:`<p>Encontramos <b>${n} ${n === 1 ? "vuelo repetido" : "vuelos repetidos"}</b> (mismo número y fecha), por ejemplo ${esc(g[0][0].num || "")} del ${esc(g[0][0].date.split("-").reverse().join("/"))}.</p><p>Se queda la copia más completa de cada uno y no se pierde nada de lo que tengan las otras.</p>`,
-        okText:"Quitar repetidos", cancelText:"Ahora no", busyText:"Quitando…", onOk: async () => { try { const k = await removeDuplicates(); toast(`Se quitaron ${k} ${k === 1 ? "vuelo repetido" : "vuelos repetidos"}`); } catch { toast("No se pudo. Probá de nuevo."); } } }); }, 900);
+      dialog({ title:"Vuelos repetidos", body:`<p>Encontramos <b>${n} ${n === 1 ? "vuelo repetido" : "vuelos repetidos"}</b> (mismo número y fecha), por ejemplo ${esc(g[0][0].num || "")} del ${esc(g[0][0].date.split("-").reverse().join("/"))}.</p><p>Podés ver las copias lado a lado y fusionarlas en un solo vuelo sin perder datos.</p>`,
+        okText:"Revisar y fusionar", cancelText:"Ahora no", busyText:"Abriendo…", onOk: async () => { setTimeout(openDupReview, 0); } }); }, 900);
   }
   if (S.loaded && !tripMigrating && S.real.some(f => f.trip && !f.tripId)) setTimeout(ensureTripIds, 0);
   else if (S.loaded && Object.keys(TRIPMETA).length && !tripMigrating) { const ids = new Set(S.real.map(f => f.tripId)); if (Object.keys(TRIPMETA).some(k => !ids.has(k) && S.real.some(f => f.tripId && norm(f.trip) === norm(k)))) setTimeout(ensureTripIds, 0); }
@@ -4111,25 +4158,29 @@ function flightKey(f) {
   const n = normNum(f.num);
   return n ? n + "|" + (f.date || "") : "x|" + (f.date || "") + "|" + (f.from?.iata || "") + "|" + (f.to?.iata || "") + "|" + (f.dep || "");
 }
+const DUP_IGN_KEY = "flights-dup-ignore";
+let DUP_IGNORE = (() => { try { return new Set(JSON.parse(localStorage.getItem(DUP_IGN_KEY) || "[]")); } catch { return new Set(); } })();
+const dupSig = g => g.map(f => f.id).sort().join(",");
 function dupGroups() {
   const m = new Map(); for (const f of S.real) { const k = flightKey(f); if (!m.has(k)) m.set(k, []); m.get(k).push(f); }
-  return [...m.values()].filter(g => g.length > 1);
+  return [...m.values()].filter(g => g.length > 1 && !DUP_IGNORE.has(dupSig(g)));
 }
+function ignoreDup(g) { DUP_IGNORE.add(dupSig(g)); try { localStorage.setItem(DUP_IGN_KEY, JSON.stringify([...DUP_IGNORE])); } catch {} }
 /* keep the most complete copy of each repeated flight, fill its gaps from the others, delete the rest */
-async function removeDuplicates() {
-  const groups = dupGroups(); if (!groups.length) return 0;
+function mergedCopy(g) {
   const score = f => ["num","airline","dep","arr","aircraft","seat","cls","notes","trip","reg","depReal","arrReal"].filter(k => String(f[k] || "").trim()).length;
-  const keep = [], drop = [];
-  for (const g of groups) {
-    const sorted = [...g].sort((a, b) => score(b) - score(a) || (b.updated || 0) - (a.updated || 0)), k = { ...sorted[0] };
-    for (const o of sorted.slice(1)) {
-      for (const f of ["airline","alc","dep","arr","aircraft","seat","cls","reg","depReal","arrReal","durationMin"]) if (!k[f] && o[f]) k[f] = o[f];
-      if (!k.trip && o.trip) { k.trip = o.trip; k.tripId = o.tripId || ""; }
-      if (o.notes && o.notes !== k.notes) k.notes = [k.notes, o.notes].filter(Boolean).join(" · ");
-      drop.push(o.id);
-    }
-    keep.push(k);
+  const sorted = [...g].sort((a, b) => score(b) - score(a) || (b.updated || 0) - (a.updated || 0)), k = { ...sorted[0] };
+  for (const o of sorted.slice(1)) {
+    for (const f of ["airline","alc","dep","arr","aircraft","seat","cls","reg","depReal","arrReal","durationMin"]) if (!k[f] && o[f]) k[f] = o[f];
+    if (!k.trip && o.trip) { k.trip = o.trip; k.tripId = o.tripId || ""; }
+    if (o.notes && o.notes !== k.notes && !(k.notes || "").includes(o.notes)) k.notes = [k.notes, o.notes].filter(Boolean).join(" · ");
   }
+  return { keep:k, drop:sorted.slice(1).map(o => o.id) };
+}
+async function removeDuplicates(only) {
+  const groups = only || dupGroups(); if (!groups.length) return 0;
+  const keep = [], drop = [];
+  for (const g of groups) { const m = mergedCopy(g); keep.push(m.keep); drop.push(...m.drop); }
   if (S.storage === "db") {
     await updateMany(keep);
     for (let i = 0; i < drop.length; i += 8) await Promise.all(drop.slice(i, i + 8).map(id => S.col.doc(id).delete()));
@@ -4401,8 +4452,8 @@ function openSettings() {
       <p class="hint">Restaurar agrega los vuelos de la copia que no tengas y no borra nada. Guardá la copia en iCloud Drive o en tu computadora para pasarla a otro dispositivo.</p>
     </div>
     ${(() => { const g = dupGroups(), n = g.reduce((s, x) => s + x.length - 1, 0); return n ? `<div class="box"><h4>Vuelos repetidos</h4>
-      <p class="hint"><b class="warn">${n} ${n === 1 ? "vuelo está repetido" : "vuelos están repetidos"}</b> (mismo número y fecha): ${g.slice(0, 4).map(x => esc((x[0].num || x[0].from?.iata + "→" + x[0].to?.iata) + " " + x[0].date.split("-").reverse().join("/"))).join(", ")}${g.length > 4 ? "…" : ""}. Se queda la copia más completa de cada uno, con lo que falte tomado de las otras.</p>
-      <div class="acts"><button class="btn danger" type="button" id="set-dups">Quitar ${n} ${n === 1 ? "repetido" : "repetidos"}</button></div></div>` : ""; })()}
+      <p class="hint"><b class="warn">${n} ${n === 1 ? "vuelo está repetido" : "vuelos están repetidos"}</b> (mismo número y fecha): ${g.slice(0, 4).map(x => esc((x[0].num || x[0].from?.iata + "→" + x[0].to?.iata) + " " + x[0].date.split("-").reverse().join("/"))).join(", ")}${g.length > 4 ? "…" : ""}. Podés ver las copias lado a lado y fusionarlas en un solo vuelo.</p>
+      <div class="acts"><button class="btn primary" type="button" id="set-dups">Revisar y fusionar</button></div></div>` : ""; })()}
     <div class="box"><h4>Búsqueda de vuelos</h4>
       <label class="f">Clave de AeroDataBox (RapidAPI)<input id="set-adb" class="adbkey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Pegá tu clave acá" value="${esc(adbKey())}"></label>
       <p class="hint">${adbKey() ? `<b class="ontime">Activada.</b> Al escribir número y fecha se completan los horarios programados y reales, la demora, el avión y la matrícula.` : "Sin clave, solo se completan la ruta y la aerolínea."}
@@ -4630,7 +4681,7 @@ document.addEventListener("click", e => {
     return;
   }
   if (t.id === "set-logos") { setLogos(!LOGOS); return openSettings(); }
-  if (t.id === "set-dups") { t.disabled = true; removeDuplicates().then(n => { toast(`Se quitaron ${n} ${n === 1 ? "vuelo repetido" : "vuelos repetidos"}`); openSettings(); }).catch(() => { t.disabled = false; toast("No se pudo. Probá de nuevo."); }); return; }
+  if (t.id === "set-dups") return openDupReview();
   if (t.id === "set-adb-del") { setAdbKey(""); return openSettings(); }
   if (t.dataset.act === "adbsetup") { closeSheet(); openSettings(); const i = $("#set-adb"); if (i) setTimeout(() => i.focus(), 50); return; }
   if (t.id === "set-wipe") { wipeArm = true; return openSettings(); }
