@@ -778,6 +778,16 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* google maps import */
+.gmlist{display:flex;flex-direction:column;background:var(--surface);border-radius:14px;overflow:hidden}
+.gmrow{display:grid;grid-template-columns:22px 24px minmax(0,1fr);gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.gmrow:last-child{border-bottom:0}
+.gmrow.off{opacity:.55}
+.gmrow input{width:18px;height:18px;accent-color:var(--accent)}
+.gmt{display:flex;flex-direction:column;min-width:0}
+.gmt b{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmt small{font-size:12px;color:var(--muted)}
+.gmdot{width:10px;height:10px;border-radius:50%;background:var(--place);justify-self:center}
 /* places stats */
 .contgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .contc{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface-2);border:0;text-align:left;font:inherit;color:var(--muted);min-width:0}
@@ -1365,6 +1375,7 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
   </div>
 
   <input type="file" id="imp-file" accept="application/json,.json" hidden>
+  <input type="file" id="gm-file" accept=".json,.geojson,.csv,.kml,.kmz,application/json,text/csv,application/vnd.google-earth.kml+xml" hidden>
   <p class="foot-note" id="claudenote" data-sec="stats">La búsqueda por número de vuelo usa los horarios programados habituales de esa ruta, no el estado en vivo. Revisá los datos antes de guardar.</p>
 </div>
 
@@ -2218,7 +2229,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009104217";
+const BUILD = "20261009104653";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3682,6 +3693,7 @@ function openPlaceSheet(id) {
       </div>
       <label class="f">Notas<input id="pl-notes" value="${esc(pf.notes)}" placeholder="Con quién, cómo llegaste, recuerdos…"></label>
     </div>
+    ${src ? "" : `<label class="pastelink" for="gm-file" role="button" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg><span><b>Importar de Google Maps</b><small>Una lista exportada con Google Takeout (.csv o .json) o un mapa de Mis Mapas (.kml)</small></span></label>`}
     <div id="pl-err" class="status err" hidden></div>
     <div class="foot">${src ? `<button class="btn danger" type="button" id="pl-del" style="margin-right:auto">Borrar</button>` : ""}<button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="pl-save">${src ? "Guardar cambios" : "Guardar lugar"}</button></div>
   </div></div>`;
@@ -3797,6 +3809,117 @@ function savePlaceForm() {
   render(); focusPlaces(saved.id);
   toast(isNew ? "Lugar agregado" : "Lugar actualizado");
 }
+/* ---------- import places from Google Maps (Takeout lists .csv, saved places .json/GeoJSON, My Maps .kml) ---------- */
+let gmItems = [], gmCtl = null;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function coordsFromUrl(u) {
+  u = String(u || ""); let m = u.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || u.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/) || u.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  return m ? [+m[2], +m[1]] : null;   // [lon, lat]
+}
+function parseCSV(t) {
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true; else if (c === ",") { row.push(cur); cur = ""; } else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(cur); rows.push(row); row = []; cur = ""; } else cur += c;
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim()));
+}
+async function parseGmFile(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith(".kmz")) throw { msg:"Los .kmz vienen comprimidos. En Mis Mapas elegí «Exportar a KML» con la opción de .kml." };
+  const text = await file.text(), out = [];
+  if (name.endsWith(".kml") || /^\s*<\?xml|<kml/i.test(text)) {
+    const doc = new DOMParser().parseFromString(text, "text/xml");
+    for (const pm of doc.getElementsByTagName("Placemark")) {
+      const nm = (pm.getElementsByTagName("name")[0]?.textContent || "").trim(), co = (pm.getElementsByTagName("coordinates")[0]?.textContent || "").trim().split(/\s+/)[0];
+      const [lon, lat] = (co || "").split(",").map(Number);
+      if (nm) out.push({ name:nm, lat, lon, notes:(pm.getElementsByTagName("description")[0]?.textContent || "").replace(/<[^>]+>/g, " ").trim().slice(0, 300) });
+    }
+    return out;
+  }
+  if (name.endsWith(".json") || name.endsWith(".geojson") || /^\s*[{[]/.test(text)) {
+    const j = JSON.parse(text), feats = j.features || (Array.isArray(j) ? j : []);
+    for (const f of feats) {
+      const p = f.properties || f, loc = p.location || p.Location || {}, g = (f.geometry || {}).coordinates;
+      const geo = loc["Geo Coordinates"] || loc.geo_coordinates || {};
+      let lat = g ? +g[1] : +(geo.Latitude ?? geo.latitude), lon = g ? +g[0] : +(geo.Longitude ?? geo.longitude);
+      if ((!lat && !lon) || !Number.isFinite(lat)) { const c = coordsFromUrl(p.google_maps_url || p["Google Maps URL"] || p.url); if (c) { lon = c[0]; lat = c[1]; } }
+      const nm = (p.Title || p.title || p.name || loc.name || loc.Name || loc.Address || loc.address || "").trim();
+      if (nm) out.push({ name:nm, lat, lon, cc:(loc.country_code || loc["Country Code"] || "").toUpperCase(), sub:loc.address || loc.Address || "", notes:(p.Comment || p.comment || "").trim() });
+    }
+    return out;
+  }
+  const rows = parseCSV(text); if (!rows.length) return out;
+  const head = rows[0].map(h => norm(h)), ti = Math.max(0, head.findIndex(h => /^(title|titulo|nombre|name)$/.test(h))), ni = head.findIndex(h => /^(note|nota|notes|notas|comment|comentario)$/.test(h)), ui = head.findIndex(h => /^(url|enlace|link)$/.test(h));
+  for (const r of rows.slice(1)) {
+    const nm = (r[ti] || "").trim(); if (!nm) continue;
+    const c = ui >= 0 ? coordsFromUrl(r.slice(ui).join(",")) : null;
+    out.push({ name:nm, lat:c ? c[1] : NaN, lon:c ? c[0] : NaN, notes:ni >= 0 ? (r[ni] || "").trim() : "" });
+  }
+  return out;
+}
+async function photonFind(q, signal) {
+  const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1`, { signal }); if (!r.ok) return null;
+  const f = ((await r.json()).features || [])[0]; if (!f) return null;
+  const p = f.properties || {}, c = f.geometry.coordinates, cc = (p.countrycode || "").toUpperCase();
+  return { lat:+c[1], lon:+c[0], cc, sub:[p.state || p.county || "", country(cc) || p.country || ""].filter(Boolean).join(", ") };
+}
+async function photonReverse(lat, lon, signal) {
+  const r = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}&limit=1`, { signal }); if (!r.ok) return null;
+  const p = (((await r.json()).features || [])[0] || {}).properties || {}, cc = (p.countrycode || "").toUpperCase();
+  return { cc, sub:[p.state || p.county || "", country(cc) || p.country || ""].filter(Boolean).join(", ") };
+}
+function openGmImport(items, fname) {
+  gmCtl?.abort(); const my = gmCtl = new AbortController();
+  gmItems = items.map(x => ({ ...x, st: Number.isFinite(x.lat) && Number.isFinite(x.lon) && (x.lat || x.lon) ? (x.cc ? "ok" : "rev") : "geo" }));
+  const draw = () => {
+    const todo = gmItems.filter(x => x.st === "geo" || x.st === "rev").length, ready = gmItems.filter(x => x.st === "ok");
+    for (const x of ready) if (x.dup == null) x.dup = PLACES.concat(placesAll().filter(p => p.auto)).some(p => samePlace(p, { name:x.name, lat:x.lat, lon:x.lon }) || (p.cc === x.cc && norm(p.name) === norm(x.name)));
+    const sel = gmItems.filter(x => x.st === "ok" && x.on !== false && !x.dup).length;
+    const el = $("#gm-list"); if (!el) return;
+    $("#gm-stat").textContent = todo ? `Ubicando lugares… faltan ${todo}` : `${ready.length} de ${gmItems.length} ubicados${gmItems.some(x => x.st === "miss") ? " · algunos no se encontraron" : ""}`;
+    el.innerHTML = gmItems.map((x, i) => `<label class="gmrow${x.st !== "ok" || x.dup ? " off" : ""}"><input type="checkbox" data-gmi="${i}" ${x.st === "ok" && !x.dup && x.on !== false ? "checked" : ""} ${x.st !== "ok" ? "disabled" : ""}>
+      ${x.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(x.cc)}</span>` : `<span class="gmdot"></span>`}<span class="gmt"><b>${esc(x.name)}</b><small>${x.st === "ok" ? esc(x.dup ? "Ya está en tus lugares" : (x.sub || country(x.cc) || "")) : x.st === "miss" ? "No se encontró" : "Ubicando…"}</small></span></label>`).join("");
+    const b = $("#gm-save"); if (b) { b.disabled = !sel || !!todo && false; b.textContent = `Agregar ${sel} ${sel === 1 ? "lugar" : "lugares"}`; }
+  };
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gm-t">
+    <div class="hd"><h2 id="gm-t">Importar lugares</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <p class="hint">${esc(fname)} · ${items.length} ${items.length === 1 ? "lugar" : "lugares"}. Los que no traen coordenadas se ubican por su nombre en OpenStreetMap; revisá la lista y desmarcá los que no quieras.</p>
+    <div id="gm-stat" class="status work"></div>
+    <div class="gmlist" id="gm-list"></div>
+    <div class="foot"><button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="gm-save">Agregar</button></div>
+  </div></div>`;
+  $("#gm-list").addEventListener("change", e => { const c = e.target.closest("[data-gmi]"); if (c) { gmItems[+c.dataset.gmi].on = c.checked; draw(); } });
+  $("#gm-save").onclick = () => {
+    const add = gmItems.filter(x => x.st === "ok" && x.on !== false && !x.dup);
+    for (const x of add) upsertPlace({ name:x.name, sub:x.sub || country(x.cc) || "", cc:x.cc, lat:x.lat, lon:x.lon, notes:x.notes || "" });
+    gmCtl?.abort(); closeSheet(); if (!isPlaces()) setLayer("lugares"); else render();
+    toast(`${add.length} ${add.length === 1 ? "lugar agregado" : "lugares agregados"}`); focusPlaces();
+  };
+  draw();
+  (async () => {   // one request at a time, gently, so the free service is not overloaded
+    for (const x of gmItems) {
+      if (my.signal.aborted) return;
+      if (x.st !== "geo" && x.st !== "rev") continue;
+      try {
+        if (x.st === "geo") { const r = await photonFind(x.name, my.signal); if (r) Object.assign(x, r, { st:"ok" }); else x.st = "miss"; }
+        else { const r = await photonReverse(x.lat, x.lon, my.signal); Object.assign(x, r || {}, { st:"ok" }); }
+      } catch (e) { if (my.signal.aborted) return; x.st = x.st === "rev" ? "ok" : "miss"; }
+      draw(); await sleep(250);
+    }
+    draw();
+  })();
+}
+document.getElementById("gm-file").addEventListener("change", async e => {
+  const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+  try {
+    const items = await parseGmFile(file);
+    if (!items.length) return dialog({ title:"No encontramos lugares", body:`<p>${esc(file.name)} no tiene lugares que podamos leer. Probá con el .csv de una lista de Google Takeout, «Lugares guardados.json» o un .kml de Mis Mapas.</p>`, cancelText:"Aceptar" });
+    openGmImport(items.slice(0, 500), file.name);
+  } catch (err) { dialog({ title:"No se pudo leer el archivo", body:`<p>${esc(err && err.msg || "El formato no es el esperado.")}</p>`, cancelText:"Aceptar" }); }
+});
 /* ---------- airline search ---------- */
 const AL_NAME = { NM:"Air Madrid", PU:"Pluna", VY:"Vueling", IB:"Iberia", FR:"Ryanair", U2:"easyJet", AF:"Air France", LH:"Lufthansa", AR:"Aerolíneas Argentinas", UX:"Air Europa",
   EI:"Aer Lingus", DY:"Norwegian", AA:"American Airlines", TP:"TAP Air Portugal", HV:"Transavia", BA:"British Airways", NT:"Binter Canarias",
