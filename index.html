@@ -912,7 +912,7 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 @media (max-width:699px){
   .ydd .yl{display:none}.ydd .ys{display:inline}
   .layerpill button{padding:0 8px;height:28px}.layerpill button span{display:none}
-  body[data-view="vuelos"] #filters.filters{right:212px;padding-left:10px;gap:6px}
+  body[data-view="vuelos"] #filters.filters{right:186px;padding-left:10px;gap:6px}
   body[data-view="vuelos"] #filters .ydd{padding:0 9px 0 11px}
   body[data-view="vuelos"] #filters .layerpill{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 }
@@ -1134,7 +1134,15 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 /* ---------- iPhone: full-screen map + draggable flights sheet (Flighty style) ---------- */
 .show-phone{display:none!important}
 .grab{display:none}
+.rgrp{display:contents}
+@media (min-width:700px){.rgrp #b-stats{order:3}}
 @media (max-width:699px){
+  /* one glass capsule for search, stats and settings; + stays apart */
+  .top .rgrp{display:flex;align-items:center;gap:0;padding:2px;border-radius:999px;flex:none;
+    background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 6px 18px rgba(0,0,0,.16)}
+  .top .rgrp .rbtn{width:38px!important;height:38px!important;background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .top .rgrp .rbtn svg{width:20px;height:20px}
+  #mapcard .mapctl #z-in,#mapcard .mapctl #z-out{display:none}
   .show-phone{display:grid!important}
   #tabbar{display:none!important}
   .wrap{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
@@ -1151,7 +1159,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
   body[data-view="vuelos"]{overflow:hidden;overscroll-behavior:none}
   body[data-view="vuelos"] .top{position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;gap:8px}
   body[data-view="vuelos"] .brand,body[data-view="vuelos"] #demo{display:none!important}
-  body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:226px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
+  body[data-view="vuelos"] #filters{display:flex!important;position:fixed;z-index:9;top:calc(env(safe-area-inset-top,0px) + 8px);left:0;right:186px;height:44px;margin:0;padding:0 8px 0 12px;align-items:center;gap:6px}
   body[data-view="vuelos"] #filters .chip{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12);height:36px;display:inline-flex;align-items:center}
   body[data-view="vuelos"] #filters .chip.c,body[data-view="vuelos"] #filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
   body[data-view="vuelos"] #filters .ydd{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12)}
@@ -1335,9 +1343,11 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
+    <div class="rgrp">
     <button class="btn themebtn rbtn" id="b-search" type="button" aria-label="Buscar" title="Buscar (/)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
-    <button class="btn themebtn rbtn" id="b-settings" type="button" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button class="btn rbtn show-phone" id="b-stats" type="button" aria-label="Stats" title="Stats"><svg class="i-stats" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><svg class="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></button>
+    <button class="btn themebtn rbtn" id="b-settings" type="button" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
     <button class="btn rbtn addc show-phone" type="button" data-act="add" aria-label="Agregar vuelo" title="Agregar vuelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
     <button class="btn primary hide-phone" id="b-add" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Agregar vuelo</button>
   </div>
@@ -2272,7 +2282,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091227";
+const BUILD = "202610091241";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
