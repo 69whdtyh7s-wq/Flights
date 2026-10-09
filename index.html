@@ -759,7 +759,8 @@ body{overflow-x:clip}
 .plc-t b{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plc-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plc-d{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
-.plc-foot{padding:4px 12px 14px}
+.plc-foot{padding:4px 18px 14px}
+.plc-fl{font-size:11px;opacity:.7}
 .plc-name{font-size:22px!important;letter-spacing:-.01em}
 .tnlink{display:flex;align-items:center;gap:8px;width:100%;border:0;background:var(--surface);border-radius:14px;padding:12px 14px;font-weight:600;font-size:14.5px;color:var(--accent-text);text-align:left}
 .tnlink .chev-r{margin-left:auto}
@@ -1856,11 +1857,11 @@ function renderPlacesMap() {
   sizeApts();
   const hint = $("#maphint");
   hint.hidden = !!(world && ps.length);
-  if (world && !ps.length) hint.textContent = PLACES.length && S.year !== "all" ? "Sin lugares en " + S.year + "." : "Agregá los lugares que visitaste con el botón +.";
+  if (world && !ps.length) hint.textContent = placesAll().length && S.year !== "all" ? "Sin lugares en " + S.year + "." : "Agregá los lugares que visitaste con el botón +.";
 }
 function focusPlaces(id) {
   if (!svgSel || !zoom) return;
-  const ps = id ? PLACES.filter(p => p.id === id) : placesShown();
+  const ps = id ? placesAll().filter(p => p.id === id) : placesShown();
   if (!ps.length) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
   const pts = ps.map(p => [+p.lon, +p.lat]);
   if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
@@ -1921,7 +1922,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009032756";
+const BUILD = "20261009032940";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -1952,7 +1953,7 @@ function relDays(ms) {
 function hm(mins) { const h = Math.floor(mins/60), m = mins % 60; return h ? `${h} h ${String(m).padStart(2,"0")} min` : `${m} min`; }
 
 function renderFilters() {
-  const years = [...new Set((isPlaces() ? PLACES.map(placeYear) : all().map(f => f.year)).filter(Boolean))].sort().reverse();
+  const years = [...new Set((isPlaces() ? placesAll().flatMap(p => p.auto ? [...p.years] : [placeYear(p)]) : all().map(f => f.year)).filter(Boolean))].sort().reverse();
   document.querySelectorAll("[data-layer]").forEach(b => b.setAttribute("aria-pressed", b.dataset.layer === LAYER));
   const lg = $("#legend"); if (lg) lg.innerHTML = isPlaces() ? `<span><i class="pl"></i>Lugares visitados</span>` : `<span><i></i>Volados</span><span><i class="up"></i>Próximos</span>`;
   const zl = $("#z-layer"); if (zl) zl.classList.toggle("on", isPlaces());
@@ -2157,10 +2158,9 @@ function tripRow(t) {
 
 function renderPlacesList() {
   const el = $("#list");
-  const ps = placesShown(), cand = flightCities();
-  const imp = cand.length ? `<button type="button" class="more" data-plcimport>+ Sumar ${cand.length} ${cand.length === 1 ? "ciudad" : "ciudades"} de mis vuelos</button>` : "";
+  const ps = placesShown(), imp = "";
   if (!ps.length) {
-    el.innerHTML = `<div class="empty"><b>${PLACES.length ? "Sin lugares en " + esc(S.year) : "Ningún lugar todavía"}</b><span>Agregá ciudades, pueblos o parques que visitaste, en avión, en tren, en auto o caminando.</span><button class="btn primary" type="button" data-act="addplace">Agregar lugar</button>${imp}</div>`;
+    el.innerHTML = `<div class="empty"><b>${placesAll().length ? "Sin lugares en " + esc(S.year) : "Ningún lugar todavía"}</b><span>Las ciudades de tus vuelos aparecen solas. Agregá también pueblos, ciudades o parques a los que fuiste en tren, en auto o caminando.</span><button class="btn primary" type="button" data-act="addplace">Agregar lugar</button>${imp}</div>`;
     return;
   }
   const by = new Map();
@@ -2169,8 +2169,8 @@ function renderPlacesList() {
   el.innerHTML = `<div class="plc-sum"><b>${ps.length}</b> ${ps.length === 1 ? "lugar" : "lugares"} · <b>${by.size}</b> ${by.size === 1 ? "país" : "países"}</div>` +
     groups.map(([cc, l]) => `<div class="plc-grp"><div class="plc-gh">${cc !== "??" ? `<span class="fl-ic sm" aria-hidden="true">${flag(cc)}</span>` : ""}<b>${esc(cc !== "??" ? country(cc) : "Sin país")}</b><span>${l.length}</span></div>` +
       l.sort((a, b) => (b.date || "").localeCompare(a.date || "") || a.name.localeCompare(b.name, "es")).map(p =>
-        `<button type="button" class="plc-row${S.openPlace === p.id ? " on" : ""}" data-plc="${esc(p.id)}"><span class="plc-dot" aria-hidden="true"></span><span class="plc-t"><b>${esc(p.name)}</b>${p.sub && p.sub !== country(p.cc) ? `<small>${esc(p.sub)}</small>` : ""}</span><span class="plc-d">${esc(placeDate(p.date))}</span></button>`).join("") + `</div>`).join("") +
-    `<div class="plc-foot">${imp}</div>`;
+        `<button type="button" class="plc-row${S.openPlace === p.id ? " on" : ""}" data-plc="${esc(p.id)}"><span class="plc-dot" aria-hidden="true"></span><span class="plc-t"><b>${esc(p.name)}</b>${p.auto ? `<small>${p.n} ${p.n === 1 ? "vuelo" : "vuelos"} · ${esc(p.iatas.join(", "))}</small>` : p.sub && p.sub !== country(p.cc) ? `<small>${esc(p.sub)}</small>` : ""}</span><span class="plc-d">${p.auto ? `<span class="plc-fl" title="De tus vuelos">✈︎</span> ` : ""}${esc(p.auto ? (p.years.size > 1 ? [...p.years].sort()[0] + "–" + [...p.years].sort().pop() : [...p.years][0] || "") : placeDate(p.date))}</span></button>`).join("") + `</div>`).join("") +
+    `<p class="hint plc-foot">✈︎ Ciudades de tus vuelos: se suman solas.</p>`;
 }
 function renderList() {
   const lp = isPlaces();
@@ -2384,7 +2384,7 @@ function setTripMeta(n, m) {
 }
 /* ---------- visited places (second map layer, by any means of travel). Saved only in this browser and in the backups ---------- */
 const PLACES_KEY = "flights-places";
-let PLACES = (() => { try { const a = JSON.parse(localStorage.getItem(PLACES_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch { return []; } })();
+let PLACES = (() => { try { const a = JSON.parse(localStorage.getItem(PLACES_KEY) || "[]"); return Array.isArray(a) ? a.filter(p => !(p.src === "vuelo" && !p.notes)) : []; } catch { return []; } })();   // flight cities are now added on their own
 function cleanPlace(p) {
   return { id:p.id || ("p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name:String(p.name || "").trim().slice(0, 80), sub:String(p.sub || "").trim().slice(0, 120),
     cc:/^[A-Z]{2}$/.test(String(p.cc || "").toUpperCase()) ? String(p.cc).toUpperCase() : "", lat:+(+p.lat).toFixed(5), lon:+(+p.lon).toFixed(5),
@@ -2396,7 +2396,7 @@ function samePlace(a, b) { return norm(a.name) === norm(b.name) && haversine(a, 
 function upsertPlace(p) { p = cleanPlace(p); const i = PLACES.findIndex(x => x.id === p.id); if (i >= 0) PLACES[i] = p; else PLACES.push(p); savePlaces(); return p; }
 function deletePlace(id) { PLACES = PLACES.filter(p => p.id !== id); savePlaces(); }
 const placeYear = p => (p.date || "").slice(0, 4);
-const placesShown = () => PLACES.filter(validPlace).filter(p => S.year === "all" || placeYear(p) === S.year);
+const placesShown = () => placesAll().filter(p => S.year === "all" || (p.auto ? p.years.has(S.year) : placeYear(p) === S.year));
 let LAYER = (() => { try { return localStorage.getItem("flights-layer") === "lugares" ? "lugares" : "vuelos"; } catch { return "vuelos"; } })();
 const isPlaces = () => LAYER === "lugares";
 function setLayer(l) {
@@ -2404,16 +2404,22 @@ function setLayer(l) {
   S.open = null; S.focusIds = null; S.openPlace = null; closeAptCard(); S.year = "all";
   render(); if (isPlaces()) focusPlaces(); else focusSelection();
 }
-/* cities you flew to (or from) that are not yet in your places */
-function flightCities() {
-  const out = [], seen = [];
-  for (const f of all().filter(f => f.past && !f.demo).sort((a, b) => a.depT - b.depT)) for (const a of [f.from, f.to]) {
+/* every city of your flown flights is a visited place too (one per city, even with several airports) */
+function flightPlaces() {
+  const by = new Map();
+  for (const f of all().filter(f => f.past).sort((a, b) => a.depT - b.depT)) for (const a of [f.from, f.to]) {
     if (!validApt(a)) continue;
-    const p = { name:a.city || a.name || a.iata, sub:country(a.cc) || "", cc:a.cc || "", lat:+a.lat, lon:+a.lon, date:f.date || "", src:"vuelo" };
-    if (seen.some(x => samePlace(x, p)) || PLACES.some(x => samePlace(x, p) || (x.cc === p.cc && norm(x.name) === norm(p.name)))) continue;
-    seen.push(p); out.push(p);
+    const name = a.city || a.name || a.iata, k = (a.cc || "") + "|" + norm(name);
+    let x = by.get(k);
+    if (!x) by.set(k, x = { id:"fc:" + k, auto:true, name, sub:country(a.cc) || "", cc:a.cc || "", date:f.date || "", years:new Set(), n:0, apts:new Map() });
+    x.n++; if (f.year) x.years.add(f.year); x.apts.set(a.iata, [a, (x.apts.get(a.iata)?.[1] || 0) + 1]);
   }
-  return out;
+  return [...by.values()].map(x => { const top = [...x.apts.values()].sort((p, q) => q[1] - p[1])[0][0]; return { ...x, lat:+top.lat, lon:+top.lon, iatas:[...x.apts.keys()] }; });
+}
+/* your own places plus the cities of your flights (yours win when both are the same place) */
+function placesAll() {
+  const own = PLACES.filter(validPlace);
+  return own.concat(flightPlaces().filter(p => !own.some(x => samePlace(x, p) || (x.cc === p.cc && norm(x.name) === norm(p.name)))));
 }
 const allTags = () => { const c = new Map(); for (const [n, m] of Object.entries(TRIPMETA)) for (const t of m.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c].sort((a, b) => b[1] - a[1]).map(e => e[0]); };
 const tagChips = n => { const t = tripMeta(n).tags; return t.length ? `<span class="ttags">${t.slice(0, 4).map(x => `<i>${esc(x)}</i>`).join("")}</span>` : ""; };
@@ -2754,7 +2760,7 @@ function renderStats() {
       : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`); }
   html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
   const noAc = past.filter(f => !f.aircraft).length;
-  { const ps = PLACES.filter(validPlace);
+  { const ps = placesAll();
     if (ps.length) {
       const cs = count(ps.map(p => p.cc).filter(Boolean)), flownCC = new Set(past.flatMap(f => [f.from?.cc, f.to?.cc]).filter(Boolean));
       const notFlown = cs.filter(([c]) => !flownCC.has(c)).length;
@@ -3778,17 +3784,18 @@ function placeDate(d) {
   return dd ? `${+dd} ${MONTHS[+m - 1]} ${y}` : m ? `${MONTH_FULL[+m - 1]} ${y}` : y;
 }
 function showPlaceCard(id, x, y) {
-  const p = PLACES.find(q => q.id === id); if (!p) return;
+  const p = placesAll().find(q => q.id === id); if (!p) return;
   S.openPlace = id; renderMap();
   closeAptCard();
   const el = document.createElement("div"); el.id = "aptcard"; el.className = "aptcard"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", p.name);
   el.innerHTML = `<button class="x" type="button" data-aptclose aria-label="Cerrar">×</button>
     <div class="ac-h"><span class="ac-code plc-name">${esc(p.name)}</span>${p.cc ? `<span class="fl-ic" aria-hidden="true">${flag(p.cc)}</span>` : ""}</div>
     <div class="ac-name">${esc(p.sub || country(p.cc) || "")}</div>
+    ${p.auto ? `<div class="ac-row"><span>Vuelos</span><b>${p.n}</b></div><div class="ac-row"><span>Primera vez</span><b>${esc(placeDate(p.date))}</b></div><div class="ac-row"><span>Aeropuertos</span><b>${esc(p.iatas.join(", "))}</b></div>
+    <button class="btn" type="button" data-rk="airport" data-key="${esc(p.iatas[0])}">Ver sus vuelos</button>` : `
     ${p.date ? `<div class="ac-row"><span>Fecha</span><b>${esc(placeDate(p.date))}</b></div>` : ""}
-    ${p.src === "vuelo" ? `<div class="ac-row"><span>Origen</span><b>De tus vuelos</b></div>` : ""}
     ${p.notes ? `<p class="ac-notes">${esc(p.notes)}</p>` : ""}
-    <button class="btn" type="button" data-plcedit="${esc(p.id)}">Editar</button>`;
+    <button class="btn" type="button" data-plcedit="${esc(p.id)}">Editar</button>`}`;
   document.body.appendChild(el);
   const w = el.offsetWidth, h = el.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
   if (phoneMap()) { el.style.left = Math.round((vw - w) / 2) + "px"; el.style.top = (safeTop() + 60) + "px"; }
@@ -4015,14 +4022,10 @@ document.addEventListener("click", e => {
   if (t.dataset.plcedit) return openPlaceSheet(t.dataset.plcedit);
   if (t.dataset.plc) {
     const id = t.dataset.plc;
-    if (S.openPlace === id) return openPlaceSheet(id);
+    if (S.openPlace === id) { const ap = placesAll().find(p => p.id === id); return ap && ap.auto ? openDrill("airport", ap.iatas[0]) : openPlaceSheet(id); }
     S.openPlace = id; renderList(); renderMap();
     if (phoneMap()) setSheet("peek", true); else focusPlaces(id);
     return;
-  }
-  if (t.hasAttribute("data-plcimport")) {
-    const c = flightCities(); for (const p of c) upsertPlace(p);
-    S.openPlace = null; closeAptCard(); render(); focusPlaces(); toast(`${c.length} ${c.length === 1 ? "ciudad sumada" : "ciudades sumadas"}`); return;
   }
   if (t.id === "b-import") return openSheet("import");
   if (t.id === "b-settings") return openSettings();
