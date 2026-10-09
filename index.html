@@ -2282,7 +2282,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091248";
+const BUILD = "202610091250";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2589,7 +2589,7 @@ function detail(f) {
   let acts;
   if (f.demo) acts = `<span class="q">Es un vuelo de ejemplo.</span>`;
   else if (S.confirmDel === f.id) acts = `<span class="q">¿Borrar ${esc(num || "este vuelo")} del ${esc(f.date)}?</span><button class="btn danger" type="button" data-del-yes="${esc(f.id)}">Sí, borrar</button><button class="btn" type="button" data-del-no>Cancelar</button>`;
-  else acts = `<button class="btn showmap" type="button" data-showmap="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/></svg>Ver en el mapa</button><button class="btn" type="button" data-edit="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button><button class="btn danger" type="button" data-del="${esc(f.id)}">Borrar</button>`;
+  else acts = `<button class="btn showmap" type="button" data-showmap="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/></svg>Ver en el mapa</button><button class="btn" type="button" data-cal="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M12 13v4M10 15h4"/></svg>Calendario</button><button class="btn" type="button" data-edit="${esc(f.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button><button class="btn danger" type="button" data-del="${esc(f.id)}">Borrar</button>`;
   return `<div class="detail">
     <div class="dhead">${alIcon(code, f.airline, "xl")}<div class="dal"><b>${esc(f.airline || "Aerolínea desconocida")}</b><span>${esc([num, f.aircraft].filter(Boolean).join(" · ") || "Sin número de vuelo")}</span></div>
       <span class="pill ${f.past ? "ex" : "up"}">${f.past ? "Volado" : "Próximo"}</span></div>
@@ -4776,6 +4776,58 @@ async function exportBackup() {
   }
   try { await S.downloads.save({ filename, data }); markBackup(); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo descargar el archivo."); }
 }
+/* ---------- add a flight to the calendar (.ics: Apple Calendar, Google Calendar, Outlook) ---------- */
+function flightICS(f) {
+  const esc2 = t => String(t || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  const utc = ms => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const enc = new TextEncoder();
+  const fold = l => { const out = []; let cur = "", n = 0; for (const ch of l) { const b = enc.encode(ch).length; if (n + b > 73) { out.push(cur); cur = " " + ch; n = 1 + b; } else { cur += ch; n += b; } } out.push(cur); return out.join("\r\n"); };
+  const num = f.num || "", al = AL_NAME[alKey(f)] || f.airline || "";
+  const place = a => a ? `${a.city || a.iata} (${a.iata})` : "";
+  const aptLine = a => a ? [a.name && a.name !== a.city ? `Aeropuerto ${a.name}` : "Aeropuerto", a.city, a.cc ? country(a.cc) : ""].filter(Boolean).join(", ") + ` (${a.iata})` : "";
+  const timed = !!f.dep && Number.isFinite(f.depT);
+  const desc = [
+    [al, num].filter(Boolean).join(" · "),
+    "",
+    `Salida: ${place(f.from)}${f.from?.name ? " · " + f.from.name : ""}`,
+    `  ${niceDate(f.date)}${f.dep ? " · " + f.dep + " hora local" : ""}`,
+    `Llegada: ${place(f.to)}${f.to?.name ? " · " + f.to.name : ""}`,
+    `  ${niceDate(f.date, +f.arrOffset || 0)}${f.arr ? " · " + f.arr + " hora local" : ""}`,
+    "",
+    `Duración: ${hm(f.mins)}${f.estimated ? " aprox." : ""} · ${fmt(f.km)} km`,
+    (f.aircraft || f.reg) && `Avión: ${[f.aircraft, f.reg].filter(Boolean).join(" · ")}`,
+    (f.cls || f.seat) && `Clase y asiento: ${[f.cls ? CLASSES[f.cls] || f.cls : "", f.seat ? "Asiento " + f.seat : ""].filter(Boolean).join(" · ")}`,
+    f.trip && `Viaje: ${f.trip}`,
+    f.status === "cancelled" && "Estado: cancelado", f.status === "diverted" && "Estado: desviado",
+    f.notes && `Notas: ${f.notes}`,
+  ].filter(x => x !== false && x != null && x !== undefined).join("\n").replace(/\n{3,}/g, "\n\n");
+  const d8 = (date, add = 0) => { const d = new Date(date + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + add); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Flights//Bitacora de vuelos//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
+    `UID:${f.id || "f" + f.date}-${(num || "vuelo").replace(/\W/g, "")}@flights`, `DTSTAMP:${utc(Date.now())}`,
+    ...(timed ? [`DTSTART:${utc(f.depT)}`, `DTEND:${utc(Math.max(f.arrT, f.depT + 30 * 60000))}`] : [`DTSTART;VALUE=DATE:${d8(f.date)}`, `DTEND;VALUE=DATE:${d8(f.date, 1)}`]),
+    `SUMMARY:${esc2(`✈︎ ${num ? num + " " : ""}${f.from?.city || f.from?.iata || ""} → ${f.to?.city || f.to?.iata || ""}`)}`,
+    `LOCATION:${esc2(aptLine(f.from))}`,
+    ...(validApt(f.from) ? [`GEO:${(+f.from.lat).toFixed(5)};${(+f.from.lon).toFixed(5)}`] : []),
+    `DESCRIPTION:${esc2(desc)}`, "TRANSP:OPAQUE", "CATEGORIES:Vuelo",
+    ...(timed && !f.past ? ["BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${esc2(`Vuelo ${num} a ${f.to?.city || f.to?.iata || ""}`)}`, "TRIGGER:-PT3H", "END:VALARM",
+                            "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${esc2(`Vuelo ${num} a ${f.to?.city || f.to?.iata || ""}`)}`, "TRIGGER:-P1D", "END:VALARM"] : []),
+    "END:VEVENT", "END:VCALENDAR"];
+  return L.map(fold).join("\r\n") + "\r\n";
+}
+async function addToCalendar(id) {
+  const f = all().find(x => x.id === id); if (!f) return;
+  const data = flightICS(f), filename = `vuelo-${(f.num || "sin-numero").toLowerCase()}-${f.date}.ics`;
+  if (S.downloads) { try { await S.downloads.save({ filename, data, mimeType:"text/calendar" }); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo crear el evento."); } return; }
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+    // iPhone/iPad: opening the event shows the system "Add to Calendar" window with every detail
+    location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(data);
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([data], { type:"text/calendar;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast("Evento descargado: abrilo para agregarlo a tu calendario");
+}
 /* small centred dialog (iOS alert style) */
 function dialog({ title, body, okText, cancelText = "Cancelar", onOk, busyText = "Restaurando…" }) {
   const root = document.getElementById("dialog-root");
@@ -5280,6 +5332,7 @@ document.addEventListener("click", e => {
   if ("tripnew" in t.dataset) return openTripEditor("");
   if (["trippick", "tripall", "tripsave", "tripdel"].some(k => k in t.dataset)) return tripAction(t);
   if (t.dataset.open) { S.popList = true; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); if (S.open) revealOpenRow(); focusSelection(); return; }
+  if (t.dataset.cal) return addToCalendar(t.dataset.cal);
   if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
   const inDrill = !!t.closest(".drill");
