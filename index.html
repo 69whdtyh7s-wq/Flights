@@ -944,6 +944,20 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .mapfoot .layerseg{margin-left:0;margin-right:auto}
 @media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
 .mapctl #z-layer.on{color:var(--place)!important}
+.dlive{background:var(--surface);border-radius:16px;padding:12px 14px;margin:0 0 10px;display:grid;gap:6px}
+.lv-h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.lv-h em{margin-left:auto;font-style:normal;font-weight:500;text-transform:none;letter-spacing:0}
+.lv-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
+.lv-st{font-size:19px;font-weight:700;letter-spacing:-.01em}.lv-st.late{color:var(--danger)}.lv-st.ok{color:var(--ok)}
+.lv-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lv-s{display:grid;gap:1px}.lv-s span{font-size:12px;color:var(--muted)}.lv-s b{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.lv-s s{font-size:12px;color:var(--muted)}.lv-s small{font-size:12.5px;color:var(--ink)}
+.dlive .muted{margin:0;font-size:13.5px;color:var(--muted)}
+.pill.late{background:color-mix(in srgb,var(--danger) 13%,transparent);color:var(--danger)}
+.dvisit{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.dvisit div{background:var(--surface);border-radius:14px;padding:10px 12px;display:grid;gap:2px}
+.dvisit span{font-size:12px;color:var(--muted)}.dvisit b{font-size:15px;font-weight:650}
+.map .land.visited{cursor:pointer}
 .calopts{display:grid;gap:8px;margin:12px 0 2px}
 .calopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:14px;background:var(--fill);color:var(--ink);padding:12px 14px;font:inherit;cursor:pointer}
 .calopt svg{width:22px;height:22px;flex:none;color:var(--accent)}
@@ -2080,6 +2094,11 @@ function initMap() {
   gLayer.append("path").attr("class","grat").attr("vector-effect","non-scaling-stroke").attr("d", geoPath(d3.geoGraticule10()));
   gLayer.append("g").attr("class","lands");
   gLayer.append("g").attr("class","lands-hi");
+  // tap a country: its flights (or, in the places layer, its places)
+  gLayer.on("click.country", e => {
+    const el = e.target.closest && e.target.closest("path.land"); if (!el) return;
+    const d = d3.select(el).datum(); if (d && d.cc) countryTap(d.cc === "FK" && !visitedCC.has("FK") ? "AR" : d.cc);
+  });
   gLayer.append("path").attr("class","bord").attr("vector-effect","non-scaling-stroke");
   gLayer.append("path").attr("class","bord-v").attr("vector-effect","non-scaling-stroke");
   gArcs = gLayer.append("g"); gApts = svgSel.append("g").attr("class","aptlayer"); gPlc = svgSel.append("g").attr("class","plclayer");
@@ -2450,7 +2469,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091711";
+const BUILD = "202610091735";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2636,7 +2655,9 @@ function flightRow(f, noDetail, noDays, loose) {
   if (!f.past) {
     const r = relDays(f.depT);
     const txt = r <= 0 ? (Date.now() >= f.depT ? "En vuelo" : "Hoy") : r === 1 ? "Mañana" : `En ${r} días`;
-    if (!noDays || txt === "En vuelo") pill += ` <span class="pill ${r <= 3 ? "soon" : "up"}">${txt}</span>`;   // same day as the flight above in the trip: shown once
+    const lp = r <= 1 ? livePill(f) : "";
+    if (lp) pill += " " + lp;
+    else if (!noDays || txt === "En vuelo") pill += ` <span class="pill ${r <= 3 ? "soon" : "up"}">${txt}</span>`;   // same day as the flight above in the trip: shown once
   }
   const open = S.open === f.id;
   return `<button class="fl ${f.past ? "" : "upc"}" type="button" data-open="${esc(f.id)}" aria-expanded="${open}">
@@ -2764,6 +2785,7 @@ function detail(f) {
     <div class="droute">${ap(f.from, f.dep, niceDate(f.date), false, f.depReal, dDep)}
       <div class="dmid"><span>${hm(f.mins)}</span><div class="dline">${PLANE}</div><span>${fmt(f.km)} km</span></div>
       ${ap(f.to, f.arr, niceDate(f.date, +f.arrOffset || 0), true, f.arrReal, dArr)}</div>
+    ${liveHTML(f)}
     <div class="dtiles">${tiles.map(([k, v, cls]) => `<div${cls ? ` class="dt-${cls}"` : ""}><span>${k}</span>${cls ? v : `<b>${v}</b>`}</div>`).join("")}</div>
     ${f.notes ? `<div class="dnotes"><span>Notas</span><p>${esc(f.notes)}</p></div>` : ""}
     ${f.demo ? "" : tripBlock(f)}
@@ -3420,6 +3442,12 @@ function openDrill(kind, key) {
       return (par ? `<button type="button" class="tnlink nest" data-tripview="${esc(par)}"><span class="nestlbl">Dentro del viaje</span>${esc(tm.get(par)[0].trip)}<small>${esc(tripDates(tm.get(par)))}</small><span class="chev-r" aria-hidden="true">›</span></button>` : "")
         + (kids.length ? `<div class="nestkids"><span class="nestlbl">${kids.length === 1 ? "Viaje dentro de este" : "Viajes dentro de este"}</span>${kids.map(c => `<button type="button" class="tnlink nest" data-tripview="${esc(c)}">${esc(tm.get(c)[0].trip)}<small>${esc(tripDates(tm.get(c)))}</small><span class="chev-r" aria-hidden="true">›</span></button>`).join("")}</div>` : ""); })() : ""}
     ${kind === "trip" && tripsNamed(tripName(key)).length > 1 ? `<button type="button" class="tnlink" data-tripname="${esc(tripName(key))}">Ver los ${tripsNamed(tripName(key)).length} viajes «${esc(tripName(key))}»<span class="chev-r" aria-hidden="true">›</span></button>` : ""}
+    ${kind === "country" ? (() => {
+      const sorted = list.filter(f => f.past).sort((a, b) => a.depT - b.depT), pl = placesAll().filter(p => p.cc === key && !p.auto);
+      const fd = f => niceDate(f.date);
+      const bits = [sorted.length ? `<div><span>Primera vez</span><b>${esc(fd(sorted[0]))}</b></div>` : "", sorted.length > 1 ? `<div><span>Última vez</span><b>${esc(fd(sorted[sorted.length - 1]))}</b></div>` : ""].join("");
+      return (bits ? `<div class="dvisit">${bits}</div>` : "") + (pl.length ? `<button type="button" class="tnlink" data-cplaces="${esc(key)}">${pl.length} ${pl.length === 1 ? "lugar visitado" : "lugares visitados"}: ${esc(pl.slice(0, 3).map(p => p.name).join(", "))}${pl.length > 3 ? "…" : ""}<span class="chev-r" aria-hidden="true">›</span></button>` : "");
+    })() : ""}
     <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
     ${kind === "trip" ? tripMetaHTML(key) : ""}
   </div></div>`;
@@ -3530,7 +3558,7 @@ function renderStats() {
     const r = relDays(nx.depT), d = new Date(nx.depT);
     html += card("Próximo vuelo", `<button type="button" class="next nextbtn" data-fopen="${esc(nx.id)}"><div class="cd">${r <= 0 ? "HOY" : r}<small>${r <= 0 ? "" : r === 1 ? "día" : "días"}</small></div>
       <div><div class="rt">${esc(nx.from?.city || nx.from?.iata)} → ${esc(nx.to?.city || nx.to?.iata)}</div>
-      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div></div><span class="chev-r" aria-hidden="true">›</span></button>`, "wide", "plane");
+      <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div>${livePill(nx) ? `<div class="when">${livePill(nx)}</div>` : ""}</div><span class="chev-r" aria-hidden="true">›</span></button>`, "wide", "plane");
   }
   if (!past.length) {
     html += card("Todavía no hay datos", `<p class="hint">Cuando tengas vuelos volados ${S.year === "all" ? "" : "en " + esc(S.year) + " "}vas a ver acá el resumen, los rankings de aerolíneas, aeropuertos, rutas y aviones, y los países visitados.</p>`, "wide");
@@ -4414,6 +4442,9 @@ async function lookupADB(num, date, hintFrom, hintTo, signal) {
     aircraft:leg.aircraft?.model || "", reg:leg.aircraft?.reg || "",
     depReal: rD ? rD.t : "", arrReal: rA ? rA.t : "", status: st.startsWith("cancel") ? "cancelled" : st === "diverted" ? "diverted" : "",
     note:notes.join(" "),
+    live:{ raw:leg.status || "", depTerm:D.terminal || "", depGate:D.gate || "", checkIn:D.checkInDesk || "", arrTerm:A.terminal || "", arrGate:A.gate || "", belt:A.baggageBelt || "",
+      depEst:(adbT(D.revisedTime) || adbT(D.predictedTime) || {}).t || "", arrEst:(adbT(A.revisedTime) || adbT(A.predictedTime) || {}).t || "",
+      depAct:(adbT(D.runwayTime) || adbT(D.actualTimeLocal) || {}).t || "", arrAct:(adbT(A.runwayTime) || adbT(A.actualTimeLocal) || {}).t || "" },
     alternatives: others.map(x => ({ from:x.departure.airport.iata, to:x.arrival.airport.iata, note:"otro tramo" })).slice(0, 4) } };
 }
 async function lookupFree(num, date, signal) {
@@ -4943,6 +4974,91 @@ async function exportBackup() {
     setTimeout(() => URL.revokeObjectURL(url), 2000); markBackup(); return;
   }
   try { await S.downloads.save({ filename, data }); markBackup(); } catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("No se pudo descargar el archivo."); }
+}
+function countryTap(cc) {
+  if (isPlaces()) {
+    if (placesAll().some(p => p.cc === cc)) searchPick("placecountry", cc);
+    return;
+  }
+  if (!filtered().some(f => f.from?.cc === cc || f.to?.cc === cc)) return;
+  S.listBack = null; S.open = null; openDrill("country", cc);
+}
+/* ---------- flight day, live: gate, terminal, delays and whether it took off (AeroDataBox key needed) ----------
+   Only flights from a few hours before departure until shortly after landing are checked, only while the app is open:
+   every 15 min until 3 h before, then every 5 min. The answers are kept on this device only. */
+const LIVE_KEY = "flights-live";
+let LIVE = (() => { try { return JSON.parse(localStorage.getItem(LIVE_KEY) || "{}"); } catch { return {}; } })();
+let liveT = null, liveBusy = false;
+const saveLive = () => { try { localStorage.setItem(LIVE_KEY, JSON.stringify(LIVE)); } catch {} };
+function liveWindow(f) {
+  if (!f || f.demo || !f.num || !f.date || f.status === "cancelled" || !Number.isFinite(f.depT)) return false;
+  const now = Date.now();
+  return now >= f.depT - 20 * 3600000 && now <= f.arrT + 90 * 60000;
+}
+function liveInfo(f) {
+  const L = LIVE[f.id]; if (!L) return null;
+  const raw = String(L.raw || "").toLowerCase();
+  const dDep = f.dep && (L.depAct || L.depEst) ? delayMin(f.dep, L.depAct || L.depEst) : null, dArr = f.arr && (L.arrAct || L.arrEst) ? delayMin(f.arr, L.arrAct || L.arrEst) : null;
+  let st = "Programado", cls = "";
+  if (raw.startsWith("cancel")) { st = "Cancelado"; cls = "late"; }
+  else if (raw === "diverted") { st = "Desviado"; cls = "late"; }
+  else if (raw === "arrived") { st = dArr != null && dArr > 10 ? `Aterrizó con ${hm(dArr)} de retraso` : "Aterrizó"; cls = dArr > 10 ? "late" : "ok"; }
+  else if (raw === "enroute" || raw === "departed" || raw === "approaching") { st = raw === "approaching" ? "Aproximando" : "En vuelo"; cls = "ok"; }
+  else if (raw === "boarding") st = "Embarcando";
+  else if (raw === "gateclosed") st = "Puerta cerrada";
+  else if (raw === "checkin") st = "Check-in abierto";
+  else if (raw === "delayed" || (dDep != null && dDep >= 10)) { st = dDep != null && dDep > 0 ? `Retrasado ${hm(dDep)}` : "Retrasado"; cls = "late"; }
+  else if (dDep != null && dDep <= 5) { st = "A tiempo"; cls = "ok"; }
+  return { ...L, st, cls, dDep, dArr };
+}
+function liveDue(f) {
+  const L = LIVE[f.id], now = Date.now();
+  if (L && /^(arrived|canceled|cancelled|diverted)/i.test(L.raw || "") && now - L.t < 6 * 3600000) return false;
+  const every = now < f.depT - 3 * 3600000 ? 15 : 5;
+  return !L || now - L.t > every * 60000;
+}
+async function liveTick() {
+  clearTimeout(liveT); liveT = setTimeout(liveTick, 60000);
+  if (liveBusy || document.hidden || !adbKey() || navigator.onLine === false) return;
+  const due = all().filter(f => !f.demo && S.real.some(r => r.id === f.id) && liveWindow(f) && liveDue(f)).slice(0, 3);
+  if (!due.length) return;
+  liveBusy = true;
+  try {
+    for (const f of due) {
+      const r = await lookupADB(f.num, f.date, f.from?.iata, f.to?.iata);
+      if (!r || !r.found || !r.f.live) { LIVE[f.id] = { ...(LIVE[f.id] || {}), t:Date.now() }; continue; }
+      const x = r.f;
+      LIVE[f.id] = { ...x.live, t:Date.now() };
+      // what is final also goes into the flight itself (real times, status, plane)
+      const src = S.real.find(q => q.id === f.id); if (!src) continue;
+      const upd = { ...src };
+      if (x.depReal) upd.depReal = x.depReal; if (x.arrReal) upd.arrReal = x.arrReal;
+      if (x.status) upd.status = x.status;
+      if (x.aircraft && !upd.aircraft) upd.aircraft = x.aircraft; if (x.reg && !upd.reg) upd.reg = x.reg;
+      if (["depReal","arrReal","status","aircraft","reg"].some(k => (upd[k] || "") !== (src[k] || ""))) await updateMany([upd]);
+    }
+    for (const id of Object.keys(LIVE)) if (Date.now() - (LIVE[id].t || 0) > 3 * DAY) delete LIVE[id];
+    saveLive(); render();
+  } catch {} finally { liveBusy = false; }
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(liveTick, 800); });
+setTimeout(liveTick, 2500);
+function liveHTML(f) {
+  if (f.past && !LIVE[f.id]) return "";
+  if (!liveWindow(f) && !LIVE[f.id]) return "";
+  const L = liveInfo(f);
+  if (!L) return adbKey() ? `<div class="dlive"><span class="lv-h"><i class="lv-dot"></i>En vivo</span><p class="muted">Buscando el estado del vuelo…</p></div>`
+    : `<div class="dlive"><span class="lv-h">El día del vuelo</span><p class="muted">Para ver puerta, terminal y retrasos en vivo, agregá la clave de AeroDataBox en Ajustes.</p></div>`;
+  const ago = Math.max(0, Math.round((Date.now() - L.t) / 60000));
+  const side = (lbl, term, gate, extra, sched, est, act) => `<div class="lv-s"><span>${lbl}</span><b>${esc(act || est || sched || "—")}</b>${(act || est) && sched && (act || est) !== sched ? `<s>${esc(sched)}</s>` : ""}<small>${[term && "Terminal " + esc(term), gate && "Puerta " + esc(gate), extra].filter(Boolean).join(" · ") || "&nbsp;"}</small></div>`;
+  return `<div class="dlive"><span class="lv-h"><i class="lv-dot"></i>En vivo<em>${ago < 1 ? "ahora" : "hace " + ago + " min"}</em></span>
+    <b class="lv-st ${L.cls}">${esc(L.st)}</b>
+    <div class="lv-row">${side("Salida", L.depTerm, L.depGate, L.checkIn ? "Mostrador " + esc(L.checkIn) : "", f.dep, L.depEst, L.depAct)}${side("Llegada", L.arrTerm, L.arrGate, L.belt ? "Cinta " + esc(L.belt) : "", f.arr, L.arrEst, L.arrAct)}</div></div>`;
+}
+function livePill(f) {
+  const L = liveInfo(f); if (!L || f.past && !/^(arrived)/i.test(L.raw || "")) return "";
+  const bits = [L.st]; if (L.depGate && !/^(enroute|departed|approaching|arrived)/i.test(L.raw || "")) bits.push("Puerta " + L.depGate);
+  return `<span class="pill ${L.cls === "late" ? "late" : "soon"}">${esc(bits.join(" · "))}</span>`;
 }
 /* ---------- add a flight to the calendar (.ics: Apple Calendar, Google Calendar, Outlook) ---------- */
 function flightICS(f, raw) {
@@ -5538,6 +5654,7 @@ document.addEventListener("click", e => {
   if ("tripnew" in t.dataset) return openTripEditor("");
   if (["trippick", "tripall", "tripsave", "tripdel"].some(k => k in t.dataset)) return tripAction(t);
   if (t.dataset.open) { S.popList = true; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); if (S.open) revealOpenRow(); focusSelection(); return; }
+  if (t.dataset.cplaces) { const cc = t.dataset.cplaces; closeSheet(); setLayer("lugares"); setTimeout(() => searchPick("placecountry", cc), 60); return; }
   if (t.dataset.cal) { const f = all().find(x => x.id === t.dataset.cal); if (f) calICS(f); return; }
   if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
