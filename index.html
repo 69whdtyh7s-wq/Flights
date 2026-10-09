@@ -1901,53 +1901,84 @@ async function rasterHi() {
       const i = Math.floor(x / G), fx = (x - i * G) / G, q = j * gw + i;
       const a = glon[q], b = glon[q + 1], c = glon[q + gw], d = glon[q + gw + 1];
       let lon, lat, o = y * cw + x;
-      if (a === a && b === b && c === c && d === d && Math.max(a, b, c, d) - Math.min(a, b, c, d) < 90) {
+      if (a !== a && b !== b && c !== c && d !== d) { lon = lat = NaN; }      // outside the Earth: nothing to compute
+      else if (a === a && b === b && c === c && d === d && Math.max(a, b, c, d) - Math.min(a, b, c, d) < 90) {
         lon = (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + d * fx) * fy;
         lat = (glat[q] * (1 - fx) + glat[q + 1] * fx) * (1 - fy) + (glat[q + gw] * (1 - fx) + glat[q + gw + 1] * fx) * fy;
       } else { const ll = inv(bx0 + (x + .5) * sx, by0 + (y + .5) * sy); lon = ll ? ll[0] : NaN; lat = ll ? ll[1] : NaN; }
       LON[o] = lon; LAT[o] = lat;
     }
-    if ((y & 63) === 63) { await new Promise(r => setTimeout(r)); if (job !== hiJob) return; }
+    if ((y & 255) === 255) { await new Promise(r => setTimeout(r)); if (job !== hiJob) return; }
   }
   // detail needed: screen pixels per degree at the middle of the view
   const mid = Math.floor(ch / 2) * cw + Math.floor(cw / 2), dlon = Math.abs(LON[mid + 1] - LON[mid]) || Math.abs(LAT[mid + cw] - LAT[mid]) || 1;
   const src = TILE_SRC[type];
-  let z = Math.ceil(Math.log2(360 / (256 * dlon)));
+  let z = Math.ceil(Math.log2(360 / (256 * dlon)) - 0.35);              // up to ~1.3x enlargement is invisible and needs a quarter of the tiles
   z = Math.max(0, Math.min(src.max, z));
   const useTiles = z >= 3 && navigator.onLine !== false;   // the built-in picture (4096 px) is about level 3-4: past that, real tiles
-  const n = 2 ** z, tiles = new Map();
+  const n = 2 ** z, N = LON.length;
   const merc = lat => { const s2 = Math.sin(Math.max(-85.05, Math.min(85.05, lat)) * Math.PI / 180); return (0.5 - Math.log((1 + s2) / (1 - s2)) / (4 * Math.PI)) * n; };
-  if (useTiles) {
-    const need = new Set();
-    for (let o = 0; o < LON.length; o += 7) { const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue; const tx = Math.floor(((lon + 180) / 360 * n % n + n) % n), ty = Math.floor(merc(lat)); if (ty >= 0 && ty < n) need.add(tx + "," + ty); }
-    if (need.size <= 220) await Promise.all([...need].map(k => { const [tx, ty] = k.split(",").map(Number); return loadTile(type, z, tx, ty).then(d => { if (d) tiles.set(k, d); }); }));
-    if (job !== hiJob) return;
-    if (need.size && !tiles.size && !rasterHi.warned) { rasterHi.warned = true; toast("No se pudo cargar el detalle del mapa (imágenes satelitales): se usa la imagen básica."); }
-  }
-  const cr = document.getElementById("mapcredit"); if (cr) { cr.textContent = tiles.size ? TILE_SRC[type].credit : ""; cr.hidden = !tiles.size; }
+  // 1) at once: the built-in picture, smoothed, drawn sharp for the screen
   const c = document.createElement("canvas"); c.width = cw; c.height = ch;
   const ctx = c.getContext("2d"), out = ctx.createImageData(cw, ch), O = out.data, td = tex.d, tw = tex.w, th = tex.h;
-  for (let o = 0; o < LON.length; o++) {
+  for (let o = 0; o < N; o++) {
     const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue;
     const j4 = o * 4;
-    if (tiles.size) {
-      const fx = ((lon + 180) / 360 * n % n + n) % n, fy = merc(lat), tx = Math.floor(fx), ty = Math.floor(fy), d = tiles.get(tx + "," + ty);
-      if (d) { const u = Math.min(255, Math.floor((fx - tx) * 256)), v = Math.min(255, Math.floor((fy - ty) * 256)), i = (v * 256 + u) * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; O[j4 + 3] = 255; continue; }
-    }
-    // built-in picture, smoothed (bilinear) so it is never blocky
     const fu = ((((lon + 180) % 360) + 360) % 360) / 360 * tw - .5, fv = Math.max(0, Math.min(th - 1.001, (90 - lat) / 180 * th - .5));
     const u0 = Math.floor(fu), v0 = Math.floor(fv), au = fu - u0, av = fv - v0, ua = (u0 + tw) % tw, ub = (u0 + 1 + tw) % tw, v1 = Math.min(th - 1, v0 + 1);
     const i00 = (v0 * tw + ua) * 4, i01 = (v0 * tw + ub) * 4, i10 = (v1 * tw + ua) * 4, i11 = (v1 * tw + ub) * 4;
     for (let k = 0; k < 3; k++) O[j4 + k] = (td[i00 + k] * (1 - au) + td[i01 + k] * au) * (1 - av) + (td[i10 + k] * (1 - au) + td[i11 + k] * au) * av;
     O[j4 + 3] = 255;
   }
-  ctx.putImageData(out, 0, 0);
-  c.toBlob(b => {
-    if (!b || job !== hiJob || !TEX_URL[mapType]) return;
-    const url = URL.createObjectURL(b);
-    satHi.attr("href", url).attr("x", bx0).attr("y", by0).attr("width", bx1 - bx0).attr("height", by1 - by0).style("display", null);
-    if (hiURL) URL.revokeObjectURL(hiURL); hiURL = url;
-  }, "image/jpeg", 0.9);
+  let committing = false, again = false, lastC = 0, credit = false;
+  const commit = () => {
+    if (job !== hiJob) return;
+    if (committing) { again = true; return; }
+    committing = true; lastC = performance.now();
+    ctx.putImageData(out, 0, 0);
+    c.toBlob(b => {
+      committing = false;
+      if (!b || job !== hiJob || !TEX_URL[mapType]) return;
+      const url = URL.createObjectURL(b);
+      satHi.attr("href", url).attr("x", bx0).attr("y", by0).attr("width", bx1 - bx0).attr("height", by1 - by0).style("display", null);
+      if (hiURL) URL.revokeObjectURL(hiURL); hiURL = url;
+      if (again) { again = false; commit(); }
+    }, "image/jpeg", 0.88);
+  };
+  commit();
+  if (!useTiles) { const cr = document.getElementById("mapcredit"); if (cr) cr.hidden = true; return; }
+  // 2) the detailed tiles, painted in as each one arrives (cached ones appear immediately)
+  const slotOf = new Map(), keys = [], pxTile = new Int32Array(N).fill(-1), pxUV = new Uint16Array(N);
+  for (let o = 0; o < N; o++) {
+    const lon = LON[o], lat = LAT[o]; if (lon !== lon) continue;
+    const fx = ((lon + 180) / 360 * n % n + n) % n, fy = merc(lat), tx = Math.floor(fx), ty = Math.floor(fy);
+    if (ty < 0 || ty >= n) continue;
+    const k = tx * n + ty; let sl = slotOf.get(k); if (sl === undefined) { sl = keys.length; slotOf.set(k, sl); keys.push([tx, ty]); }
+    pxTile[o] = sl; pxUV[o] = Math.min(255, Math.floor((fy - ty) * 256)) * 256 + Math.min(255, Math.floor((fx - tx) * 256));
+  }
+  if (keys.length > 260) return;
+  const counts = new Int32Array(keys.length + 1); for (let o = 0; o < N; o++) if (pxTile[o] >= 0) counts[pxTile[o] + 1]++;
+  for (let k = 1; k <= keys.length; k++) counts[k] += counts[k - 1];
+  const order = new Int32Array(counts[keys.length]), fill = counts.slice(0, keys.length);
+  for (let o = 0; o < N; o++) if (pxTile[o] >= 0) order[fill[pxTile[o]]++] = o;
+  let pending = 0, got = 0, timer = null;
+  const paintTile = (sl, d) => {
+    for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], i = pxUV[o] * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; }
+    got++;
+    if (!credit) { credit = true; const cr = document.getElementById("mapcredit"); if (cr) { cr.textContent = src.credit; cr.hidden = false; } }
+  };
+  const flush = () => { timer = null; commit(); };
+  // nearest the middle of the screen first
+  const cxT = keys.reduce((a, k) => a + k[0], 0) / keys.length, cyT = keys.reduce((a, k) => a + k[1], 0) / keys.length;
+  const ord = keys.map((k, sl) => sl).sort((a, b) => Math.hypot(keys[a][0] - cxT, keys[a][1] - cyT) - Math.hypot(keys[b][0] - cxT, keys[b][1] - cyT));
+  await Promise.all(ord.map(sl => { pending++; return loadTile(type, z, keys[sl][0], keys[sl][1]).then(d => {
+    pending--; if (job !== hiJob || !d) return;
+    paintTile(sl, d);
+    if (!timer) timer = setTimeout(flush, performance.now() - lastC > 400 ? 60 : 300);
+  }); }));
+  if (job !== hiJob) return;
+  clearTimeout(timer); commit();
+  if (!got && !rasterHi.warned) { rasterHi.warned = true; toast("No se pudo cargar el detalle del mapa (imágenes satelitales): se usa la imagen básica."); }
 }
 function makeProjection() {
   if (mapView === "globo") {
@@ -2419,7 +2450,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091658";
+const BUILD = "202610091711";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
