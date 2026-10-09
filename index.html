@@ -89,6 +89,8 @@ button{cursor:pointer}
 .map .land{fill:var(--land);stroke:var(--sea);stroke-width:.5}
 .map .land.visited{fill:var(--land-visited)}
 .map .land.under{display:none}
+.map .land.out{fill-opacity:.22;stroke-opacity:.3}
+.map.isol .bord{opacity:.3}
 .map .arc{fill:none;stroke-linecap:round}
 .map .arc.past{stroke:var(--route)}
 .map .arc.up{stroke:var(--sky);stroke-dasharray:5 5}
@@ -942,6 +944,7 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .mapfoot .layerseg{margin-left:0;margin-right:auto}
 @media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
 .mapctl #z-layer.on{color:var(--place)!important}
+.plc-all{float:right;border:0;background:transparent;color:var(--accent);font:inherit;font-weight:600;padding:0}
 .plc-edit{margin-left:auto;border:0;background:transparent;color:var(--accent);font:inherit;font-size:16px;font-weight:600;padding:6px 2px}
 .plc-row.ed{cursor:default}.plc-row.ed:hover{background:transparent}
 .plc-del{width:26px;height:26px;border:0;border-radius:50%;background:var(--danger);color:#fff;display:grid;place-items:center;padding:0;flex:none}
@@ -1973,14 +1976,14 @@ function setBase(w, force) {
   if (BASE !== w || force) {
     BASE = w;
     gLayer.select(".lands").selectAll("path").data(w.features).join("path")
-      .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : "")).attr("d", geoPath);
+      .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : (svgSel && svgSel.classed("isol") ? " out" : ""))).attr("d", geoPath);
     if (!w.borders) { const keep = world; world = w; buildBorders(); w.borders = BORDERS; world = keep; }
   }
 }
 function setHi(feats, box) {
   const hi = gLayer.select(".lands-hi"), on = !!(feats && feats.length);
   hi.selectAll("path").data(on ? feats : [], d => d.id + "|" + (d.cc || "") + "|" + (d._i ??= Math.random())).join("path")
-    .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : "")).attr("d", geoPath);
+    .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : (svgSel && svgSel.classed("isol") ? " out" : ""))).attr("d", geoPath);
   const covered = new Set(on ? feats.map(f => f.cc).filter(Boolean) : []);
   gLayer.select(".lands").selectAll("path").classed("under", d => !!d.cc && covered.has(d.cc));
   world = on ? WORLD_HI : BASE;
@@ -2139,7 +2142,7 @@ function renderMap() {
     }
   }
   if (visited.has("AR")) visited.add("FK");   // Islas Malvinas shaded together with Argentina (map only)
-  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc)).classed("out", false); svgSel.classed("isol", false);
   const vkey = [...visited].sort().join(",");
   if (vkey !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
   const selIds = S.open ? [S.open] : S.focusIds;
@@ -2175,11 +2178,16 @@ function renderPlacesMap() {
   const ps = placesShown();
   const visited = new Set(ps.map(p => p.cc).filter(Boolean));
   if (visited.has("AR")) visited.add("FK");
-  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  const sel0 = S.openPlace, grp0 = !sel0 && S.placeSet ? S.placeSet : null;
+  // a country or continent from the search: only its countries and places stay on the map
+  const iso = grp0 ? new Set(ps.filter(p => grp0.has(p.id)).map(p => p.cc).filter(Boolean)) : null;
+  if (iso) { visited.clear(); iso.forEach(c => visited.add(c)); if (iso.has("AR")) visited.add("FK"); }
+  svgSel.classed("isol", !!iso);
+  gLayer.selectAll(".lands path, .lands-hi path").classed("visited", d => !!d.cc && visited.has(d.cc)).classed("out", d => !!iso && !(d.cc && visited.has(d.cc)));
   if ([...visited].sort().join(",") !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
   const sel = S.openPlace, group = !sel && S.placeSet ? S.placeSet : null;   // one place selected, or a group from the search (a country, a continent)
   const isSel = p => p.id === sel || (group && group.has(p.id));
-  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: isSel(p) ? 5 : 3.5, sel: isSel(p), dim: !!(sel || group) && !isSel(p) }))
+  const ds = ps.filter(p => isVisible(+p.lon, +p.lat) && (!iso || isSel(p))).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: isSel(p) ? 5 : 3.5, sel: isSel(p), dim: !!(sel || group) && !isSel(p) }))
     .sort((a, b) => a.sel - b.sel);
   gPlc.selectAll("circle").data(ds, d => d.id).join("circle").attr("class", d => "plc" + (d.dim ? " dim" : "") + (d.sel ? " sel" : ""))
     .selectAll("title").data(d => [d]).join("title").text(d => d.name + (d.cc ? " · " + country(d.cc) : ""));
@@ -2196,6 +2204,17 @@ function focusPlaces(id) {
   const pts = ps.map(p => [+p.lon, +p.lat]);
   if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
   const xy = pts.map(q => proj(q)), xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+  if (Array.isArray(id) && S.placeSet && world) {
+    // a searched country: frame its main landmass too, not only the dots
+    const ccs = new Set(ps.map(p => p.cc).filter(Boolean));
+    for (const f of world.features) {
+      if (!f.cc || !ccs.has(f.cc)) continue;
+      const g = f.geometry, polys = g.type === "MultiPolygon" ? g.coordinates : g.type === "Polygon" ? [g.coordinates] : [];
+      let best = null, ba = -1;
+      for (const c of polys) { const a = d3.geoArea({ type:"Polygon", coordinates:c }); if (a > ba) { ba = a; best = c; } }
+      if (best) { const b = geoPath.bounds({ type:"Polygon", coordinates:best }); if (b.every(q => q.every(Number.isFinite))) { xs.push(b[0][0], b[1][0]); ys.push(b[0][1], b[1][1]); } }
+    }
+  }
   let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   updateZoomExtent(); const ext = zoom.extent().call(svgSel.node());
   let vx0 = ext[0][0], vx1 = ext[1][0], vy0 = ext[0][1], vy1 = ext[1][1];
@@ -2252,7 +2271,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091117";
+const BUILD = "202610091123";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2638,7 +2657,8 @@ function tripRow(t) {
 
 function renderPlacesList() {
   const el = $("#list");
-  const ps = placesShown(), imp = "";
+  const grp = !S.openPlace && S.placeSet ? S.placeSet : null;
+  const ps = placesShown().filter(p => !grp || grp.has(p.id)), imp = "";
   if (!ps.length) {
     el.innerHTML = `<div class="empty"><b>${placesAll().length ? "Sin lugares en " + esc(S.year) : "Ningún lugar todavía"}</b><span>Las ciudades de tus vuelos aparecen solas. Agregá también pueblos, ciudades o parques a los que fuiste en tren, en auto o caminando.</span><button class="btn primary" type="button" data-act="addplace">Agregar lugar</button>${imp}</div>`;
     return;
@@ -2646,7 +2666,7 @@ function renderPlacesList() {
   const by = new Map();
   for (const p of ps) { const k = p.cc || "??"; if (!by.has(k)) by.set(k, []); by.get(k).push(p); }
   const groups = [...by].sort((a, b) => b[1].length - a[1].length || country(a[0]).localeCompare(country(b[0]), "es"));
-  el.innerHTML = `<div class="plc-sum"><b>${ps.length}</b> ${ps.length === 1 ? "lugar" : "lugares"} · <b>${by.size}</b> ${by.size === 1 ? "país" : "países"}</div>` +
+  el.innerHTML = `<div class="plc-sum"><b>${ps.length}</b> ${ps.length === 1 ? "lugar" : "lugares"} · <b>${by.size}</b> ${by.size === 1 ? "país" : "países"}${grp ? `<button type="button" class="plc-all" data-plcclear>Ver todos</button>` : ""}</div>` +
     groups.map(([cc, l]) => `<div class="plc-grp"><div class="plc-gh">${cc !== "??" ? `<span class="fl-ic sm" aria-hidden="true">${flag(cc)}</span>` : ""}<b>${esc(cc !== "??" ? country(cc) : "Sin país")}</b><span>${l.length}</span></div>` +
       l.sort((a, b) => (b.date || "").localeCompare(a.date || "") || a.name.localeCompare(b.name, "es")).map(p => S.plcEdit ?
         `<div class="plc-row ed"><span class="plc-dot" aria-hidden="true"></span><span class="plc-t"><b>${esc(p.name)}</b>${p.auto ? `<small>De tus vuelos</small>` : p.sub && p.sub !== country(p.cc) ? `<small>${esc(p.sub)}</small>` : ""}</span>${p.auto ? `<span class="plc-lock" title="Se borra borrando sus vuelos">✈︎</span>` : `<button type="button" class="plc-del" data-pldel="${esc(p.id)}" aria-label="Borrar ${esc(p.name)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 12h12"/></svg></button>`}</div>` :
@@ -5000,6 +5020,7 @@ document.addEventListener("click", e => {
   if (t.dataset.layer) { setLayer(t.dataset.layer); if (t.closest("#stats") && window.innerWidth <= 699) setView("mapa", true); return; }
   if (t.id === "z-layer") { setLayer(isPlaces() ? "vuelos" : "lugares"); toast(isPlaces() ? "Capa: lugares visitados" : "Capa: vuelos"); return; }
   if (t.dataset.plcedit) return openPlaceSheet(t.dataset.plcedit);
+  if (t.dataset.plcclear !== undefined) { S.placeSet = null; S.openPlace = null; closeAptCard(); render(); focusPlaces(); return; }
   if (t.id === "plc-edit") { S.plcEdit = !S.plcEdit; S.openPlace = null; renderList(); return; }
   if (t.dataset.pldel) {
     const before = PLACES.slice(), p = PLACES.find(x => x.id === t.dataset.pldel);
