@@ -1018,6 +1018,19 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .rank.trips small{font-size:12px;color:var(--muted)}
 .tripbox{margin:8px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:18px;overflow:clip;background:color-mix(in srgb,var(--accent) 4%,var(--surface))}
 .tripbox > .fl:first-of-type{border-top:0}
+:root{--nest:#8A4FD8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--nest:#B48CFF}}
+:root[data-theme="dark"]{--nest:#B48CFF}
+.tripbox.nested{margin:6px 10px 10px 18px;border:2px solid var(--nest);border-left-width:5px;background:color-mix(in srgb,var(--nest) 7%,var(--surface));border-radius:14px}
+.tripbox.nested > .tripttl b{color:var(--nest)}
+.tripbox.nested .tripbox.nested{margin-left:12px}
+.nestlbl{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#fff;background:var(--nest);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.tripttl .nestlbl{flex:none}
+.nestcnt{font-size:11px;font-weight:700;color:var(--nest);background:color-mix(in srgb,var(--nest) 14%,transparent);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.tnlink.nest{color:var(--nest);flex-wrap:wrap;gap:4px 8px}
+.tnlink.nest small{color:var(--muted);font-weight:500;font-size:12.5px}
+.nestkids{display:flex;flex-direction:column;gap:6px}
+.nestkids > .nestlbl{align-self:flex-start;margin-left:2px}
 .tripttl{display:flex;align-items:baseline;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:11px 14px 6px;cursor:pointer;font:inherit;color:var(--ink)}
 .tripttl b{font-size:15px;font-weight:700;color:var(--accent-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .tripttl small{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -1911,7 +1924,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009032431";
+const BUILD = "20261009032628";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2184,20 +2197,39 @@ function renderList() {
     el.innerHTML = `<div class="empty"><b>${S.tab === "up" ? "Nada programado" : "Todavía no hay vuelos"}</b><span>${S.tab === "up" ? "Agregá tu próximo vuelo con el número y la fecha." : "Cargá vuelos pasados uno por uno o pegá varios a la vez."}</span><button class="btn primary" type="button" data-act="add">Agregar vuelo</button></div>`;
     return;
   }
-  const fw = popMode(), titled = new Set(), tm = tripMap();
+  const fw = popMode(), titled = new Set(), tm = tripMap(), pm = tripParents(tm);
   // flights of the same trip that sit next to each other share one outline, with the trip name once on top
   const rowsHTML = list => {
     let out = "";
     for (let i = 0; i < list.length; ) {
       const f = list[i];
-      const k = tripKey(f);
+      let k = tripKey(f);
       if (!k) { out += flightRow(f, fw); i++; continue; }
-      let j = i; while (j < list.length && tripKey(list[j]) === k) j++;
+      while (pm.has(k)) k = pm.get(k);                      // start from the outermost trip
+      const inK = x => { let t = tripKey(x); while (t) { if (t === k) return true; t = pm.get(t); } return false; };
+      let j = i; while (j < list.length && inK(list[j])) j++;
       const legs = tm.get(k) || [];
+      const own = list.slice(i, j).filter(x => tripKey(x) === k).length;
       // every box gets the trip title (a trip can be split by another flight or by the change of year)
-      const part = j - i < legs.length ? `${j - i} de ${legs.length} vuelos` : `${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"}`;
-      const head = `<button type="button" class="tripttl" data-tripview="${esc(k)}"><b>${esc(f.trip)}</b>${tagChips(k)}<small>${part}${legs.length ? " · " + esc(tripDates(legs)) : ""}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
-      out += `<div class="tripbox">${head}${list.slice(i, j).map(x => flightRow(x, fw)).join("")}</div>`;
+      const kids = tripChildren(k, tm);
+      const part = own < legs.length ? `${own} de ${legs.length} vuelos` : `${legs.length} ${legs.length === 1 ? "vuelo" : "vuelos"}`;
+      const head = `<button type="button" class="tripttl" data-tripview="${esc(k)}"><b>${esc(legs[0]?.trip || f.trip)}</b>${tagChips(k)}<small>${part}${legs.length ? " · " + esc(tripDates(legs)) : ""}</small>${kids.length ? `<span class="nestcnt">${kids.length === 1 ? "1 viaje adentro" : kids.length + " viajes adentro"}</span>` : ""}<span class="chev-r" aria-hidden="true">›</span></button>`;
+      // flights of trips inside this one go in their own inner box
+      const body = (arr, outer) => {
+        let h = "";
+        for (let a = 0; a < arr.length; ) {
+          let ck = tripKey(arr[a]); while (ck && pm.get(ck) !== outer && ck !== outer) ck = pm.get(ck);
+          if (!ck || ck === outer) { h += flightRow(arr[a], fw); a++; continue; }
+          const inC = x => { let t = tripKey(x); while (t) { if (t === ck) return true; t = pm.get(t); } return false; };
+          let b2 = a; while (b2 < arr.length && inC(arr[b2])) b2++;
+          const cl = tm.get(ck) || [], cn = arr.slice(a, b2).filter(x => tripKey(x) === ck).length;
+          const ch = `<button type="button" class="tripttl" data-tripview="${esc(ck)}"><span class="nestlbl">Dentro de ${esc(tm.get(outer)?.[0]?.trip || "")}</span><b>${esc(cl[0]?.trip || "")}</b>${tagChips(ck)}<small>${cn < cl.length ? `${cn} de ${cl.length} vuelos` : `${cl.length} ${cl.length === 1 ? "vuelo" : "vuelos"}`} · ${esc(tripDates(cl))}</small><span class="chev-r" aria-hidden="true">›</span></button>`;
+          h += `<div class="tripbox nested">${ch}${body(arr.slice(a, b2), ck)}</div>`;
+          a = b2;
+        }
+        return h;
+      };
+      out += `<div class="tripbox${kids.length ? " hasnest" : ""}">${head}${body(list.slice(i, j), k)}</div>`;
       i = j;
     }
     return out;
@@ -2239,6 +2271,17 @@ function tripMap() {
 }
 const tripName = id => { const l = tripMap().get(id); return l && l[0] ? l[0].trip : ""; };
 const tripList = () => [...tripMap().entries()].map(([id, legs]) => ({ id, name:legs[0].trip, legs })).sort((a, b) => b.legs[0].depT - a.legs[0].depT);
+/* trips that happen inside another trip (e.g. an excursion during a longer trip): child id -> parent id */
+function tripParents(tm = tripMap()) {
+  const r = [...tm].map(([id, l]) => ({ id, a:l[0].depT, b:l[l.length - 1].depT })), out = new Map();
+  for (const c of r) {
+    let best = null;
+    for (const p of r) if (p.id !== c.id && p.a <= c.a && c.b <= p.b && (p.b - p.a) > (c.b - c.a) && (!best || (p.b - p.a) < (best.b - best.a))) best = p;
+    if (best) out.set(c.id, best.id);
+  }
+  return out;
+}
+const tripChildren = (id, tm = tripMap()) => { const pm = tripParents(tm); return [...pm].filter(([, p]) => p === id).map(([c]) => c); };
 const tripsNamed = name => tripList().filter(t => norm(t.name) === norm(name)).sort((a, b) => a.legs[0].depT - b.legs[0].depT);
 const tripNames = () => tripList().map(t => t.id);
 const tripDates = legs => legs.length ? shortDate(legs[0]) + (legs.length > 1 && legs[legs.length - 1].date !== legs[0].date ? " – " + shortDate(legs[legs.length - 1]) : "") : "";
@@ -2634,6 +2677,9 @@ function openDrill(kind, key) {
     ${S.listBack ? `<button type="button" class="backbtn" data-list="${S.listBack}">‹ ${esc(LIST_TITLE[S.listBack])}</button>` : ""}
     <div class="hd">${icon}<div class="dtt"><small>${kind === "trip" ? "Viaje" + (list.length ? " · " + esc(tripDates(list)) : "") : DRILL_LABEL[kind] + (S.year !== "all" ? " · " + esc(S.year) : "")}</small><h2 id="dr-t">${esc(d.title(key))}</h2></div>${kind === "trip" ? `<button class="btn" type="button" data-tripedit="${esc(key)}">Editar</button>` : ""}<button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     <div class="dstats"><div><b>${list.length}</b><span>${list.length === 1 ? "vuelo" : "vuelos"}</span></div><div><b>${fmt(km)}</b><span>km</span></div><div><b>${fmt(Math.round(mins / 60))}</b><span>horas</span></div><div><b>${yrs.length > 1 ? esc(yrs[0]) + "–" + esc(yrs[yrs.length - 1].slice(2)) : esc(yrs[0] || "—")}</b><span>${yrs.length > 1 ? "años" : "año"}</span></div></div>
+    ${kind === "trip" ? (() => { const tm = tripMap(), pm = tripParents(tm), par = pm.get(key), kids = [...pm].filter(([, p]) => p === key).map(([c]) => c);
+      return (par ? `<button type="button" class="tnlink nest" data-tripview="${esc(par)}"><span class="nestlbl">Dentro del viaje</span>${esc(tm.get(par)[0].trip)}<small>${esc(tripDates(tm.get(par)))}</small><span class="chev-r" aria-hidden="true">›</span></button>` : "")
+        + (kids.length ? `<div class="nestkids"><span class="nestlbl">${kids.length === 1 ? "Viaje dentro de este" : "Viajes dentro de este"}</span>${kids.map(c => `<button type="button" class="tnlink nest" data-tripview="${esc(c)}">${esc(tm.get(c)[0].trip)}<small>${esc(tripDates(tm.get(c)))}</small><span class="chev-r" aria-hidden="true">›</span></button>`).join("")}</div>` : ""); })() : ""}
     ${kind === "trip" && tripsNamed(tripName(key)).length > 1 ? `<button type="button" class="tnlink" data-tripname="${esc(tripName(key))}">Ver los ${tripsNamed(tripName(key)).length} viajes «${esc(tripName(key))}»<span class="chev-r" aria-hidden="true">›</span></button>` : ""}
     <div class="panel dlist">${rows || `<div class="empty">Sin vuelos.</div>`}</div>
     ${kind === "trip" ? tripMetaHTML(key) : ""}
