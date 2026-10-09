@@ -42,6 +42,9 @@
   --flap:transparent; --flap-cell:#1C1C1E; --flap-ink:#FFFFFF; --flap-label:#8E8E93; --flap-seam:transparent;
   --card-shadow:none; --shadow:none; color-scheme:dark}
 *{box-sizing:border-box}
+html,body,*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable],[contenteditable] *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,svg,a{-webkit-user-drag:none;user-drag:none}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 .wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:18px 48px;display:flex;flex-direction:column;gap:18px}
 @media (max-width:520px){.wrap{padding-inline:16px}}
@@ -758,15 +761,17 @@ body{overflow-x:clip}
 .dtiles span{font-size:11.5px;font-weight:600;color:var(--muted)}
 .dtiles b{font-size:14.5px;font-weight:600;overflow-wrap:anywhere}
 .dtiles .muted{color:var(--muted);font-weight:500}
-.dtiles .dt-plane{grid-column:1 / -1;padding:0;overflow:hidden}
-.dtiles .dt-plane > span{padding:10px 12px 0}
-.dt-plane .dplane{background:none;border-radius:0}
-.dt-plane .dpimg{min-height:70px;padding:2px 12px 0}
-.dt-plane .planeart{max-width:220px}
-.dt-plane .dplane.hasphoto{margin-top:8px}
-.dt-plane .dplane.hasphoto .dpimg{min-height:140px;max-height:190px}
-.dt-plane .dpcap{padding:2px 12px 10px}
+.dtiles .dt-plane{overflow:hidden}
+.dtiles .dt-plane div{padding:0;background:none;border-radius:0;gap:0}
+.dt-plane .dplane{display:flex;flex-direction:column}
+.dtiles .dt-plane .dpimg,.dtiles .dt-plane .dplane.hasphoto .dpimg{display:block;flex:none;min-height:0;max-height:none;margin:3px 0 2px;text-align:left}
+.dt-plane .planeart{display:block;width:84px;max-width:84px;margin-left:-4px}
+.dt-plane .dplane.hasphoto .dpimg img{width:100%;height:52px;border-radius:8px;object-fit:cover}
+.dt-plane .dplane.hasphoto .dpcap{position:static;background:none;color:inherit;padding:0}
+.dt-plane .dplane.hasphoto .dpcap span,.dt-plane .dplane.hasphoto .dpcap a{color:var(--muted)}
+.dtiles .dt-plane .dpcap{display:flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 6px}
 .dt-plane .dpcap b{font-size:14.5px;font-weight:600}
+.dt-plane .dpcap span{font-size:11.5px}
 .dreal{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
 .late{color:var(--danger)!important}.warn-d{color:#C93400!important}.ontime{color:var(--ok)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
@@ -2155,7 +2160,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009040405";
+const BUILD = "20261009040643";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4358,6 +4363,11 @@ async function wipeAll(btn) {
   } catch { btn.disabled = false; toast("No se pudo borrar todo. Probá de nuevo."); }
 }
 
+/* nothing in the app gets selected or dragged by double-clicking, holding or dragging (except text you type) */
+const typing = el => el && el.closest && el.closest("input,textarea,select,[contenteditable]");
+document.addEventListener("dragstart", e => { if (!typing(e.target)) e.preventDefault(); });
+document.addEventListener("selectstart", e => { if (!typing(e.target)) e.preventDefault(); });
+document.addEventListener("mousedown", e => { if (e.detail > 1 && !typing(e.target)) e.preventDefault(); });
 document.addEventListener("change", e => {
   if (e.target && e.target.id === "set-accent") setAccent(e.target.value);
   if (e.target && e.target.id === "set-adb") { const k = e.target.value.trim(); setAdbKey(k); openSettings(); if (k) toast("Búsqueda completa activada"); }
