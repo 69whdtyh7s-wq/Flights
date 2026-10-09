@@ -2272,7 +2272,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610091216";
+const BUILD = "202610091227";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4397,10 +4397,10 @@ function openImport() {
       found = res.filter(f => f.from && f.to && f.date);
       const skipped = res.length - found.length;
       if (!found.length) { stat("No encontramos vuelos completos en el texto." + (skipped ? ` Hubo ${skipped} sin ruta o fecha.` : ""), "err"); return; }
-      const byK = new Map(S.real.map(r => [flightKey(r), r])), dup = f => byK.get(flightKey(f));
+      const dup = f => pasteMatch(f);
       const upd = f => { const r = dup(f); return r && pasteMerge(r, f); };
       stat(`Encontramos ${found.length} vuelo${found.length > 1 ? "s" : ""}.${skipped ? ` ${skipped} no tenía${skipped > 1 ? "n" : ""} ruta o fecha.` : ""} Destildá los que no quieras guardar.`, "ok");
-      $("#im-prev").innerHTML = found.map((f, i) => `<label><input type="checkbox" id="im-c${i}" ${dup(f) && !upd(f) ? "" : "checked"}><div><b>${esc(f.from.iata)} → ${esc(f.to.iata)}</b> <span class="mono">${esc(f.num)}</span><br><span>${esc(f.date)}${f.dep ? " · " + esc(f.dep) + (f.arr ? "–" + esc(f.arr) + (f.arrOffset ? " +" + f.arrOffset : "") : "") : ""}${f.airline ? " · " + esc(f.airline) : ""}${dup(f) ? (upd(f) ? " · <b>ya lo tenés: se actualiza con los datos nuevos</b>" : " · ya está guardado, sin datos nuevos") : ""}${f.confidence === "baja" ? " · verificar horarios" : ""}</span></div></label>`).join("");
+      $("#im-prev").innerHTML = found.map((f, i) => `<label><input type="checkbox" id="im-c${i}" ${dup(f) && !upd(f) ? "" : "checked"}><div><b>${esc(f.from.iata)} → ${esc(f.to.iata)}</b> <span class="mono">${esc(f.num)}</span><br><span>${esc((dup(f) || f).date)}${f.dep ? " · " + esc(f.dep) + (f.arr ? "–" + esc(f.arr) + (f.arrOffset ? " +" + f.arrOffset : "") : "") : ""}${f.airline ? " · " + esc(f.airline) : ""}${f.seat ? " · asiento " + esc(f.seat) : ""}${dup(f) ? (upd(f) ? " · <b>ya lo tenés: se actualiza con los datos nuevos</b>" : " · ya está guardado, sin datos nuevos") : ""}${f.confidence === "baja" ? " · verificar horarios" : ""}</span></div></label>`).join("");
       $("#im-foot").hidden = false;
     } catch (e) { stat(sampleErr(e), "err"); }
     finally { const g = $("#im-go"); if (g) g.disabled = false; const s = $("#im-stop"); if (s) s.hidden = true; }
@@ -4411,8 +4411,8 @@ function openImport() {
     e.target.disabled = true;
     try {
       // a flight you already have: keep the copy with more information, fill its gaps from the other one
-      const byK = new Map(S.real.map(r => [flightKey(r), r])), upds = [], fresh = [], seenU = new Set();
-      for (const f of pick) { const r = byK.get(flightKey(f)); if (!r) { fresh.push(f); continue; } if (seenU.has(r.id)) continue; const m = pasteMerge(r, f); if (m) { upds.push({ old:r, now:m }); seenU.add(r.id); } }
+      const upds = [], fresh = [], seenU = new Set();
+      for (const f of pick) { const r = pasteMatch(f); if (!r) { fresh.push(f); continue; } if (seenU.has(r.id)) continue; const m = pasteMerge(r, f); if (m) { upds.push({ old:r, now:m }); seenU.add(r.id); } }
       const n = await saveMany(fresh); if (upds.length) await updateMany(upds.map(u => u.now));
       const same = pick.length - n - upds.length;
       closeSheet(); if (n || !upds.length) S.tab = "past"; render();
@@ -4436,9 +4436,9 @@ function guessYear(m, d) {
 function findDates(low) {
   const out = [], add = (pos, len, y, m, d) => {
     if (!(m >= 1 && m <= 12 && d >= 1 && d <= 31)) return;
-    if (y == null) y = guessYear(m, d);
+    const guessed = y == null; if (guessed) y = guessYear(m, d);
     if (y < 1950 || y > 2100) return;
-    out.push({ pos, end:pos + len, date:`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}` });
+    out.push({ pos, end:pos + len, guessed, date:`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}` });
   };
   let m;
   const iso = /\b(19\d\d|20\d\d)-(\d{1,2})-(\d{1,2})\b/g;
@@ -4453,86 +4453,198 @@ function findDates(low) {
 }
 async function extractLocal(text, signal) {
   await Promise.all([loadAptDB(), loadAlDB()]);
-  const low = text.toLowerCase().replace(/[áàâä]/g, "a").replace(/[éèêë]/g, "e").replace(/[íìîï]/g, "i").replace(/[óòôö]/g, "o").replace(/[úùûü]/g, "u");
+  text = String(text).replace(/\r/g, "").replace(/[   ]/g, " ");
+  const deacc = t => t.toLowerCase().replace(/[áàâä]/g, "a").replace(/[éèêë]/g, "e").replace(/[íìîï]/g, "i").replace(/[óòôö]/g, "o").replace(/[úùûü]/g, "u");
+  const low = deacc(text);   // same length as text: positions match
+  const lines = []; { let p0 = 0; for (const l of text.split("\n")) { lines.push(p0); p0 += l.length + 1; } }
+  const lineOf = pos => { let lo = 0, hi = lines.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (lines[m] <= pos) lo = m; else hi = m - 1; } return lo; };
   const aptSet = new Set((APTDB || []).map(a => a.iata)); for (const a of AIRPORTS.values()) aptSet.add(a.iata);
   const alSet = new Set(Object.keys(AL_NAME)); for (const a of (ALDB || [])) if (a.active) alSet.add(a.code); for (const f of S.real) { const c = alCode(f); if (c) alSet.add(c); }
+  const used = new Map(); for (const f of S.real) for (const a of [f.from, f.to]) if (validApt(a)) used.set(a.iata, (used.get(a.iata) || 0) + 1);
   let m;
-  // flight numbers: an airline code written in capitals + 1-4 digits (IB6845, IB 6845, AR-1132)
-  const nums = [], reNum = /\b([A-Z][A-Z0-9]|[0-9][A-Z])[ \-]?(\d{1,4})(?![\d:])\b/g;
+  // ---- flight numbers: IB6845, IB 6845, AR-1132, and "Vueling 6104" (airline name + number) ----
+  const nums = [];
+  const reNum = /\b([A-Z][A-Z0-9]|[0-9][A-Z])[ \-]?(\d{1,4})(?![\d:.,]\d)(?![\d])\b/g;
+  const isAircraft = (pos, end) => /(airbus|boeing|embraer|atr|bombardier|avion|aeronave|aircraft|equipo|modelo)\W{0,3}$/.test(low.slice(Math.max(0, pos - 14), pos)) || /^(-\d|neo|max|\s?(neo|max)\b)/i.test(text.slice(end, end + 4));
   while ((m = reNum.exec(text))) {
     const code = m[1], spaced = m[0].length > code.length + m[2].length;
     if (!alSet.has(code)) continue;
-    if (spaced && (code === "AM" || code === "PM" || code === "DE")) continue;
-    nums.push({ pos:m.index, end:m.index + m[0].length, num:code + m[2], code });
+    if (spaced && /^(AM|PM|DE|EL|LA|EN|AL|TO|AT|ON|IN|NO|OF|BY)$/.test(code)) continue;
+    if (isAircraft(m.index, m.index + m[0].length)) continue;
+    nums.push({ pos:m.index, line:lineOf(m.index), num:code + m[2] });
   }
-  // routes: MAD-EZE, MAD → EZE, MAD to EZE
-  const pairs = [], rePair = /\b([A-Z]{3})\s*(?:-|–|—|→|->|>|\/|\ba\b|\bto\b)\s*([A-Z]{3})\b/g;
-  while ((m = rePair.exec(text))) if (aptSet.has(m[1]) && aptSet.has(m[2]) && m[1] !== m[2]) pairs.push({ pos:m.index, end:m.index + m[0].length, a:m[1], b:m[2] });
-  const codes = [], reCode = /\b[A-Z]{3}\b/g;
-  while ((m = reCode.exec(text))) if (aptSet.has(m[0]) && !NOT_APT.has(m[0])) codes.push({ pos:m.index, iata:m[0] });
-  // city names of airports you already use (and the built-in list), e.g. "Barcelona → Lisboa"
-  const cityPool = new Map();
-  for (const a of AIRPORTS.values()) if (a.city) cityPool.set(norm(a.city), a.iata);
-  const used = new Map(); for (const f of S.real) for (const a of [f.from, f.to]) if (validApt(a) && a.city) used.set(a.iata, (used.get(a.iata) || 0) + 1);
-  for (const [iata] of [...used].sort((x, y) => x[1] - y[1])) { const a = knownApt(iata); if (a && a.city) cityPool.set(norm(a.city), iata); }
-  const cities = [];
-  for (const [c, iata] of cityPool) { if (c.length < 4) continue; const re = new RegExp("\\b" + c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"); while ((m = re.exec(low))) cities.push({ pos:m.index, iata }); }
-  const dates = findDates(low);
-  const times = [], reT = /\b([01]?\d|2[0-3])[:h]([0-5]\d)\s*(a\.?m\.?|p\.?m\.?)?(?![\d])/g;
-  while ((m = reT.exec(low))) { let h = +m[1]; const ap = m[3] ? m[3][0] : ""; if (ap === "p" && h < 12) h += 12; if (ap === "a" && h === 12) h = 0; times.push({ pos:m.index, t:`${String(h).padStart(2, "0")}:${m[2]}` }); }
+  const alWords = new Set();
+  { const names = new Map();
+    for (const [c, n] of Object.entries(AL_NAME)) if (n && n.length >= 4) names.set(deacc(n), c);
+    for (const a of (ALDB || [])) if (a.active && a.name && a.name.length >= 5 && !names.has(deacc(a.name))) names.set(deacc(a.name), a.code);
+    for (const [n, c] of names) {
+      const re = new RegExp("\\b" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:\\s+airlines?|\\s+lineas aereas)?\\s*(?:vuelo|flight|n[ºo°.]*|#)?\\s*(\\d{1,4})\\b", "g");
+      while ((m = re.exec(low))) if (!nums.some(x => Math.abs(x.pos - m.index) < m[0].length + 2)) nums.push({ pos:m.index, line:lineOf(m.index), num:c + m[1] });
+      if (low.includes(n)) alWords.add(n);
+    }
+    for (const x of nums) { const n = AL_NAME[x.num.slice(0, 2)]; if (n) alWords.add(deacc(n)); }
+    nums.sort((x, y) => x.pos - y.pos);
+  }
+  // ---- places: IATA codes first, then airport names, then cities (one kind per line) ----
+  const NOT_APT2 = new Set([...NOT_APT, ..."IDA DIA MES LOS LAS DEL CON SIN POR UNO DOS TRES SUS UNA HAY QUE BUS CAR TOP FLY AIR BAR SPA GYM TEL FAX WEB API AVE CIA REF RES VIA SAN SAO GATE ENE FEB MAR ABR MAY JUN JUL AGO SEP SET OCT NOV DIC JAN APR AUG DEC LUN MIE JUE VIE SAB DOM MON TUE WED THU FRI SAT SUN MRS MSS CHD INF ADT".split(" ")]);
+  const places = [];
+  const reCode = /\b[A-Z]{3}\b/g;
+  while ((m = reCode.exec(text))) {
+    const c = m[0]; if (!aptSet.has(c)) continue;
+    const ctx = text.slice(Math.max(0, m.index - 2), m.index + 5);
+    const strong = /\(\s*[A-Z]{3}\s*\)/.test(ctx) || /[-–—→>\/]/.test(text.slice(Math.max(0, m.index - 4), m.index) + text.slice(m.index + 3, m.index + 7));
+    if (NOT_APT2.has(c) && !strong) continue;
+    places.push({ pos:m.index, line:lineOf(m.index), iata:c, kind:0 });
+  }
+  { const lineHas = new Set(places.map(p => p.line));
+    const named = [];
+    // airport names ("Stansted", "Barajas", "El Prat") and cities ("Lisboa", "Buenos Aires")
+    const nameIdx = new Map(), cityIdx = new Map();
+    const GENERIC = /^(international|internacional|aeropuerto|airport|regional|municipal|city|central|county|field|base|airfield|santa|san|santo|saint|new|north|south|east|west|la|el|los|las)$/;
+    for (const a of (APTDB || [])) {
+      for (const w of deacc(a.name || "").split(/[\/,–-]/)) { const k = w.trim(); if (k.length >= 5 && !GENERIC.test(k) && !nameIdx.has(k)) nameIdx.set(k, a.iata); }
+      const c = deacc(a.city || "").trim(); if (c.length >= 4) { const cur = cityIdx.get(c); const score = x => (MAIN_APT.has(x) ? 1000 : 0) + (used.get(x) || 0); if (!cur || score(a.iata) > score(cur)) cityIdx.set(c, a.iata); }
+    }
+    for (const a of AIRPORTS.values()) if (a.city) { const c = deacc(a.city); if (!cityIdx.has(c) || MAIN_APT.has(a.iata)) cityIdx.set(c, a.iata); }
+    for (const [iata] of [...used].sort((x, y) => x[1] - y[1])) { const a = knownApt(iata); if (a && a.city) cityIdx.set(deacc(a.city), iata); }
+    const EN = { london:"Londres", "new york":"Nueva York", rome:"Roma", lisbon:"Lisboa", munich:"Múnich", geneva:"Ginebra", brussels:"Bruselas", athens:"Atenas", milan:"Milán", florence:"Florencia", venice:"Venecia", naples:"Nápoles", seville:"Sevilla", cologne:"Colonia", copenhagen:"Copenhague", stockholm:"Estocolmo", prague:"Praga", vienna:"Viena", warsaw:"Varsovia", moscow:"Moscú", istanbul:"Estambul", tokyo:"Tokio", beijing:"Pekín", "mexico city":"Ciudad de México", "sao paulo":"São Paulo", "rio de janeiro":"Río de Janeiro", "cape town":"Ciudad del Cabo", marrakech:"Marrakech", amsterdam:"Ámsterdam", berlin:"Berlín", zurich:"Zúrich", dublin:"Dublín", edinburgh:"Edimburgo", "the hague":"La Haya", "tel aviv":"Tel Aviv", cairo:"El Cairo", singapore:"Singapur", "buenos aires":"Buenos Aires" };
+    for (const [en, es] of Object.entries(EN)) { const i = cityIdx.get(deacc(es)); if (i) cityIdx.set(en, i); }
+    // a word that is a city, or an airline in this text ("Iberia"), is not read as an airport name
+    for (const k of [...nameIdx.keys()]) if (cityIdx.has(k) || alWords.has(k)) nameIdx.delete(k);
+    for (const k of [...cityIdx.keys()]) if (alWords.has(k)) cityIdx.delete(k);
+    const scan = (idx, kind) => { for (const [k, iata] of idx) { if (!low.includes(k)) continue; const re = new RegExp("(^|[^a-z0-9])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![a-z0-9])", "g"); while ((m = re.exec(low))) { const pos = m.index + m[1].length; if (!/[A-ZÁÉÍÓÚÑÜ]/.test(text[pos])) continue; named.push({ pos, end:pos + k.length, line:lineOf(pos), iata, kind }); } } };
+    scan(nameIdx, 1); scan(cityIdx, 2);
+    // longest match wins where two overlap ("buenos aires" over "aires"); airport name over city
+    named.sort((x, y) => (y.end - y.pos) - (x.end - x.pos) || x.kind - y.kind);
+    const taken = [];
+    for (const n of named) { if (lineHas.has(n.line) || taken.some(t => n.pos < t.end && n.end > t.pos)) continue; taken.push(n); }
+    // per line keep one kind: names beat cities, and an airport name right after its city ("London Stansted") counts once
+    const byLine = new Map(); for (const t of taken) { if (!byLine.has(t.line)) byLine.set(t.line, []); byLine.get(t.line).push(t); }
+    for (const l of byLine.values()) {
+      l.sort((x, y) => x.pos - y.pos);
+      const out = [];
+      for (const t of l) { const prev = out[out.length - 1]; if (prev && t.pos - prev.end <= 2) { if (t.kind <= prev.kind) out[out.length - 1] = t; continue; } out.push(t); }
+      places.push(...out);
+    }
+    places.sort((x, y) => x.pos - y.pos);
+  }
+  // ---- legs: two places on one line, or two lines with one place each ----
+  const legs = [];
+  { const byLine = new Map(); for (const p of places) { if (!byLine.has(p.line)) byLine.set(p.line, []); byLine.get(p.line).push(p); }
+    let pend = null;
+    for (const [ln, ps] of [...byLine].sort((x, y) => x[0] - y[0])) {
+      const u = ps.filter((p, i) => i === 0 || p.iata !== ps[i - 1].iata);
+      if (u.length >= 2) { for (let i = 0; i + 1 < u.length; i++) legs.push({ a:u[i], b:u[i + 1], l0:ln, l1:ln }); pend = null; continue; }
+      if (pend && pend.iata !== u[0].iata && ln - pend.line <= 6) { legs.push({ a:pend, b:u[0], l0:pend.line, l1:ln }); pend = null; }
+      else pend = u[0];
+    }
+  }
+  // ---- dates, times and details ----
+  const dates = findDates(low).map(d => ({ ...d, line:lineOf(d.pos) }));
+  const times = [];
+  const LBL = /(salida|sale|parte|despega|departure|departs?|departing|dep\b|desde|from|llegada|llega|arribo|aterriza|arrival|arrives?|arriving|arr\b|embarque|boarding|check-?in|presentacion|cierre|puerta|gate)/g;
+  const labelAt = pos => { const l0 = lines[lineOf(pos)], seg = low.slice(l0, pos); let k = null, x; LBL.lastIndex = 0; while ((x = LBL.exec(seg))) k = x[1]; if (!k) return ""; return /^(sal|parte|desp|dep|desde|from)/.test(k) ? "dep" : /^(lleg|arrib|ater|arr)/.test(k) ? "arr" : "skip"; };
+  const reT = /\b([01]?\d|2[0-3])(?:[:h]([0-5]\d)|\.([0-5]\d)(?=\s*(?:h|hs|hrs)?\b)(?![.\/-]\d))\s*(a\.?\s?m\.?|p\.?\s?m\.?|hs?\b|hrs\b)?(?![\d])/g;
+  while ((m = reT.exec(low))) {
+    if (m[3] != null && !/(salida|sale|llegada|llega|hora|departure|arrival|dep|arr|embarque)\W*$/.test(low.slice(Math.max(0, m.index - 14), m.index)) && !/^\s*(h|hs|hrs)\b/.test(low.slice(m.index + m[0].length - (m[4] || "").length))) continue;
+    if (dates.some(d => m.index >= d.pos && m.index < d.end)) continue;
+    let h = +m[1]; const mm = m[2] ?? m[3], ap = m[4] && /^[ap]/.test(m[4]) ? m[4][0] : "";
+    if (ap === "p" && h < 12) h += 12; if (ap === "a" && h === 12) h = 0;
+    const after = low.slice(m.index + m[0].length, m.index + m[0].length + 12);
+    const plus = /^\s*\(?\s*\+\s*(\d)/.exec(after);
+    times.push({ pos:m.index, line:lineOf(m.index), t:`${String(h).padStart(2, "0")}:${mm}`, lbl:labelAt(m.index), plus: plus ? +plus[1] : 0 });
+  }
+  const det = [];
+  const reSeat = /\b(?:asientos?|seats?|plaza|butaca)\s*(?:n[ºo°.]*)?[:#]?\s*(\d{1,2}\s?[a-k])\b/g;
+  while ((m = reSeat.exec(low))) det.push({ pos:m.index, line:lineOf(m.index), k:"seat", v:m[1].replace(/\s/g, "").toUpperCase() });
+  const CLS = [[/\b(premium economy|turista premium|economy plus)\b/, "premium"], [/\b(business|ejecutiva|preferente)\b/, "business"], [/\b(primera clase|first class)\b/, "first"], [/\b(economy|economica|turista|basic|basica)\b/, "economy"]];
+  for (const [re, v] of CLS) { const g = new RegExp(re.source, "g"); while ((m = g.exec(low))) if (!det.some(d => d.k === "cls" && d.line === lineOf(m.index))) det.push({ pos:m.index, line:lineOf(m.index), k:"cls", v }); }
+  const reAc = /\b(airbus\s*a?\d{3}(?:[- ]?\d{3})?(?:\s?neo)?|boeing\s*7\d7(?:[- ]?\d{1,3})?(?:\s?max(?:\s?\d)?)?|embraer\s*(?:e?\d{3}|erj\s?\d{3})(?:[- ]?e2)?|atr\s?\d{2}(?:-\d{3})?|bombardier\s*(?:crj|q)\s?\d{3,4}|(?:a3[1-5]\d|a220)(?:-\d{3})?(?:\s?neo)?|b7[3-8]7(?:-\d{1,3})?(?:\s?max)?)\b/g;
+  while ((m = reAc.exec(low))) det.push({ pos:m.index, line:lineOf(m.index), k:"aircraft", v:text.slice(m.index, m.index + m[0].length).replace(/\s+/g, " ").replace(/^(airbus|boeing|embraer|bombardier|atr)/i, w => w[0].toUpperCase() + w.slice(1).toLowerCase()).replace(/^([ab])(\d)/i, (w, x, y) => x.toUpperCase() + y) });
+  const reDur = /\b(?:duracion|duration|tiempo de vuelo|flight time)\W{0,3}(\d{1,2})\s*(?:h|hs|hrs|horas?)\s*(\d{1,2})?\s*(?:m|min|minutos?)?/g;
+  while ((m = reDur.exec(low))) det.push({ pos:m.index, line:lineOf(m.index), k:"durationMin", v:+m[1] * 60 + (+m[2] || 0) });
+  const pnr = /\b(?:codigo de reserva|localizador|referencia de (?:la )?reserva|booking (?:reference|code)|confirmation (?:code|number)|pnr|record locator|reserva)\W{0,3}([A-Z0-9]{5,8})\b/i.exec(text.replace(/[áéíóú]/gi, c => deacc(c)));
+  const ref = pnr && /[A-Z]/.test(pnr[1]) && /^[A-Z0-9]+$/.test(pnr[1]) ? pnr[1] : "";
 
-  const anchors = nums.length ? nums : pairs.map(p => ({ ...p, num:"" }));
-  // a date/airport on the same line as a flight belongs to it; otherwise to the closest flight
-  const lineNo = pos => { let n = 0, k = -1; while ((k = text.indexOf("\n", k + 1)) !== -1 && k < pos) n++; return n; };
-  for (const a of anchors) a.line = lineNo(a.pos);
-  const owner = x => {
-    if (x._own) return x._own;
-    const ln = lineNo(x.pos), same = anchors.filter(a => a.line === ln), pool = same.length ? same : anchors;
-    return (x._own = pool.reduce((b, a) => Math.abs(a.pos - x.pos) < Math.abs(b.pos - x.pos) ? a : b));
-  };
-  const out = []; let lastDate = null;
-  for (let i = 0; i < anchors.length; i++) {
+  // ---- assemble ----
+  const near = (x, lg) => x.line < lg.l0 ? lg.l0 - x.line : x.line > lg.l1 ? x.line - lg.l1 : 0;
+  // each flight number goes to its closest leg (one number per leg)
+  const pairsNL = [];
+  for (const n of nums) for (const lg of legs) pairsNL.push([near(n, lg) + (n.line > lg.l1 ? 0.1 : 0), n, lg]);
+  pairsNL.sort((x, y) => x[0] - y[0]);
+  const usedN = new Set();
+  for (const [d, n, lg] of pairsNL) { if (d > 4 || usedN.has(n) || lg.n) continue; lg.n = n; usedN.add(n); }
+  // anything else (times, seats, dates) belongs to the closest leg; on a tie, to the one above (details usually follow the route)
+  const owner = x => { let best = null, bd = 1e9; for (const lg of legs) { const d = near(x, lg) + (x.line < lg.l0 ? 0.5 : 0); if (d < bd) { bd = d; best = lg; } } return bd <= 6 ? best : null; };
+  const out = [];
+  for (const lg of legs) {
     if (signal && signal.aborted) throw { code:"cancelled" };
-    const an = anchors[i], prev = anchors[i - 1], next = anchors[i + 1];
-    const lineStart = pos => text.lastIndexOf("\n", pos - 1) + 1;
-    // dates, airports and cities go to whichever flight they are closest to
-    const dist = x => Math.abs(x.pos - an.pos);
-    const mine = x => owner(x) === an;
-    const near = arr => arr.filter(mine).sort((a, b) => dist(a) - dist(b));
-    // times: from this flight's line until the next flight's line
-    const t0 = Math.max(prev ? prev.end : 0, lineStart(an.pos)), t1 = next ? Math.max(t0, lineStart(next.pos)) : text.length;
-    const inSeg = x => x.pos >= t0 && x.pos < t1;
-    const dt = near(dates.filter(d => !(d.pos <= an.pos && d.end > an.pos)))[0];
-    const date = dt ? dt.date : lastDate;
-    let from = null, to = null;
-    const pr = an.a ? an : near(pairs)[0];
-    if (pr) { from = pr.a; to = pr.b; }
-    else {
-      let c = near(codes).slice(0, 2);
-      if (c.length < 2) c = near(cities).filter((x, k, arr) => arr.findIndex(y => y.iata === x.iata) === k).slice(0, 2);
-      if (c.length === 2 && c[0].iata !== c[1].iata) { c.sort((a, b) => a.pos - b.pos); from = c[0].iata; to = c[1].iata; }
-    }
-    const tt = times.filter(inSeg).sort((a, b) => a.pos - b.pos);
-    const f = { num:an.num || "", date, dep:tt[0] ? tt[0].t : "", arr:tt[1] ? tt[1].t : "", arrOffset:0, airline:"", aircraft:"", from:null, to:null };
-    if (f.dep && f.arr && f.arr < f.dep) f.arrOffset = 1;
+    const sameLine = dates.filter(d => d.line >= lg.l0 && d.line <= lg.l1);
+    const before = dates.filter(d => d.line < lg.l0).pop();
+    const afterD = dates.find(d => d.line > lg.l1 && owner(d) === lg && (!before || before.line < (legs[legs.indexOf(lg) - 1]?.l1 ?? -1)));
+    const dt = sameLine[0] || (lg.n && dates.find(d => d.line === lg.n.line)) || afterD || before;
+    const mine = times.filter(t => owner(t) === lg && t.lbl !== "skip");
+    let dep = null, arr = null;
+    dep = mine.find(t => t.lbl === "dep") || null; arr = mine.find(t => t.lbl === "arr") || null;
+    if (!dep) dep = mine.find(t => t.line === lg.a.line && lg.a.line !== lg.b.line && t !== arr) || null;
+    if (!arr) arr = mine.find(t => t.line === lg.b.line && lg.a.line !== lg.b.line && t !== dep) || null;
+    const rest = mine.filter(t => t !== dep && t !== arr && !t.lbl).sort((x, y) => x.pos - y.pos);
+    if (!dep && rest.length) dep = rest.shift();
+    if (!arr && rest.length) { const i = rest.findIndex(t => !dep || t.pos > dep.pos); if (i >= 0) arr = rest.splice(i, 1)[0]; }
+    const f = { num:lg.n ? lg.n.num : "", date:dt ? dt.date : "", dep:dep ? dep.t : "", arr:arr ? arr.t : "", arrOffset:0, airline:"", aircraft:"", seat:"", cls:"", notes:ref ? "Reserva " + ref : "", from:null, to:null, _yearGuess:dt ? !!dt.guessed : false };
+    if (arr && arr.plus) f.arrOffset = arr.plus;
+    else if (/\(?\+\s?1\s*(d|dia|day)?/.test(low.slice(lines[lg.l1], lines[lg.l1 + 1] ?? low.length)) && f.arr && f.dep && f.arr < f.dep) f.arrOffset = 1;
+    else if (f.dep && f.arr && f.arr < f.dep) f.arrOffset = 1;
+    for (const d of det) if (owner(d) === lg && !f[d.k]) f[d.k] = d.v;
     if (f.num) { const c = f.num.slice(0, 2); f.alc = c; f.airline = AL_NAME[c] || ((ALDB || []).find(a => a.code === c && a.active) || {}).name || ""; }
-    if (from && to) { f.from = await aptFrom(from); f.to = await aptFrom(to); }
-    if ((!f.from || !f.to) && f.num) {
-      const r = await lookupFree(f.num, date, signal);
-      if (r.found) { f.from = r.f.from; f.to = r.f.to; if (!f.airline) f.airline = r.f.airline; }
-    }
-    if (f.num && f.from && f.to && !f.dep) {
-      const h = historyMatch(f.num);
-      if (h && h.from.iata === f.from.iata && h.to.iata === f.to.iata) Object.assign(f, { dep:h.dep, arr:h.arr, arrOffset:h.arrOffset, durationMin:h.durationMin, aircraft:h.aircraft || "" });
-    }
-    if (date) lastDate = date;
+    f.from = await aptFrom(lg.a.iata); f.to = await aptFrom(lg.b.iata);
     out.push(f);
   }
-  return out;
+  // flight numbers with no route in the text: look the route up
+  let lastDate = out.length ? out[out.length - 1].date : "";
+  for (const n of nums) {
+    if (usedN.has(n)) continue;
+    if (signal && signal.aborted) throw { code:"cancelled" };
+    const d0 = dates.filter(d => d.line <= n.line).pop() || dates.find(d => d.line > n.line);
+    const f = { num:n.num, date:d0 ? d0.date : lastDate, dep:"", arr:"", arrOffset:0, airline:"", aircraft:"", seat:"", cls:"", notes:ref ? "Reserva " + ref : "", from:null, to:null, _yearGuess:d0 ? !!d0.guessed : false };
+    const c = f.num.slice(0, 2); f.alc = c; f.airline = AL_NAME[c] || ((ALDB || []).find(a => a.code === c && a.active) || {}).name || "";
+    const tl = times.filter(t => t.lbl !== "skip" && t.line >= n.line && t.line <= n.line + 3 && !legs.some(lg => owner(t) === lg));
+    const td = tl.find(t => t.lbl === "dep") || tl.find(t => !t.lbl), ta = tl.find(t => t.lbl === "arr") || tl.find(t => !t.lbl && t !== td);
+    if (td) f.dep = td.t; if (ta) { f.arr = ta.t; f.arrOffset = ta.plus || (f.dep && ta.t < f.dep ? 1 : 0); }
+    const r = await lookupFree(f.num, f.date, signal);
+    if (r.found) { f.from = r.f.from; f.to = r.f.to; if (!f.airline) f.airline = r.f.airline; }
+    if (f.date) lastDate = f.date;
+    out.push(f);
+  }
+  for (const f of out) if (f.num && f.from && f.to && !f.dep) {
+    const h = historyMatch(f.num);
+    if (h && h.from.iata === f.from.iata && h.to.iata === f.to.iata) Object.assign(f, { dep:h.dep, arr:h.arr, arrOffset:h.arrOffset, durationMin:f.durationMin || h.durationMin, aircraft:f.aircraft || h.aircraft || "" });
+  }
+  // a route with nothing else (no number, times or date) next to real flights is just a city in the text ("Hola", an address)
+  if (out.some(f => f.num || f.dep)) for (let i = out.length - 1; i >= 0; i--) if (!out[i].num && !out[i].dep && !out[i].arr) out.splice(i, 1);
+  // the same flight mentioned twice (a summary line and the details): keep one, with everything
+  const res = [];
+  for (const f of out.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.dep || "").localeCompare(b.dep || ""))) {
+    const o = res.find(x => x.from && f.from && x.from.iata === f.from.iata && x.to.iata === f.to.iata && (x.date === f.date || !x.date || !f.date) && (!x.num || !f.num || normNum(x.num) === normNum(f.num)));
+    if (!o) { res.push(f); continue; }
+    for (const k of ["num","alc","airline","date","dep","arr","aircraft","seat","cls","durationMin"]) if (!o[k] && f[k]) o[k] = f[k];
+    if (!o.arrOffset && f.arrOffset) o.arrOffset = f.arrOffset;
+  }
+  return res;
+}
+/* the saved flight a pasted one refers to: same number and day, or same day and route
+   (a date written without a year matches the same number on the same day and month of any year) */
+function pasteMatch(f) {
+  if (!f || !f.date) return null;
+  const n = normNum(f.num), fi = f.from?.iata, ti = f.to?.iata;
+  return S.real.find(r => r.date === f.date && n && normNum(r.num) === n && (!fi || !r.from || r.from.iata === fi))
+    || S.real.find(r => r.date === f.date && fi && ti && r.from?.iata === fi && r.to?.iata === ti && (!n || !r.num || normNum(r.num) === n))
+    || (f._yearGuess ? S.real.find(r => n && normNum(r.num) === n && (r.date || "").slice(5) === f.date.slice(5) && (!fi || r.from?.iata === fi)) : null)
+    || null;
 }
 /* a pasted flight you already have: the merged copy (keeps the saved id, trip and notes), or null if the paste brings nothing new */
 function pasteMerge(r, f) {
-  const m = mergedCopy([r, { ...f, id:undefined, updated:Date.now() }]).keep;
+  const m = mergedCopy([r, { ...f, date:r.date, id:undefined, updated:Date.now() }]).keep;
   const out = { ...m, id:r.id, trip:r.trip || m.trip || "", tripId:r.trip ? (r.tripId || "") : (m.tripId || "") };
   const sig = x => { const c = clean(x); return JSON.stringify(["num","airline","dep","arr","arrOffset","durationMin","aircraft","seat","cls","notes","reg","depReal","arrReal","status"].map(k => c[k]).concat([c.from?.iata, c.to?.iata, c.from?.city, c.to?.city])); };
   return sig(out) === sig(r) ? null : out;
