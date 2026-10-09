@@ -778,6 +778,15 @@ body{overflow-x:clip}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn-d{color:#FF9F0A!important}}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
+/* settings: quick actions */
+.qacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.qbtn{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:0;border-radius:18px;background:var(--surface);color:var(--accent-text);font:inherit;font-size:13.5px;font-weight:600;text-align:center;padding:10px;cursor:pointer;box-shadow:var(--card-shadow);line-height:1.2}
+.qbtn svg{width:30px;height:30px;padding:9px;box-sizing:content-box;border-radius:14px;background:color-mix(in srgb,var(--accent) 13%,transparent)}
+.qbtn span{color:var(--ink)}
+.qbtn:active{transform:scale(.97)}
+.qbtn:disabled{opacity:.45;cursor:default}
+.qbtn.busy svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 /* stats */
 .ssec{grid-column:1 / -1;margin:12px 4px -4px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ssec small{font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}
@@ -2161,7 +2170,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009040856";
+const BUILD = "20261009041017";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4324,12 +4333,13 @@ function openSettings() {
   const seg = (k, t) => `<button type="button" data-theme-set="${k}" aria-pressed="${theme === k}">${t}</button>`;
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet settings" role="dialog" aria-modal="true" aria-labelledby="st-t">
     <div class="hd"><h2 id="st-t">Ajustes</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="qacts">
+      <button class="qbtn" type="button" id="set-export" ${n || PLACES.length ? "" : "disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Descargar copia</span></button>
+      <label class="qbtn" for="imp-file" role="button" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg><span>Restaurar copia</span></label>
+      <button class="qbtn" type="button" id="set-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Actualizar app</span></button>
+    </div>
     <div class="box"><h4>Copia de seguridad</h4>
       <p class="hint">${n} ${n === 1 ? "vuelo guardado" : "vuelos guardados"}. ${where} <b class="${!lb || days > 30 ? "warn" : ""}">${when}</b></p>
-      <div class="acts">
-        <button class="btn primary" type="button" id="set-export" ${n || PLACES.length ? "" : "disabled"}>Descargar copia (.json)</button>
-        <label class="btn" for="imp-file" style="cursor:pointer">Restaurar desde una copia</label>
-      </div>
       <p class="hint">Restaurar agrega los vuelos de la copia que no tengas y no borra nada. Guardá la copia en iCloud Drive o en tu computadora para pasarla a otro dispositivo.</p>
     </div>
     <div class="box"><h4>Búsqueda de vuelos</h4>
@@ -4347,8 +4357,7 @@ function openSettings() {
       <p class="hint">${esc((ACCENTS.find(([, c]) => c.toUpperCase() === ACCENT.toUpperCase()) || ["Personalizado"])[0])}</p>
     </div>
     <div class="box"><h4>App</h4>
-      <div class="acts"><button class="btn" type="button" id="set-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Actualizar la app</button></div>
-      <p class="hint">Descarga la última versión de Flights y recarga la pantalla. Tus vuelos no se tocan.${/^\d{14}$/.test(BUILD) ? ` Versión ${esc(BUILD.slice(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, "$3/$2/$1"))} ${esc(BUILD.slice(8, 10))}:${esc(BUILD.slice(10, 12))}.` : ""} <span class="mono" style="opacity:.55">[${window.innerHeight}·${dvhProbe.offsetHeight}·${window.screen ? screen.height : 0}·${IS_STANDALONE ? "app" : "web"}]</span></p>
+      <p class="hint">«Actualizar app» descarga la última versión de Flights y recarga la pantalla. Tus vuelos no se tocan.${/^\d{14}$/.test(BUILD) ? ` Versión ${esc(BUILD.slice(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, "$3/$2/$1"))} ${esc(BUILD.slice(8, 10))}:${esc(BUILD.slice(10, 12))}.` : ""} <span class="mono" style="opacity:.55">[${window.innerHeight}·${dvhProbe.offsetHeight}·${window.screen ? screen.height : 0}·${IS_STANDALONE ? "app" : "web"}]</span></p>
     </div>
     <div class="box"><h4>Datos</h4>
       ${wipeArm ? `<div class="acts"><span class="q">¿Borrar los ${n} vuelos? No se puede deshacer.</span><button class="btn danger" type="button" id="set-wipe-yes">Sí, borrar todo</button><button class="btn" type="button" id="set-wipe-no">Cancelar</button></div>`
@@ -4367,6 +4376,7 @@ async function wipeAll(btn) {
 
 /* nothing in the app gets selected or dragged by double-clicking, holding or dragging (except text you type) */
 const typing = el => el && el.closest && el.closest("input,textarea,select,[contenteditable]");
+document.addEventListener("keydown", e => { const l = e.target.closest && e.target.closest("label.qbtn"); if (l && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); l.click(); } });
 document.addEventListener("dragstart", e => { if (!typing(e.target)) e.preventDefault(); });
 document.addEventListener("selectstart", e => { if (!typing(e.target)) e.preventDefault(); });
 document.addEventListener("mousedown", e => { if (e.detail > 1 && !typing(e.target)) e.preventDefault(); });
@@ -4547,7 +4557,7 @@ document.addEventListener("click", e => {
   if (t.id === "set-export") return exportBackup();
   if (t.id === "set-refresh") {
     if (navigator.onLine === false) { dialog({ title:"Sin conexión", body:"<p>Para buscar una versión nueva hace falta internet. Mientras tanto, Flights funciona con lo que ya tenés guardado.</p>", cancelText:"Aceptar" }); return; }
-    t.disabled = true; t.lastChild.textContent = "Actualizando…";
+    t.disabled = true; t.lastChild.textContent = "Actualizando…"; t.classList.add("busy");
     const go = () => location.replace(location.pathname + "?u=" + Date.now());   // skip any cached copy of the page
     const limit = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
     setTimeout(go, 5000);                                                          // never stay stuck
