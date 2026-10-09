@@ -2113,7 +2113,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009035602";
+const BUILD = "20261009035719";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3356,7 +3356,7 @@ function openPlaceSheet(id) {
   dk.addEventListener("change", () => { pf.date = readPlaceDate() || pf.date; setDateInput(); });
   setDateInput();
   const q = $("#pl-q"), box = $("#s-pl");
-  q.addEventListener("input", () => { clearTimeout(plcT); const v = q.value.trim(); if (v.length < 2) { box.hidden = true; return; } showPlaceSugg(v, []); plcT = setTimeout(() => geoSearch(v), 650); });
+  q.addEventListener("input", () => { clearTimeout(plcT); const v = q.value.trim(); if (v.length < 2) { box.hidden = true; return; } showPlaceSugg(v, plcGeo[norm(v)] || []); plcT = setTimeout(() => geoSearch(v), 380); });
   q.addEventListener("blur", () => setTimeout(() => { box.hidden = true; }, 200));
   suggNav(q, box, o => pickPlace(+o.dataset.i), o => o.dataset.name);
   $("#pl-save").onclick = savePlaceForm;
@@ -3371,21 +3371,34 @@ function readPlaceDate() {
   if (k === "m") return /^\d{4}-\d{2}/.test(v) ? v.slice(0, 7) : "";
   return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
 }
-let plcHits = [];
+let plcHits = [], plcGeo = {};
+/* cities while typing: any word of the name counts ("janeiro" → Río de Janeiro), best matches first */
+let CITY_IDX = null;
 function cityHits(v) {
-  const n = norm(v), out = [], seen = new Set();
-  for (const a of APTDB || []) {
-    if (!a.city || !norm(a.city).startsWith(n)) continue;
-    const k = a.city + "|" + a.cc; if (seen.has(k)) continue; seen.add(k);
-    out.push({ name:a.city, sub:country(a.cc), cc:a.cc, lat:+a.lat, lon:+a.lon });
-    if (out.length >= 4) break;
+  const n = norm(v).trim(); if (n.length < 2) return [];
+  if (!CITY_IDX && APTDB) {
+    const m = new Map();
+    for (const a of APTDB) { if (!a.city) continue; const k = a.city + "|" + a.cc; const x = m.get(k); if (x) x.n++; else m.set(k, { name:a.city, cc:a.cc, lat:+a.lat, lon:+a.lon, n:1, key:norm(a.city) }); }
+    CITY_IDX = [...m.values()];
   }
-  return out;
+  const pool = [...(CITY_IDX || []), ...placesAll().map(p => ({ name:p.name, cc:p.cc, lat:p.lat, lon:p.lon, n:99, key:norm(p.name), mine:true }))];
+  const out = [];
+  for (const c of pool) {
+    const i = c.key.indexOf(n); if (i < 0) continue;
+    const rank = i === 0 ? 0 : /[\s\-'’.(]/.test(c.key[i - 1]) ? 1 : 2;
+    out.push([rank, c]);
+  }
+  out.sort((a, b) => (a[0] > 1) - (b[0] > 1) || b[1].n - a[1].n || a[0] - b[0] || a[1].name.length - b[1].name.length);   // whole words first, bigger cities (more airports) first
+  const seen = new Set(), res = [];
+  for (const [, c] of out) { const k = norm(c.name) + "|" + c.cc; if (seen.has(k)) continue; seen.add(k); res.push({ name:c.name, sub:country(c.cc), cc:c.cc, lat:c.lat, lon:c.lon }); if (res.length >= 6) break; }
+  return res;
 }
 function showPlaceSugg(v, geo) {
   const box = $("#s-pl"); if (!box) return;
   const local = cityHits(v);
-  plcHits = [...geo, ...local.filter(l => !geo.some(g => samePlace(g, l) || (g.cc === l.cc && norm(g.name) === norm(l.name))))].slice(0, 8);
+  const dup = (x, l) => l.some(g => samePlace(g, x) || (g.cc === x.cc && norm(g.name) === norm(x.name)));
+  plcHits = [...local.slice(0, 3), ...geo.filter(g => !dup(g, local.slice(0, 3)))];
+  plcHits = [...plcHits, ...local.slice(3).filter(l => !dup(l, plcHits))].slice(0, 8);
   box.hidden = !plcHits.length;
   box.innerHTML = plcHits.map((p, i) => `<button type="button" class="sg" role="option" data-i="${i}" data-name="${esc(p.name)}"><span class="sg-code">📍</span><span class="sg-txt"><b>${esc(p.name)}</b><small>${esc(p.sub || "")}</small></span>${p.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(p.cc)}</span>` : ""}</button>`).join("");
   box.querySelectorAll(".sg").forEach(o => o.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); pickPlace(+o.dataset.i); }));
@@ -3403,7 +3416,7 @@ async function geoSearch(v) {
       const region = a.state || a.region || a.province || a.county || "";
       return { name, sub:[region && region !== name ? region : "", country(cc) || a.country || ""].filter(Boolean).join(", "), cc, lat:+x.lat, lon:+x.lon };
     }).filter(p => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lon));
-    showPlaceSugg(v, geo);
+    plcGeo[norm(v)] = geo; showPlaceSugg(v, geo);
   } catch {}
 }
 function pickPlace(i) {
