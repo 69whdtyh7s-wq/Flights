@@ -2229,7 +2229,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009105806";
+const BUILD = "20261009110324";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3841,13 +3841,19 @@ async function parseGmFile(file) {
   }
   if (name.endsWith(".json") || name.endsWith(".geojson") || /^\s*[{[]/.test(text)) {
     const j = JSON.parse(text), feats = j.features || (Array.isArray(j) ? j : (j.places || j.items || j.list || j.saved || j.Places || []));
+    const qOf = u => { try { const v = new URL(u).searchParams.get("q"); return v ? v.replace(/\+/g, " ").trim() : ""; } catch { return ""; } };
     for (const f of feats) {
       const p = f.properties || f, loc = p.location || p.Location || {}, g = (f.geometry || {}).coordinates;
-      const geo = loc["Geo Coordinates"] || loc.geo_coordinates || {};
+      const geo = loc["Geo Coordinates"] || loc.geo_coordinates || {}, url = p.google_maps_url || p["Google Maps URL"] || p.url || "";
       let lat = g ? +g[1] : +(geo.Latitude ?? geo.latitude), lon = g ? +g[0] : +(geo.Longitude ?? geo.longitude);
-      if ((!lat && !lon) || !Number.isFinite(lat)) { const c = coordsFromUrl(p.google_maps_url || p["Google Maps URL"] || p.url); if (c) { lon = c[0]; lat = c[1]; } }
-      const nm = (p.Title || p.title || p.name || loc.name || loc.Name || loc.Address || loc.address || "").trim();
-      if (nm) out.push({ name:nm, lat, lon, cc:(loc.country_code || loc["Country Code"] || "").toUpperCase(), sub:loc.address || loc.Address || "", notes:(p.Comment || p.comment || "").trim() });
+      if (!lat && !lon) { lat = NaN; lon = NaN; }                     // Google writes 0,0 when it has no location
+      if (!Number.isFinite(lat)) { const c = coordsFromUrl(url); if (c) { lon = c[0]; lat = c[1]; } }
+      // places without data only have their search text in the link: "?q=Roses,+Girona"
+      const q = qOf(url), qName = q && !/^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(q) ? q.split(",")[0].replace(/^\s*\d{4,6}\s+/, "").trim() : "";
+      const nm = (p.Title || p.title || p.name || loc.name || loc.Name || qName || loc.Address || loc.address || "").trim();
+      let notes = String(p.Comment || p.comment || "").trim();
+      if (/^(no hay información de ubicación|no location information)/i.test(notes)) notes = "";
+      if (nm || Number.isFinite(lat)) out.push({ name:nm, needName:!nm, query:q || nm, lat, lon, cc:(loc.country_code || loc["Country Code"] || "").toUpperCase(), sub:loc.address || loc.Address || "", notes });
     }
     return out;
   }
@@ -3869,19 +3875,22 @@ async function photonFind(q, signal) {
 async function photonReverse(lat, lon, signal) {
   const r = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}&limit=1`, { signal }); if (!r.ok) return null;
   const p = (((await r.json()).features || [])[0] || {}).properties || {}, cc = (p.countrycode || "").toUpperCase();
-  return { cc, sub:[p.state || p.county || "", country(cc) || p.country || ""].filter(Boolean).join(", ") };
+  return { cc, place:p.city || p.town || p.village || p.district || p.name || "", sub:[p.state || p.county || "", country(cc) || p.country || ""].filter(Boolean).join(", ") };
 }
 function openGmImport(items, fname) {
   gmCtl?.abort(); const my = gmCtl = new AbortController();
-  gmItems = items.map(x => ({ ...x, st: Number.isFinite(x.lat) && Number.isFinite(x.lon) && (x.lat || x.lon) ? (x.cc ? "ok" : "rev") : "geo" }));
-  const draw = () => {
+  gmItems = items.map(x => ({ ...x, st: Number.isFinite(x.lat) && Number.isFinite(x.lon) && (x.lat || x.lon) ? (x.cc && !x.needName ? "ok" : "rev") : "geo" }));
+  const existing = PLACES.concat(placesAll().filter(p => p.auto));
+  let drawQ = false; const draw = () => { if (drawQ) return; drawQ = true; requestAnimationFrame(() => { drawQ = false; drawNow(); }); };
+  const drawNow = () => {
     const todo = gmItems.filter(x => x.st === "geo" || x.st === "rev").length, ready = gmItems.filter(x => x.st === "ok");
-    for (const x of ready) if (x.dup == null) x.dup = PLACES.concat(placesAll().filter(p => p.auto)).some(p => samePlace(p, { name:x.name, lat:x.lat, lon:x.lon }) || (p.cc === x.cc && norm(p.name) === norm(x.name)));
+    for (const x of ready) if (!x.name) x.name = `Punto guardado (${fmt(x.lat, 3)}, ${fmt(x.lon, 3)})`;
+    for (const x of ready) if (x.dup == null) x.dup = existing.some(p => samePlace(p, { name:x.name, lat:x.lat, lon:x.lon }) || (p.cc === x.cc && norm(p.name) === norm(x.name)));
     const sel = gmItems.filter(x => x.st === "ok" && x.on !== false && !x.dup).length;
     const el = $("#gm-list"); if (!el) return;
     $("#gm-stat").textContent = todo ? `Ubicando lugares… faltan ${todo}` : `${ready.length} de ${gmItems.length} ubicados${gmItems.some(x => x.st === "miss") ? " · algunos no se encontraron" : ""}`;
     el.innerHTML = gmItems.map((x, i) => `<label class="gmrow${x.st !== "ok" || x.dup ? " off" : ""}"><input type="checkbox" data-gmi="${i}" ${x.st === "ok" && !x.dup && x.on !== false ? "checked" : ""} ${x.st !== "ok" ? "disabled" : ""}>
-      ${x.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(x.cc)}</span>` : `<span class="gmdot"></span>`}<span class="gmt"><b>${esc(x.name)}</b><small>${x.st === "ok" ? esc(x.dup ? "Ya está en tus lugares" : (x.sub || country(x.cc) || "")) : x.st === "miss" ? "No se encontró" : "Ubicando…"}</small></span></label>`).join("");
+      ${x.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(x.cc)}</span>` : `<span class="gmdot"></span>`}<span class="gmt"><b>${esc(x.name || "Punto guardado")}</b><small>${x.st === "ok" ? esc(x.dup ? "Ya está en tus lugares" : (x.sub || country(x.cc) || "")) : x.st === "miss" ? "No se encontró" : "Ubicando…"}</small></span></label>`).join("");
     const b = $("#gm-save"); if (b) { b.disabled = !sel || !!todo && false; b.textContent = `Agregar ${sel} ${sel === 1 ? "lugar" : "lugares"}`; }
   };
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gm-t">
@@ -3901,26 +3910,26 @@ function openGmImport(items, fname) {
     gmCtl?.abort(); closeSheet(); if (!isPlaces()) setLayer("lugares"); else render();
     toast(`${add.length} ${add.length === 1 ? "lugar agregado" : "lugares agregados"}`); focusPlaces();
   };
-  draw();
-  (async () => {   // one request at a time, gently, so the free service is not overloaded
-    for (const x of gmItems) {
+  drawNow();
+  const queue = gmItems.filter(x => x.st === "geo" || x.st === "rev");
+  const worker = async () => {   // two requests at a time, gently, so the free service is not overloaded
+    for (let x; (x = queue.shift()); ) {
       if (my.signal.aborted) return;
-      if (x.st !== "geo" && x.st !== "rev") continue;
       try {
-        if (x.st === "geo") { const r = await photonFind(x.name, my.signal); if (r) Object.assign(x, r, { st:"ok" }); else x.st = "miss"; }
-        else { const r = await photonReverse(x.lat, x.lon, my.signal); Object.assign(x, r || {}, { st:"ok" }); }
+        if (x.st === "geo") { const r = await photonFind(x.query || x.name, my.signal); if (r) Object.assign(x, r, { st:"ok" }); else x.st = "miss"; }
+        else { const r = await photonReverse(x.lat, x.lon, my.signal); if (r) { x.cc = x.cc || r.cc; x.sub = x.sub || r.sub; if (x.needName) x.name = r.place || ""; } x.st = "ok"; }
       } catch (e) { if (my.signal.aborted) return; x.st = x.st === "rev" ? "ok" : "miss"; }
-      draw(); await sleep(250);
+      draw(); await sleep(200);
     }
-    draw();
-  })();
+  };
+  Promise.all([worker(), worker()]).then(draw);
 }
 document.getElementById("gm-file").addEventListener("change", async e => {
   const file = e.target.files[0]; e.target.value = ""; if (!file) return;
   try {
     const items = await parseGmFile(file);
     if (!items.length) return dialog({ title:"No encontramos lugares", body:`<p>${esc(file.name)} no tiene lugares que podamos leer. Probá con el .csv de una lista de Google Takeout, «Lugares guardados.json» o un .kml de Mis Mapas.</p>`, cancelText:"Aceptar" });
-    openGmImport(items.slice(0, 500), file.name);
+    openGmImport(items.slice(0, 3000), file.name);
   } catch (err) { dialog({ title:"No se pudo leer el archivo", body:`<p>${esc(err && err.msg || "El formato no es el esperado.")}</p>`, cancelText:"Aceptar" }); }
 });
 /* ---------- airline search ---------- */
