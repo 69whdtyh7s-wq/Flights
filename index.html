@@ -731,6 +731,37 @@ body{overflow-x:clip}
 :root[data-theme="dark"] .warn-d{color:#FF9F0A!important}
 .dlbl{font-size:11.5px;font-weight:600;margin-top:3px;min-height:14px}
 .adbkey{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+/* visited places layer */
+:root{--place:#E8534A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--place:#FF6B61}}
+:root[data-theme="dark"]{--place:#FF6B61}
+.map .plc{fill:var(--place);stroke:#fff;stroke-width:1.8px;cursor:pointer}
+.map .plc.sel{stroke-width:2.6px}
+.map .plc.dim,.map .plcl.dim{opacity:.4}
+.map .plcl{font-family:var(--f-body);font-weight:600;font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+#mapcard[data-type="satelite"] .map .plcl,#mapcard[data-type="noche"] .map .plcl{fill:#fff;stroke:rgba(0,0,0,.6)}
+.legend i.pl{width:10px;height:10px;border:0;border-radius:50%;background:var(--place);box-shadow:0 0 0 1.5px #fff}
+.mapfoot .layerseg{margin-left:0;margin-right:auto}
+@media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
+.mapctl #z-layer.on{color:var(--place)!important}
+.plc-add{margin-left:auto;background:var(--fill)!important;box-shadow:none!important;padding:7px 12px!important}
+.plc-add svg{width:15px;height:15px}
+.plc-sum{padding:0 18px 8px;font-size:13px;color:var(--muted)}
+.plc-sum b{color:var(--ink);font-weight:700}
+.plc-grp{margin:4px 12px 10px;background:var(--surface-2);border-radius:16px;overflow:hidden}
+.plc-gh{display:flex;align-items:center;gap:8px;padding:10px 14px 6px;font-size:13px}
+.plc-gh b{font-weight:700}
+.plc-gh > span:last-child{margin-left:auto;color:var(--muted);font-weight:600}
+.plc-row{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:9px 14px;border-top:1px solid var(--line);color:var(--ink)}
+.plc-row:hover,.plc-row.on{background:color-mix(in srgb,var(--place) 9%,var(--surface-2))}
+.plc-dot{width:10px;height:10px;border-radius:50%;background:var(--place)}
+.plc-t{display:flex;flex-direction:column;min-width:0}
+.plc-t b{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plc-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plc-d{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.plc-foot{padding:4px 12px 14px}
+.plc-name{font-size:22px!important;letter-spacing:-.01em}
+.ac-notes{margin:2px 0 4px;font-size:13px;color:var(--muted);white-space:pre-wrap}
 .dnotes{background:var(--surface);border-radius:12px;padding:10px 12px}
 .dnotes span{font-size:11.5px;font-weight:600;color:var(--muted)}
 .dnotes p{margin:2px 0 0;font-size:14px}
@@ -980,7 +1011,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .tripttl b{font-size:15px;font-weight:700;color:var(--accent-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .tripttl small{font-size:12px;color:var(--muted);white-space:nowrap}
 .tripttl .chev-r{margin-left:auto;color:var(--muted)}
-.apf input#f-trip,.apf input#tr-name{border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:16px;font-family:var(--f-body);color:var(--ink);width:100%;min-width:0}
+.apf input#f-trip,.apf input#tr-name,.apf input#pl-q{border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:16px;font-family:var(--f-body);color:var(--ink);width:100%;min-width:0}
 .tripsheet .apf input#tr-name{background:var(--surface);font-size:17px;font-weight:600;padding:10px 12px}
 /* search */
 .searchsheet{gap:10px}
@@ -1078,11 +1109,13 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
       <button type="button" id="z-in" aria-label="Acercar">+</button>
       <button type="button" id="z-out" aria-label="Alejar">−</button>
       <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+      <button type="button" id="z-layer" class="show-phone" aria-label="Capa del mapa: vuelos o lugares" title="Vuelos / Lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></button>
       <button type="button" id="z-type" class="show-phone" aria-label="Tipo de mapa" title="Tipo de mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
       <button type="button" id="z-fit" aria-label="Mapa a pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="mapfoot">
-      <div class="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
+      <div class="maptype layerseg" role="group" aria-label="Capa del mapa"><button type="button" data-layer="vuelos">Vuelos</button><button type="button" data-layer="lugares">Lugares</button></div>
+      <div class="legend" id="legend"><span><i></i>Volados</span><span><i class="up"></i>Próximos</span></div>
       <div class="maptype" role="group" aria-label="Tipo de mapa"><button type="button" data-maptype="estandar">Estándar</button><button type="button" data-maptype="satelite">Satélite</button><button type="button" data-maptype="noche">Noche</button></div>
     </div>
   </div>
@@ -1093,8 +1126,9 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
     <section class="panel" id="p-list" data-sec="vuelos">
       <div class="grab" aria-hidden="true"></div>
       <header>
-        <h2>Vuelos</h2>
-        <div class="tabs" role="tablist">
+        <h2 id="list-title">Vuelos</h2>
+        <button class="btn plc-add" type="button" data-act="addplace" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Agregar</button>
+        <div class="tabs" role="tablist" id="list-tabs">
           <button role="tab" id="t-up" aria-selected="true" type="button">Próximos<span class="n" id="n-up"></span></button>
           <button role="tab" id="t-past" aria-selected="false" type="button">Historial<span class="n" id="n-past"></span></button>
         </div>
@@ -1604,7 +1638,7 @@ function initMap() {
   gLayer.append("g").attr("class","lands");
   gLayer.append("path").attr("class","bord").attr("vector-effect","non-scaling-stroke");
   gLayer.append("path").attr("class","bord-v").attr("vector-effect","non-scaling-stroke");
-  gArcs = gLayer.append("g"); gApts = svgSel.append("g").attr("class","aptlayer");
+  gArcs = gLayer.append("g"); gApts = svgSel.append("g").attr("class","aptlayer"); gPlc = svgSel.append("g").attr("class","plclayer");
   zoom = d3.zoom().scaleExtent([1, 12]).translateExtent([[0,0],[W,H]])
     .filter(e => mapView !== "globo" ? ((!e.ctrlKey || e.type === "wheel") && !e.button) : (e.type === "wheel" || (e.touches && e.touches.length > 1)))
     .on("zoom", e => {
@@ -1637,7 +1671,7 @@ function initMap() {
 }
 const ISO_N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","31":"AZ","32":"AR","36":"AU","40":"AT","44":"BS","50":"BD","51":"AM","56":"BE","64":"BT","68":"BO","70":"BA","72":"BW","76":"BR","84":"BZ","90":"SB","96":"BN","100":"BG","104":"MM","108":"BI","112":"BY","116":"KH","120":"CM","124":"CA","140":"CF","144":"LK","148":"TD","152":"CL","156":"CN","158":"TW","170":"CO","178":"CG","180":"CD","188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","204":"BJ","208":"DK","214":"DO","218":"EC","222":"SV","226":"GQ","231":"ET","232":"ER","233":"EE","238":"FK","242":"FJ","246":"FI","250":"FR","254":"GF","260":"TF","262":"DJ","266":"GA","268":"GE","270":"GM","275":"PS","276":"DE","288":"GH","300":"GR","304":"GL","320":"GT","324":"GN","328":"GY","332":"HT","340":"HN","348":"HU","352":"IS","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","384":"CI","388":"JM","392":"JP","398":"KZ","400":"JO","404":"KE","408":"KP","410":"KR","414":"KW","417":"KG","418":"LA","422":"LB","426":"LS","428":"LV","430":"LR","434":"LY","440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","466":"ML","478":"MR","484":"MX","496":"MN","498":"MD","499":"ME","504":"MA","508":"MZ","512":"OM","516":"NA","524":"NP","528":"NL","540":"NC","548":"VU","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","624":"GW","626":"TL","630":"PR","634":"QA","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","688":"RS","694":"SL","703":"SK","704":"VN","705":"SI","706":"SO","710":"ZA","716":"ZW","724":"ES","728":"SS","729":"SD","732":"EH","740":"SR","748":"SZ","752":"SE","756":"CH","760":"SY","762":"TJ","764":"TH","768":"TG","780":"TT","784":"AE","788":"TN","792":"TR","795":"TM","800":"UG","804":"UA","807":"MK","818":"EG","826":"GB","834":"TZ","840":"US","854":"BF","858":"UY","860":"UZ","862":"VE","887":"YE","894":"ZM"};
 /* land borders only (edges shared by two countries), so coastlines are not outlined */
-let BORDERS = [], visitedCC = new Set();
+let BORDERS = [], visitedCC = new Set(), gPlc = null;
 function buildBorders() {
   const own = new Map(), key = p => p[0].toFixed(3) + "," + p[1].toFixed(3);
   world.features.forEach((f, i) => {
@@ -1663,6 +1697,15 @@ function sizeApts() {
   // dots live outside the zoomed group: place them in screen coordinates so they always sit exactly on the city
   const t = d3.zoomTransform(svgSel.node()), k = t.k;
   gApts.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => d.r).style("stroke-width", "1.6px");
+  if (gPlc) {
+    gPlc.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => d.r);
+    // names: the selected one first, then the rest only where they do not overlap another name
+    const boxes = [], fit = d => { const x = t.applyX(d.p[0]), y = t.applyY(d.p[1]) - (d.r + 4), w = d.name.length * 6.3 + 6, b = [x - w / 2, y - 12, x + w / 2, y + 2];
+      if (boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) return false; boxes.push(b); return true; };
+    const show = new Set(); [...gPlc.selectAll("text").data()].sort((a, b) => b.sel - a.sel).forEach(d => { if (fit(d)) show.add(d.id); });
+    gPlc.selectAll("text").style("display", d => show.has(d.id) ? null : "none")
+      .attr("x", d => t.applyX(d.p[0])).attr("y", d => t.applyY(d.p[1]) - (d.r + 4));
+  }
   const showCodes = k >= 3 || !!(S.open || S.focusIds);
   gApts.selectAll("text").style("display", showCodes ? null : "none")
     .attr("font-size", 10.5).style("stroke-width", "3px")
@@ -1690,6 +1733,7 @@ function fitRoutes(animate) {
 }
 function focusSelection() {
   if (!svgSel || !zoom) return;
+  if (isPlaces()) return focusPlaces(S.openPlace);
   const ids = S.open ? [S.open] : S.focusIds;
   const phone = phoneMap();
   if (!ids && !phone) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
@@ -1725,6 +1769,9 @@ function focusSelection() {
 }
 function renderMap() {
   if (!S.mapReady) return;
+  const card = document.getElementById("mapcard"); if (card) card.dataset.layer = LAYER;
+  if (isPlaces()) return renderPlacesMap();
+  if (gPlc) { gPlc.selectAll("circle").remove(); gPlc.selectAll("text").remove(); }
   const fl = filtered();
   const visited = new Set();
   const routes = new Map(), apts = new Map();
@@ -1771,6 +1818,47 @@ function renderMap() {
   fitKey = key;
 }
 
+function renderPlacesMap() {
+  gArcs.selectAll("path").remove(); gApts.selectAll("circle").remove(); gApts.selectAll("text").remove();
+  const ps = placesShown();
+  const visited = new Set(ps.map(p => p.cc).filter(Boolean));
+  if (visited.has("AR")) visited.add("FK");
+  gLayer.select(".lands").selectAll("path").classed("visited", d => !!d.cc && visited.has(d.cc));
+  if ([...visited].sort().join(",") !== [...visitedCC].sort().join(",")) { visitedCC = visited; drawBorders(); }
+  const sel = S.openPlace;
+  const ds = ps.filter(p => isVisible(+p.lon, +p.lat)).map(p => ({ ...p, p:proj([+p.lon, +p.lat]), r: p.id === sel ? 6.5 : 4.6, sel: p.id === sel, dim: !!sel && p.id !== sel }))
+    .sort((a, b) => a.sel - b.sel);
+  gPlc.selectAll("circle").data(ds, d => d.id).join("circle").attr("class", d => "plc" + (d.dim ? " dim" : "") + (d.sel ? " sel" : ""))
+    .selectAll("title").data(d => [d]).join("title").text(d => d.name + (d.cc ? " · " + country(d.cc) : ""));
+  gPlc.selectAll("text").data(ds, d => d.id).join("text").attr("class", d => "plcl" + (d.dim ? " dim" : "")).attr("text-anchor","middle").text(d => d.name);
+  sizeApts();
+  const hint = $("#maphint");
+  hint.hidden = !!(world && ps.length);
+  if (world && !ps.length) hint.textContent = PLACES.length && S.year !== "all" ? "Sin lugares en " + S.year + "." : "Agregá los lugares que visitaste con el botón +.";
+}
+function focusPlaces(id) {
+  if (!svgSel || !zoom) return;
+  const ps = id ? PLACES.filter(p => p.id === id) : placesShown();
+  if (!ps.length) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
+  const pts = ps.map(p => [+p.lon, +p.lat]);
+  if (mapView === "globo") { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); svgSel.call(zoom.transform, d3.zoomIdentity); return; }
+  const xy = pts.map(q => proj(q)), xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  updateZoomExtent(); const ext = zoom.extent().call(svgSel.node());
+  let vx0 = ext[0][0], vx1 = ext[1][0], vy0 = ext[0][1], vy1 = ext[1][1];
+  if (phoneMap()) {
+    const r = svgSel.node().getBoundingClientRect(), sc = (vx1 - vx0) / r.width, full = document.body.classList.contains("mapfull");
+    vx0 = ext[0][0] + 12 * sc; vx1 = ext[0][0] + (r.width - 64) * sc;
+    vy0 = ext[0][1] + (safeTop() + (full ? 12 : 58) - r.top) * sc;
+    vy1 = ext[0][1] + ((full ? fullH() - 24 : sheetTopPx() - 10) - r.top) * sc;
+    if (vy1 - vy0 < 40) vy1 = vy0 + 40;
+  }
+  const w = Math.max(x1 - x0, id ? 8 : 40), h = Math.max(y1 - y0, id ? 6 : 30);
+  const k = Math.max(1, Math.min(id ? 9 : 8, 0.75 / Math.max(w / (vx1 - vx0), h / (vy1 - vy0))));
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, mx = (vx0 + vx1) / 2, my = (vy0 + vy1) / 2;
+  svgSel.transition().duration(550).call(zoom.transform, d3.zoomIdentity.translate(mx - k * cx, my - k * cy).scale(k));
+}
+
 /* ---------- airline icons + flags ---------- */
 const AL_CODES = { "vueling":"VY","ryanair":"FR","iberia":"IB","iberia express":"I2","easyjet":"U2","air france":"AF","lufthansa":"LH",
   "aerolíneas argentinas":"AR","aerolineas argentinas":"AR","air europa":"UX","aer lingus":"EI","norwegian":"DY","american airlines":"AA",
@@ -1811,7 +1899,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "20261009030711";
+const BUILD = "20261009031724";
 const LOGO_CODES = new Set(["1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -1842,7 +1930,10 @@ function relDays(ms) {
 function hm(mins) { const h = Math.floor(mins/60), m = mins % 60; return h ? `${h} h ${String(m).padStart(2,"0")} min` : `${m} min`; }
 
 function renderFilters() {
-  const years = [...new Set(all().map(f => f.year).filter(Boolean))].sort().reverse();
+  const years = [...new Set((isPlaces() ? PLACES.map(placeYear) : all().map(f => f.year)).filter(Boolean))].sort().reverse();
+  document.querySelectorAll("[data-layer]").forEach(b => b.setAttribute("aria-pressed", b.dataset.layer === LAYER));
+  const lg = $("#legend"); if (lg) lg.innerHTML = isPlaces() ? `<span><i class="pl"></i>Lugares visitados</span>` : `<span><i></i>Volados</span><span><i class="up"></i>Próximos</span>`;
+  const zl = $("#z-layer"); if (zl) zl.classList.toggle("on", isPlaces());
   if (S.year !== "all" && !years.includes(S.year)) S.year = "all";
   $("#filters").innerHTML = `<span class="lbl">Año</span>` + ["all", ...years].map(y =>
     `<button class="chip" type="button" data-year="${y}" aria-pressed="${S.year === y}">${y === "all" ? "Todos" : y}</button>`).join("");
@@ -2042,7 +2133,30 @@ function tripRow(t) {
     ${t.legs.map(flightRow).join("")}</div>`;
 }
 
+function renderPlacesList() {
+  const el = $("#list");
+  const ps = placesShown(), cand = flightCities();
+  const imp = cand.length ? `<button type="button" class="more" data-plcimport>+ Sumar ${cand.length} ${cand.length === 1 ? "ciudad" : "ciudades"} de mis vuelos</button>` : "";
+  if (!ps.length) {
+    el.innerHTML = `<div class="empty"><b>${PLACES.length ? "Sin lugares en " + esc(S.year) : "Ningún lugar todavía"}</b><span>Agregá ciudades, pueblos o parques que visitaste, en avión, en tren, en auto o caminando.</span><button class="btn primary" type="button" data-act="addplace">Agregar lugar</button>${imp}</div>`;
+    return;
+  }
+  const by = new Map();
+  for (const p of ps) { const k = p.cc || "??"; if (!by.has(k)) by.set(k, []); by.get(k).push(p); }
+  const groups = [...by].sort((a, b) => b[1].length - a[1].length || country(a[0]).localeCompare(country(b[0]), "es"));
+  el.innerHTML = `<div class="plc-sum"><b>${ps.length}</b> ${ps.length === 1 ? "lugar" : "lugares"} · <b>${by.size}</b> ${by.size === 1 ? "país" : "países"}</div>` +
+    groups.map(([cc, l]) => `<div class="plc-grp"><div class="plc-gh">${cc !== "??" ? `<span class="fl-ic sm" aria-hidden="true">${flag(cc)}</span>` : ""}<b>${esc(cc !== "??" ? country(cc) : "Sin país")}</b><span>${l.length}</span></div>` +
+      l.sort((a, b) => (b.date || "").localeCompare(a.date || "") || a.name.localeCompare(b.name, "es")).map(p =>
+        `<button type="button" class="plc-row${S.openPlace === p.id ? " on" : ""}" data-plc="${esc(p.id)}"><span class="plc-dot" aria-hidden="true"></span><span class="plc-t"><b>${esc(p.name)}</b>${p.sub && p.sub !== country(p.cc) ? `<small>${esc(p.sub)}</small>` : ""}</span><span class="plc-d">${esc(placeDate(p.date))}</span></button>`).join("") + `</div>`).join("") +
+    `<div class="plc-foot">${imp}</div>`;
+}
 function renderList() {
+  const lp = isPlaces();
+  $("#list-title").textContent = lp ? "Lugares" : "Vuelos";
+  $("#list-tabs").hidden = lp; $(".plc-add").hidden = !lp;
+  const ba = $("#b-add"); if (ba) ba.lastChild.textContent = lp ? "Agregar lugar" : "Agregar vuelo";
+  document.querySelectorAll('[data-act="add"].addc, .tab-add').forEach(b => b.setAttribute("aria-label", lp ? "Agregar lugar" : "Agregar vuelo"));
+  if (lp) return renderPlacesList();
   const fl = filtered();
   // plain chronological list: next flights soonest first, history newest first (no trip grouping)
   const t0 = f => Number.isFinite(f.depT) ? f.depT : 0;
@@ -2165,6 +2279,39 @@ function setTripMeta(n, m) {
   const tags = [...new Set((m.tags || []).map(t => String(t).trim()).filter(Boolean))].slice(0, 20), notes = String(m.notes || "").slice(0, 5000);
   if (!notes.trim() && !tags.length) delete TRIPMETA[n]; else TRIPMETA[n] = { notes, tags };
   try { localStorage.setItem(TRIPMETA_KEY, JSON.stringify(TRIPMETA)); } catch {}
+}
+/* ---------- visited places (second map layer, by any means of travel). Saved only in this browser and in the backups ---------- */
+const PLACES_KEY = "flights-places";
+let PLACES = (() => { try { const a = JSON.parse(localStorage.getItem(PLACES_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch { return []; } })();
+function cleanPlace(p) {
+  return { id:p.id || ("p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name:String(p.name || "").trim().slice(0, 80), sub:String(p.sub || "").trim().slice(0, 120),
+    cc:/^[A-Z]{2}$/.test(String(p.cc || "").toUpperCase()) ? String(p.cc).toUpperCase() : "", lat:+(+p.lat).toFixed(5), lon:+(+p.lon).toFixed(5),
+    date:/^\d{4}(-\d{2}(-\d{2})?)?$/.test(p.date || "") ? p.date : "", notes:String(p.notes || "").slice(0, 2000), src:p.src === "vuelo" ? "vuelo" : "", added:p.added || Date.now() };
+}
+const validPlace = p => p && p.name && Number.isFinite(+p.lat) && Number.isFinite(+p.lon) && Math.abs(+p.lat) <= 90 && Math.abs(+p.lon) <= 180;
+function savePlaces() { try { localStorage.setItem(PLACES_KEY, JSON.stringify(PLACES)); return true; } catch { return false; } }
+function samePlace(a, b) { return norm(a.name) === norm(b.name) && haversine(a, b) < 25; }
+function upsertPlace(p) { p = cleanPlace(p); const i = PLACES.findIndex(x => x.id === p.id); if (i >= 0) PLACES[i] = p; else PLACES.push(p); savePlaces(); return p; }
+function deletePlace(id) { PLACES = PLACES.filter(p => p.id !== id); savePlaces(); }
+const placeYear = p => (p.date || "").slice(0, 4);
+const placesShown = () => PLACES.filter(validPlace).filter(p => S.year === "all" || placeYear(p) === S.year);
+let LAYER = (() => { try { return localStorage.getItem("flights-layer") === "lugares" ? "lugares" : "vuelos"; } catch { return "vuelos"; } })();
+const isPlaces = () => LAYER === "lugares";
+function setLayer(l) {
+  LAYER = l === "lugares" ? "lugares" : "vuelos"; try { localStorage.setItem("flights-layer", LAYER); } catch {}
+  S.open = null; S.focusIds = null; S.openPlace = null; closeAptCard(); S.year = "all";
+  render(); if (isPlaces()) focusPlaces(); else focusSelection();
+}
+/* cities you flew to (or from) that are not yet in your places */
+function flightCities() {
+  const out = [], seen = [];
+  for (const f of all().filter(f => f.past && !f.demo).sort((a, b) => a.depT - b.depT)) for (const a of [f.from, f.to]) {
+    if (!validApt(a)) continue;
+    const p = { name:a.city || a.name || a.iata, sub:country(a.cc) || "", cc:a.cc || "", lat:+a.lat, lon:+a.lon, date:f.date || "", src:"vuelo" };
+    if (seen.some(x => samePlace(x, p)) || PLACES.some(x => samePlace(x, p) || (x.cc === p.cc && norm(x.name) === norm(p.name)))) continue;
+    seen.push(p); out.push(p);
+  }
+  return out;
 }
 const allTags = () => { const c = new Map(); for (const [n, m] of Object.entries(TRIPMETA)) for (const t of m.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c].sort((a, b) => b[1] - a[1]).map(e => e[0]); };
 const tagChips = n => { const t = tripMeta(n).tags; return t.length ? `<span class="ttags">${t.slice(0, 4).map(x => `<i>${esc(x)}</i>`).join("")}</span>` : ""; };
@@ -2477,6 +2624,15 @@ function renderStats() {
       : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`); }
   html += card(`Rutas <span>${topRoute.length}</span>`, rankList(topRoute, k => `<b>${esc(k)}</b>`, "route"));
   const noAc = past.filter(f => !f.aircraft).length;
+  { const ps = PLACES.filter(validPlace);
+    if (ps.length) {
+      const cs = count(ps.map(p => p.cc).filter(Boolean)), flownCC = new Set(past.flatMap(f => [f.from?.cc, f.to?.cc]).filter(Boolean));
+      const notFlown = cs.filter(([c]) => !flownCC.has(c)).length;
+      html += card(`Lugares visitados <span>${ps.length}</span>`, `<div class="recs">
+        ${rec("Países", fmt(cs.length), notFlown ? `${notFlown} sin llegar en avión` : "")}
+        ${cs.length ? rec("Con más lugares", esc(country(cs[0][0])), `${cs[0][1]} ${cs[0][1] === 1 ? "lugar" : "lugares"}`) : ""}
+      </div><button type="button" class="more" data-layer="lugares">Ver en el mapa</button>`);
+    } }
   html += card(`Aviones <span>${topAc.length}</span>`, (topAc.length ? rankList(topAc, esc, "aircraft") : `<p class="hint">Sin datos.</p>`) + (noAc ? `<p class="hint">${noAc} ${noAc === 1 ? "vuelo no tiene" : "vuelos no tienen"} el avión cargado.</p>` : ""));
   $("#stats").innerHTML = html;
 }
@@ -2662,6 +2818,112 @@ function showDelays() {
     const d = delayMin($("#" + s).value, $("#" + r).value);
     el.className = "dlbl " + delayCls(d); el.textContent = d == null ? "" : delayText(d, "").trim().replace(/^./, c => c.toUpperCase());
   }
+}
+/* ---------- add / edit a visited place ---------- */
+let plcForm = null, plcCtl = null, plcT = null;
+function openPlaceSheet(id) {
+  closeAptCard();
+  const src = id ? PLACES.find(p => p.id === id) : null;
+  plcForm = src ? { ...src } : { name:"", sub:"", cc:"", lat:null, lon:null, date:"", notes:"" };
+  const pf = plcForm, dm = (pf.date || "").length;
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pl-t">
+    <div class="hd"><h2 id="pl-t">${src ? "Editar lugar" : "Agregar lugar"}</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="box"><h4>Lugar</h4>
+      <div class="f apf">Buscar<input id="pl-q" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ciudad, pueblo, parque, monumento…" aria-label="Buscar lugar" value="${esc(pf.name)}"><div class="sugg" id="s-pl" role="listbox" hidden></div></div>
+      <div id="pl-sel" class="status ${pf.lat != null ? "ok" : ""}" ${pf.lat != null ? "" : "hidden"}>${pf.lat != null ? esc([pf.name, pf.sub].filter(Boolean).join(" · ")) : ""}</div>
+      <label class="f">Nombre que se muestra<input id="pl-name" value="${esc(pf.name)}" placeholder="Se completa al elegir"></label>
+    </div>
+    <div class="box"><h4>Detalles</h4>
+      <div class="row">
+        <label class="f">Precisión de la fecha<select id="pl-dk"><option value="">Sin fecha</option><option value="y" ${dm === 4 ? "selected" : ""}>Año</option><option value="m" ${dm === 7 ? "selected" : ""}>Mes</option><option value="d" ${dm === 10 ? "selected" : ""}>Día</option></select></label>
+        <label class="f" id="pl-dwrap">Fecha<input id="pl-date"></label>
+      </div>
+      <label class="f">Notas<input id="pl-notes" value="${esc(pf.notes)}" placeholder="Con quién, cómo llegaste, recuerdos…"></label>
+    </div>
+    <div id="pl-err" class="status err" hidden></div>
+    <div class="foot">${src ? `<button class="btn danger" type="button" id="pl-del" style="margin-right:auto">Borrar</button>` : ""}<button class="btn" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="pl-save">${src ? "Guardar cambios" : "Guardar lugar"}</button></div>
+  </div></div>`;
+  const dk = $("#pl-dk");
+  const setDateInput = () => {
+    const k = dk.value, w = $("#pl-dwrap"), cur = pf.date || "";
+    w.hidden = !k;
+    const inp = $("#pl-date");
+    if (k === "y") { inp.type = "number"; inp.min = 1900; inp.max = 2099; inp.placeholder = "2019"; inp.value = cur.slice(0, 4); inp.inputMode = "numeric"; }
+    else if (k === "m") { inp.type = "month"; inp.value = cur.slice(0, 7).length === 7 ? cur.slice(0, 7) : (cur.slice(0, 4) ? cur.slice(0, 4) + "-01" : ""); inp.placeholder = "2019-05"; }
+    else if (k === "d") { inp.type = "date"; inp.value = cur.length === 10 ? cur : (cur.length === 7 ? cur + "-01" : cur.length === 4 ? cur + "-01-01" : ""); }
+  };
+  dk.addEventListener("change", () => { pf.date = readPlaceDate() || pf.date; setDateInput(); });
+  setDateInput();
+  const q = $("#pl-q"), box = $("#s-pl");
+  q.addEventListener("input", () => { clearTimeout(plcT); const v = q.value.trim(); if (v.length < 2) { box.hidden = true; return; } showPlaceSugg(v, []); plcT = setTimeout(() => geoSearch(v), 650); });
+  q.addEventListener("blur", () => setTimeout(() => { box.hidden = true; }, 200));
+  suggNav(q, box, o => pickPlace(+o.dataset.i), o => o.dataset.name);
+  $("#pl-save").onclick = savePlaceForm;
+  const del = $("#pl-del"); if (del) del.onclick = () => { if (del.dataset.arm) { deletePlace(src.id); closeSheet(); S.openPlace = null; render(); toast("Lugar borrado"); } else { del.dataset.arm = 1; del.textContent = "¿Seguro? Tocá de nuevo"; } };
+  if (!src) q.focus();
+  loadAptDB();
+}
+function readPlaceDate() {
+  const k = $("#pl-dk")?.value, v = ($("#pl-date")?.value || "").trim();
+  if (!k || !v) return "";
+  if (k === "y") return /^\d{4}$/.test(v) ? v : "";
+  if (k === "m") return /^\d{4}-\d{2}/.test(v) ? v.slice(0, 7) : "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
+}
+let plcHits = [];
+function cityHits(v) {
+  const n = norm(v), out = [], seen = new Set();
+  for (const a of APTDB || []) {
+    if (!a.city || !norm(a.city).startsWith(n)) continue;
+    const k = a.city + "|" + a.cc; if (seen.has(k)) continue; seen.add(k);
+    out.push({ name:a.city, sub:country(a.cc), cc:a.cc, lat:+a.lat, lon:+a.lon });
+    if (out.length >= 4) break;
+  }
+  return out;
+}
+function showPlaceSugg(v, geo) {
+  const box = $("#s-pl"); if (!box) return;
+  const local = cityHits(v);
+  plcHits = [...geo, ...local.filter(l => !geo.some(g => samePlace(g, l) || (g.cc === l.cc && norm(g.name) === norm(l.name))))].slice(0, 8);
+  box.hidden = !plcHits.length;
+  box.innerHTML = plcHits.map((p, i) => `<button type="button" class="sg" role="option" data-i="${i}" data-name="${esc(p.name)}"><span class="sg-code">📍</span><span class="sg-txt"><b>${esc(p.name)}</b><small>${esc(p.sub || "")}</small></span>${p.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(p.cc)}</span>` : ""}</button>`).join("");
+  box.querySelectorAll(".sg").forEach(o => o.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); pickPlace(+o.dataset.i); }));
+}
+async function geoSearch(v) {
+  plcCtl?.abort(); const my = plcCtl = new AbortController();
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=es&q=${encodeURIComponent(v)}`, { signal:my.signal });
+    if (!r.ok || my !== plcCtl) return;
+    const j = await r.json();
+    if (($("#pl-q")?.value || "").trim() !== v) return;
+    const geo = (Array.isArray(j) ? j : []).map(x => {
+      const a = x.address || {}, cc = (a.country_code || "").toUpperCase();
+      const name = x.name || a.city || a.town || a.village || (x.display_name || "").split(",")[0];
+      const region = a.state || a.region || a.province || a.county || "";
+      return { name, sub:[region && region !== name ? region : "", country(cc) || a.country || ""].filter(Boolean).join(", "), cc, lat:+x.lat, lon:+x.lon };
+    }).filter(p => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lon));
+    showPlaceSugg(v, geo);
+  } catch {}
+}
+function pickPlace(i) {
+  const p = plcHits[i]; if (!p) return;
+  Object.assign(plcForm, { name:p.name, sub:p.sub, cc:p.cc, lat:p.lat, lon:p.lon });
+  $("#pl-q").value = p.name; $("#pl-name").value = p.name; $("#s-pl").hidden = true;
+  const s = $("#pl-sel"); s.hidden = false; s.className = "status ok"; s.textContent = [p.name, p.sub].filter(Boolean).join(" · ");
+  $("#pl-err").hidden = true;
+}
+function savePlaceForm() {
+  const err = $("#pl-err"), show = m => { err.hidden = !m; err.textContent = m; };
+  if (plcForm.lat == null) return show("Buscá el lugar y elegí una opción de la lista.");
+  const name = $("#pl-name").value.trim() || plcForm.name;
+  const p = { ...plcForm, name, date:readPlaceDate(), notes:$("#pl-notes").value.trim() };
+  if (!plcForm.id && PLACES.some(x => samePlace(x, p))) return show(`${name} ya está en tus lugares.`);
+  const saved = upsertPlace(p);
+  const isNew = !plcForm.id;
+  closeSheet(); S.openPlace = saved.id;
+  if (S.year !== "all" && placeYear(saved) !== S.year) S.year = "all";
+  render(); focusPlaces(saved.id);
+  toast(isNew ? "Lugar agregado" : "Lugar actualizado");
 }
 /* ---------- airline search ---------- */
 const AL_NAME = { VY:"Vueling", IB:"Iberia", FR:"Ryanair", U2:"easyJet", AF:"Air France", LH:"Lufthansa", AR:"Aerolíneas Argentinas", UX:"Air Europa",
@@ -3199,8 +3461,8 @@ async function saveMany(list) {
 
 /* ---------- export / import file ---------- */
 async function exportBackup() {
-  const data = JSON.stringify({ app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), trips:TRIPMETA, flights:S.real.map(({ id, ...f }) => f) }, null, 2);
-  if (!S.real.length) return toast("Todavía no hay vuelos propios para exportar.");
+  const data = JSON.stringify({ app:"bitacora-vuelos", version:1, exported:new Date().toISOString(), trips:TRIPMETA, places:PLACES, flights:S.real.map(({ id, ...f }) => f) }, null, 2);
+  if (!S.real.length && !PLACES.length) return toast("Todavía no hay vuelos propios para exportar.");
   const filename = `flights-${today()}.json`;
   if (!S.downloads) {
     if (!STANDALONE) return toast("La descarga no está disponible en esta vista.");
@@ -3237,6 +3499,10 @@ $("#imp-file").addEventListener("change", async e => {
     if (j && j.trips && typeof j.trips === "object") {     // trip notes and tags travel with the copy (merged, nothing is lost)
       for (const [n, m] of Object.entries(j.trips)) { const cur = tripMeta(n); setTripMeta(n, { notes:cur.notes && cur.notes.trim() ? cur.notes : (m.notes || ""), tags:[...cur.tags, ...(m.tags || [])] }); }
       render();
+    }
+    if (j && Array.isArray(j.places)) {        // visited places travel with the copy too (merged, nothing is lost)
+      let n = 0; for (const p of j.places) if (validPlace(p) && !PLACES.some(x => x.id === p.id || samePlace(x, p))) { PLACES.push(cleanPlace(p)); n++; }
+      if (n) { savePlaces(); render(); toast(`${n} ${n === 1 ? "lugar recuperado" : "lugares recuperados"}`); }
     }
     list = (Array.isArray(j) ? j : j.flights || []).filter(f => f && f.from && f.to && f.date && validApt(f.from) && validApt(f.to));
   } catch {
@@ -3328,6 +3594,11 @@ function aptAt(e) {
   const svg = svgSel.node(), r = svg.getBoundingClientRect(), [px, py] = d3.pointer(e, svg), t = d3.zoomTransform(svg);
   const ext = zoom.extent().call(svg), unit = (ext[1][0] - ext[0][0]) / r.width;          // svg units per screen pixel
   let best = null, bd = 22 * unit;
+  if (isPlaces()) {
+    gPlc.selectAll("circle").each(d => { const dd = Math.hypot(t.applyX(d.p[0]) - px, t.applyY(d.p[1]) - py); if (dd < bd) { bd = dd; best = d; } });
+    if (!best) return false;
+    showPlaceCard(best.id, e.clientX, e.clientY); return true;
+  }
   gApts.selectAll("circle").each(d => { const dd = Math.hypot(t.applyX(d.p[0]) - px, t.applyY(d.p[1]) - py); if (dd < bd) { bd = dd; best = d; } });
   if (!best) return false;
   showAptCard(best.iata, e.clientX, e.clientY);
@@ -3365,8 +3636,30 @@ function showAptCard(iata, x, y) {
     el.style.left = lx + "px"; el.style.top = ty + "px";
   }
 }
+function placeDate(d) {
+  if (!d) return "";
+  const [y, m, dd] = d.split("-");
+  return dd ? `${+dd} ${MONTHS[+m - 1]} ${y}` : m ? `${MONTH_FULL[+m - 1]} ${y}` : y;
+}
+function showPlaceCard(id, x, y) {
+  const p = PLACES.find(q => q.id === id); if (!p) return;
+  S.openPlace = id; renderMap();
+  closeAptCard();
+  const el = document.createElement("div"); el.id = "aptcard"; el.className = "aptcard"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", p.name);
+  el.innerHTML = `<button class="x" type="button" data-aptclose aria-label="Cerrar">×</button>
+    <div class="ac-h"><span class="ac-code plc-name">${esc(p.name)}</span>${p.cc ? `<span class="fl-ic" aria-hidden="true">${flag(p.cc)}</span>` : ""}</div>
+    <div class="ac-name">${esc(p.sub || country(p.cc) || "")}</div>
+    ${p.date ? `<div class="ac-row"><span>Fecha</span><b>${esc(placeDate(p.date))}</b></div>` : ""}
+    ${p.src === "vuelo" ? `<div class="ac-row"><span>Origen</span><b>De tus vuelos</b></div>` : ""}
+    ${p.notes ? `<p class="ac-notes">${esc(p.notes)}</p>` : ""}
+    <button class="btn" type="button" data-plcedit="${esc(p.id)}">Editar</button>`;
+  document.body.appendChild(el);
+  const w = el.offsetWidth, h = el.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  if (phoneMap()) { el.style.left = Math.round((vw - w) / 2) + "px"; el.style.top = (safeTop() + 60) + "px"; }
+  else { let lx = x + 14, ty = y - 20; if (lx + w > vw - 10) lx = x - w - 14; lx = Math.max(10, Math.min(vw - w - 10, lx)); ty = Math.max(10, Math.min(vh - h - 10, ty)); el.style.left = lx + "px"; el.style.top = ty + "px"; }
+}
 document.addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-aptclose]"); if (b) { closeAptCard(); return; }
+  const b = e.target.closest && e.target.closest("[data-aptclose]"); if (b) { closeAptCard(); if (S.openPlace) { S.openPlace = null; renderMap(); renderList(); } return; }
   const card = document.getElementById("aptcard");
   if (card && !card.contains(e.target) && !e.target.closest("#map")) closeAptCard();
   if (card && e.target.closest("#aptcard [data-rk]")) setTimeout(closeAptCard, 0);
@@ -3384,7 +3677,7 @@ function openSettings() {
     <div class="box"><h4>Copia de seguridad</h4>
       <p class="hint">${n} ${n === 1 ? "vuelo guardado" : "vuelos guardados"}. ${where} <b class="${!lb || days > 30 ? "warn" : ""}">${when}</b></p>
       <div class="acts">
-        <button class="btn primary" type="button" id="set-export" ${n ? "" : "disabled"}>Descargar copia (.json)</button>
+        <button class="btn primary" type="button" id="set-export" ${n || PLACES.length ? "" : "disabled"}>Descargar copia (.json)</button>
         <label class="btn" for="imp-file" style="cursor:pointer">Restaurar desde una copia</label>
       </div>
       <p class="hint">Restaurar agrega los vuelos de la copia que no tengas y no borra nada. Guardá la copia en iCloud Drive o en tu computadora para pasarla a otro dispositivo.</p>
@@ -3556,6 +3849,7 @@ function setSheet(st, refocus) {
   document.getElementById("map").addEventListener("click", e => {
     if (aptAt(e)) return;                                   // tapped an airport: its card opens instead
     closeAptCard();
+    if (S.openPlace) { S.openPlace = null; renderMap(); renderList(); }
     if (phoneMap() && sheetState !== "peek") setSheet("peek", !!(S.open || S.focusIds));
   });
   const relayout = () => requestAnimationFrame(() => layoutSheet());
@@ -3578,7 +3872,22 @@ document.addEventListener("click", e => {
   const t = e.target.closest("button,[data-close]");
   if (!t) return;
   if (t.matches("[data-close]") && (t.classList.contains("scrim") ? e.target === t : true)) { closeSheet(); return; }
-  if (t.id === "b-add" || t.dataset.act === "add") return openSheet("add");
+  if (t.dataset.act === "addplace") return openPlaceSheet();
+  if (t.id === "b-add" || t.dataset.act === "add") return isPlaces() && !t.closest("#demo") ? openPlaceSheet() : openSheet("add");
+  if (t.dataset.layer) { setLayer(t.dataset.layer); if (t.closest("#stats") && window.innerWidth <= 699) setView("mapa", true); return; }
+  if (t.id === "z-layer") { setLayer(isPlaces() ? "vuelos" : "lugares"); toast(isPlaces() ? "Capa: lugares visitados" : "Capa: vuelos"); return; }
+  if (t.dataset.plcedit) return openPlaceSheet(t.dataset.plcedit);
+  if (t.dataset.plc) {
+    const id = t.dataset.plc;
+    if (S.openPlace === id) return openPlaceSheet(id);
+    S.openPlace = id; renderList(); renderMap();
+    if (phoneMap()) setSheet("peek", true); else focusPlaces(id);
+    return;
+  }
+  if (t.hasAttribute("data-plcimport")) {
+    const c = flightCities(); for (const p of c) upsertPlace(p);
+    S.openPlace = null; closeAptCard(); render(); focusPlaces(); toast(`${c.length} ${c.length === 1 ? "ciudad sumada" : "ciudades sumadas"}`); return;
+  }
   if (t.id === "b-import") return openSheet("import");
   if (t.id === "b-settings") return openSettings();
   if (t.dataset.themeSet) return setTheme(t.dataset.themeSet);
