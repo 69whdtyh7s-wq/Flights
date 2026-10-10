@@ -1049,14 +1049,16 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .phone-only{display:none!important}
 @media (max-width:699px){.scard.phone-only{display:flex!important}.stitle{font-size:30px}}
 .tiles6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tiles6 .tmore{display:block;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:699px){.tiles6 .tmore{display:none}}
 @media (min-width:700px){
-  .tiles6{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
-  .tiles6 > div,.tiles6 > button.tbtn{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;row-gap:0;align-items:center;padding:8px 10px!important}
-  .tiles6 .ti{grid-row:1 / span 2;margin:0!important;width:20px!important;height:20px!important}.tiles6 .ti svg{width:20px!important;height:20px!important}
-  .tiles6 b{font-size:18px!important}
-  .tiles6 > * > span:last-child{font-size:11.5px}
+  .tiles6{gap:8px}
+  .tiles6 > div,.tiles6 > button.tbtn{display:grid!important;grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:0;align-items:center;padding:12px 14px!important}
+  .tiles6 .ti{grid-row:1 / span 2;margin:0!important;width:34px!important;height:34px!important;border-radius:10px;display:grid!important;place-items:center;background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .tiles6 .ti svg{width:19px!important;height:19px!important}
+  .tiles6 b{font-size:22px}
+  .tiles6 .tmore{grid-column:1 / -1;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12.5px}
 }
-@media (min-width:700px) and (max-width:1000px){.tiles6{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){body[data-dv="stats"] .pvgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 .tiles6 div,.fun div{background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tiles6 b{font-family:var(--f-round);font-size:22px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
@@ -2525,7 +2527,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101202";
+const BUILD = "202610101206";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3549,9 +3551,17 @@ function renderPlaceStats() {
   if (!ps.length) { $("#stats").innerHTML = html + card("Todavía no hay lugares", `<p class="hint">Las ciudades de tus vuelos aparecen solas; agregá también pueblos y lugares a los que fuiste por tierra o por mar.</p>`, "wide"); return; }
   const ccs = count(ps.map(p => p.cc).filter(Boolean)), conts = count(ps.map(p => continent(p.cc)).filter(Boolean));
   const own = ps.filter(p => !p.auto), flown = new Set(all.filter(p => p.auto).map(p => p.cc));
-  const tile = (icon, v, k) => `<div><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}</span></div>`;
+  const tile = (icon, v, k, more) => `<div><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}</span>${more ? `<small class="tmore">${more}</small>` : ""}</div>`;
   html += sec("Resumen");
-  html += `<section class="scard wide"><div class="tiles6">${tile("pin", fmt(ps.length), ps.length === 1 ? "lugar" : "lugares")}${tile("flag", fmt(ccs.length), ccs.length === 1 ? "país" : "países")}${tile("globe", `${conts.filter(([k]) => k !== "AN").length}/6`, "continentes")}${tile("compass", fmt(ccs.length / 195 * 100, 1) + "%", "de los países del mundo")}${tile("plane", fmt(ps.length - own.length), "ciudades de tus vuelos")}${tile("star", fmt(own.length), "agregados a mano")}</div></section>`;
+  const flownPl = ps.filter(p => p.auto).sort((a, b) => b.n - a.n), ownByDate = own.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.added || 0) - (a.added || 0));
+  const yrsP = [...new Set(ps.flatMap(p => p.auto ? [...p.years] : [placeYear(p)]).filter(Boolean))].sort();
+  const contsOK = conts.filter(([k]) => k !== "AN");
+  html += `<section class="scard wide"><div class="tiles6">${tile("pin", fmt(ps.length), ps.length === 1 ? "lugar" : "lugares", yrsP.length ? (yrsP.length > 1 ? `de ${yrsP[0]} a ${yrsP[yrsP.length - 1]}` : `en ${yrsP[0]}`) : "")
+    }${tile("flag", fmt(ccs.length), ccs.length === 1 ? "país" : "países", esc(ccs.slice(0, 3).map(([c]) => country(c)).join(", ")))
+    }${tile("globe", `${contsOK.length}/6`, "continentes", esc(contsOK.map(([k]) => CONT_NAME[k]).join(", ")))
+    }${tile("compass", fmt(ccs.length / 195 * 100, 1) + "%", "de los países del mundo", `Faltan ${fmt(Math.max(0, 195 - ccs.length))} para los 195`)
+    }${tile("plane", fmt(ps.length - own.length), "ciudades de tus vuelos", esc(flownPl.slice(0, 3).map(p => p.name).join(", ")))
+    }${tile("star", fmt(own.length), "agregados a mano", ownByDate.length ? "Último: " + esc(ownByDate[0].name) : "Agregalos con el botón +")}</div></section>`;
   // continents
   html += sec("Continentes");
   const CONTS = ["EU", "AS", "AF", "NA", "SA", "OC"], cmap = new Map(conts);
@@ -3629,8 +3639,17 @@ function renderStats() {
 
   /* ---- summary ---- */
   html += sec("Resumen");
-  const tile = (icon, v, k, list) => `<${list ? `button type="button" class="tbtn" data-list="${list}"` : "div"}><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}${list ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</span></${list ? "button" : "div"}>`;
-  html += `<section class="scard wide"><div class="tiles6">${tile("plane", fmt(past.length), past.length === 1 ? "vuelo" : "vuelos")}${tile("ruler", km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "km recorridos")}${tile("clock", fmt(Math.round(mins / 60)), "horas en el aire")}${tile("tower", fmt(aptSet.size), "aeropuertos", "airport")}${tile("flag", fmt(ccSet.size), ccSet.size === 1 ? "país" : "países", "country")}${tile("ticket", fmt(alSet.size), alSet.size === 1 ? "aerolínea" : "aerolíneas", "airline")}</div></section>`;
+  const tile = (icon, v, k, list, more) => `<${list ? `button type="button" class="tbtn" data-list="${list}"` : "div"}><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}${list ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</span>${more ? `<small class="tmore">${more}</small>` : ""}</${list ? "button" : "div"}>`;
+  const top3 = arr => count(arr).slice(0, 3).map(([k]) => k);
+  const yrsF = [...new Set(past.map(f => f.year))].sort(), nUp = upAll.length;
+  const topApt = top3(past.flatMap(f => [f.from?.iata, f.to?.iata])), topCC = top3(past.flatMap(f => [...new Set([f.from?.cc, f.to?.cc])])), topAl = top3(past.map(alKey));
+  html += `<section class="scard wide"><div class="tiles6">${tile("plane", fmt(past.length), past.length === 1 ? "vuelo" : "vuelos", null,
+      [nUp ? `${nUp} ${nUp === 1 ? "programado" : "programados"}` : "", yrsF.length ? (yrsF.length > 1 ? `de ${yrsF[0]} a ${yrsF[yrsF.length - 1]}` : `en ${yrsF[0]}`) : ""].filter(Boolean).join(" · "))
+    }${tile("ruler", km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "km recorridos", null, `${fmt(km / 40075, 1)} vueltas al mundo · ${fmt(km / past.length)} km por vuelo`)
+    }${tile("clock", fmt(Math.round(mins / 60)), "horas en el aire", null, `${fmt(mins / 1440, 1)} días · ${hm(Math.round(mins / past.length))} por vuelo`)
+    }${tile("tower", fmt(aptSet.size), "aeropuertos", "airport", esc(topApt.join(" · ")))
+    }${tile("flag", fmt(ccSet.size), ccSet.size === 1 ? "país" : "países", "country", esc(topCC.map(country).join(", ")))
+    }${tile("ticket", fmt(alSet.size), alSet.size === 1 ? "aerolínea" : "aerolíneas", "airline", esc(topAl.map(alLabel).join(", ")))}</div></section>`;
 
   /* ---- in perspective ---- */
   const laps = km / 40075, moon = km / 384400, days = mins / 1440;
