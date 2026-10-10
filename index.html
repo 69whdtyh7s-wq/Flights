@@ -2540,7 +2540,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101221";
+const BUILD = "202610101223";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3758,8 +3758,7 @@ function renderStats() {
   };
   html += card("", `<div class="stabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-stab="${k}" aria-selected="${tab === k}">${t}</button>`).join("")}</div>${lists[tab]()}`, "wide ranks", "trophy").replace("<h3>", `<h3 class="hidden-h">`);
 
-  /* ---- records ---- */
-  html += sec("Récords");
+  /* ---- records (shown beside Trips) ---- */
   const byKm = [...past].sort((a, b) => b.km - a.km), lg = byKm[0], sh = byKm[byKm.length - 1];
   const byMin = [...past].sort((a, b) => b.mins - a.mins)[0];
   const rec = (icon, k, v, sub, id) => `<${id ? `button type="button" data-fopen="${esc(id)}"` : "div"} class="rec2"><span class="ri">${ICON[icon]}</span><span class="rk2">${k}</span><b>${v}${sub ? `<small>${sub}</small>` : ""}</b>${id ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</${id ? "button" : "div"}>`;
@@ -3769,7 +3768,7 @@ function renderStats() {
   const sorted = [...past].sort((a, b) => a.depT - b.depT), first = sorted[0], last = sorted[sorted.length - 1];
   const nights = past.filter(f => +f.arrOffset > 0).length;
   const route = f => `${esc(f.from?.iata)} → ${esc(f.to?.iata)}`;
-  html += card("", `<div class="recgrid">
+  const recCard = card("Récords", `<div class="recgrid">
     ${rec("ruler", "Vuelo más largo", route(lg), `${fmt(lg.km)} km · ${esc(shortDate(lg))}`, lg.id)}
     ${byMin && byMin !== lg ? rec("clock", "Más tiempo en el aire", route(byMin), `${hm(byMin.mins)} · ${esc(shortDate(byMin))}`, byMin.id) : ""}
     ${past.length > 1 ? rec("ruler", "Vuelo más corto", route(sh), `${fmt(sh.km)} km · ${esc(shortDate(sh))}`, sh.id) : ""}
@@ -3783,7 +3782,7 @@ function renderStats() {
     ${Sx && Sx.a.iata !== N.a.iata ? rec("compass", "Más al sur", esc(Sx.a.city || Sx.a.iata), `${esc(Sx.a.iata)} · ${fmt(Math.abs(Sx.a.lat), 1)}° ${Sx.a.lat >= 0 ? "N" : "S"}`, Sx.f.id) : ""}
     ${E ? rec("compass", "Más al este", esc(E.a.city || E.a.iata), `${esc(E.a.iata)} · ${fmt(Math.abs(E.a.lon), 1)}° ${E.a.lon >= 0 ? "E" : "O"}`, E.f.id) : ""}
     ${Wx && Wx.a.iata !== E.a.iata ? rec("compass", "Más al oeste", esc(Wx.a.city || Wx.a.iata), `${esc(Wx.a.iata)} · ${fmt(Math.abs(Wx.a.lon), 1)}° ${Wx.a.lon >= 0 ? "E" : "O"}`, Wx.f.id) : ""}
-  </div>`, "wide", "trophy").replace("<h3>", `<h3 class="hidden-h">`);
+  </div>`, "recside", "trophy");
 
   /* ---- punctuality ---- */
   { const dl = past.map(f => ({ f, d: delayMin(f.arr, f.arrReal) ?? delayMin(f.dep, f.depReal) })).filter(x => x.d != null);
@@ -3804,6 +3803,7 @@ function renderStats() {
   { const tm = tripList();   // newest first; trips with the same name stay separate
     html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.slice(0, S.rankOpen.has("trips") ? 999 : 6).map(({ id, name, legs:l }) => `<li><button type="button" class="rk" data-tripview="${esc(id)}"><div class="nm"><span><b>${esc(name)}</b> ${tagChips(id)}</span><small>${esc(tripDates(l))} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>${tm.length > 6 ? `<button type="button" class="more" data-more="trips">${S.rankOpen.has("trips") ? "Ver menos" : `Ver todos (${tm.length})`}</button>` : ""}`
       : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`, "", "pin"); }
+  html += recCard;
   $("#stats").innerHTML = html;
   markLogos($("#stats"));
 }
