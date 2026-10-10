@@ -328,6 +328,28 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
 }
 @media (min-width:1500px){#stats{grid-template-columns:repeat(3,minmax(0,1fr))}#stats .sec:nth-child(3){border-top:0}#stats .sec:nth-child(odd){border-right:0}#stats .sec{border-right:1px solid var(--line)}}
 
+/* computer and iPad: one section at a time (Mapa or Stats), chosen in the header */
+.dvseg{display:none}
+@media (min-width:700px){
+  .dvseg{display:inline-flex;background:var(--fill);border-radius:999px;padding:3px;gap:2px;margin-inline:auto 0;flex:none}
+  .top .dvseg{margin-left:auto;margin-right:6px}
+  .dvseg button{border:0;background:transparent;border-radius:999px;height:32px;padding:0 18px;font:inherit;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer}
+  .dvseg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+  .top{align-items:center}
+  body[data-dv="stats"] #mapcard,body[data-dv="stats"] #p-list{display:none!important}
+  body[data-dv="map"] #stats,body[data-dv="map"] #claudenote,#board{display:none!important}   /* the summary tiles live in Stats now */
+  #stats .stitle{display:none}
+  body[data-dv="map"] .grid{grid-template-columns:minmax(0,1fr)!important}
+  body[data-dv="stats"] .grid{grid-template-columns:minmax(0,1fr)!important}
+  body[data-dv="map"] #mapcard .map{height:min(68vh,760px);min-height:380px}
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dvseg button[aria-pressed="true"]{background:#636366}}
+:root[data-theme="dark"] .dvseg button[aria-pressed="true"]{background:#636366}
+@media (min-width:1100px){
+  body[data-dv="map"] #p-list{max-height:calc(100dvh - 32px)}
+  body[data-dv="stats"] .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "demo" "filters" "stats" "note"}
+  body[data-dv="stats"] #stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 /* scrolling chip rows */
 .yjump{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .yjump::-webkit-scrollbar{display:none}
@@ -1374,6 +1396,7 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
+    <div class="dvseg" role="group" aria-label="Sección"><button type="button" data-dv="map" aria-pressed="true">Mapa</button><button type="button" data-dv="stats" aria-pressed="false">Stats</button></div>
     <div class="rgrp">
     <button class="btn themebtn rbtn" id="b-search" type="button" aria-label="Buscar" title="Buscar (/)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
     <button class="btn rbtn show-phone" id="b-stats" type="button" aria-label="Stats" title="Stats"><svg class="i-stats" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><svg class="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></button>
@@ -2141,7 +2164,7 @@ function initMap() {
     .on("end", () => { dragging = false; redrawGeo(); }));
   document.querySelectorAll("[data-maptype]").forEach(b => b.addEventListener("click", () => setMapType(b.dataset.maptype)));
   setMapType(mapType, true);
-  S.mapReady = true;
+  S.mapReady = true; requestAnimationFrame(fitDeskMap);
   try {
     WORLD_LO = makeWorld(JSON.parse(document.getElementById("world-data").textContent));
     useWorld(WORLD_LO);
@@ -2303,6 +2326,7 @@ function fitRoutes(animate) {
   (animate ? svgSel.transition().duration(500) : svgSel).call(zoom.transform, t);
 }
 function focusSelection() {
+  toMapDV();
   if (!svgSel || !zoom) return;
   if (isPlaces() && S.openPlace) return focusPlaces(S.openPlace);
   const ids = S.open ? [S.open] : S.focusIds;
@@ -2414,6 +2438,7 @@ function renderPlacesMap() {
   if (world && !ps.length) hint.textContent = placesAll().length && S.year !== "all" ? "Sin lugares en " + S.year + "." : "Agregá los lugares que visitaste con el botón +.";
 }
 function focusPlaces(id) {
+  toMapDV();
   if (!svgSel || !zoom) return;
   const ps = Array.isArray(id) ? placesAll().filter(p => id.includes(p.id)) : id ? placesAll().filter(p => p.id === id) : placesShown();
   if (!ps.length) { svgSel.transition().duration(450).call(zoom.transform, d3.zoomIdentity); return; }
@@ -2487,7 +2512,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610100008";
+const BUILD = "202610101144";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3763,7 +3788,7 @@ function render() {
   }
   if (S.loaded && !tripMigrating && S.real.some(f => f.trip && !f.tripId)) setTimeout(ensureTripIds, 0);
   else if (S.loaded && Object.keys(TRIPMETA).length && !tripMigrating) { const ids = new Set(S.real.map(f => f.tripId)); if (Object.keys(TRIPMETA).some(k => !ids.has(k) && S.real.some(f => f.tripId && norm(f.trip) === norm(k)))) setTimeout(ensureTripIds, 0); }
-  $("#demo").hidden = !isDemo();
+  const demoWas = $("#demo").hidden; $("#demo").hidden = !isDemo(); if (demoWas !== $("#demo").hidden) requestAnimationFrame(fitDeskMap);
   const n = S.real.length;
   $("#sub").textContent = !S.loaded ? "Cargando…" : isDemo() ? "Modo ejemplo" : `${n} ${n === 1 ? "vuelo" : "vuelos"} · ${S.storage === "db" ? "guardado en tu cuenta" : "guardado en este navegador"}`;
   buildAlLabels(all());
@@ -5486,6 +5511,28 @@ function updateZoomExtent() {
   zoom.translateExtent(phoneMap() ? [[-W * 0.05, -H * 0.12], [W * 1.05, H * 1.75]] : [[0, 0], [W, H]]).scaleExtent([phoneMap() ? 0.45 : 1, 80]);
   svgSel.call(zoom.transform, d3.zoomTransform(svgSel.node()));
 }
+/* computer / iPad section */
+const DV_KEY = "flights-dview";
+function setDV(v, save = true) {
+  v = v === "stats" ? "stats" : "map";
+  document.body.dataset.dv = v;
+  document.querySelectorAll("[data-dv]").forEach(b => b.setAttribute("aria-pressed", b.dataset.dv === v));
+  if (save) { try { localStorage.setItem(DV_KEY, v); } catch {} }
+  if (v === "stats") { if (statsDirty) renderStats(); }
+  else { requestAnimationFrame(fitDeskMap); if (S.mapReady) requestAnimationFrame(() => { updateZoomExtent(); renderMap(); }); }
+}
+/* on a computer the map fills the window below the header (the list scrolls on its own beside it) */
+function fitDeskMap() {
+  const m = document.getElementById("map"); if (!m) return;
+  if (window.innerWidth < 1100 || document.body.dataset.dv !== "map" || document.body.classList.contains("mapfull")) { if (window.innerWidth < 1100 || document.body.dataset.dv !== "map") m.style.height = ""; return; }
+  const top = m.getBoundingClientRect().top + window.scrollY, foot = document.querySelector("#mapcard .mapfoot")?.offsetHeight || 0;
+  const h = Math.max(380, Math.round(window.innerHeight - top - foot - 18));
+  if (m.style.height !== h + "px") { m.style.height = h + "px"; if (S.mapReady) requestAnimationFrame(() => { updateZoomExtent(); renderMap(); }); }
+}
+window.addEventListener("resize", () => requestAnimationFrame(fitDeskMap));
+const toMapDV = () => { if (!isPhone() && document.body.dataset.dv === "stats") setDV("map"); };
+document.body.dataset.dv = (() => { try { return localStorage.getItem(DV_KEY) === "stats" ? "stats" : "map"; } catch { return "map"; } })();
+setTimeout(() => setDV(document.body.dataset.dv, false), 0);
 function setView(v, save) {
   if (v === "mapa" && isPhone()) { v = "vuelos"; sheetState = "peek"; }
   document.body.dataset.view = v;
@@ -5683,6 +5730,7 @@ document.addEventListener("click", e => {
   if (["trippick", "tripall", "tripsave", "tripdel"].some(k => k in t.dataset)) return tripAction(t);
   if (t.dataset.open) { S.popList = true; S.open = S.open === t.dataset.open ? null : t.dataset.open; S.confirmDel = null; render(); if (S.open) revealOpenRow(); focusSelection(); return; }
   if (t.dataset.cplaces) { const cc = t.dataset.cplaces; closeSheet(); setLayer("lugares"); setTimeout(() => searchPick("placecountry", cc), 60); return; }
+  if (t.dataset.dv) return setDV(t.dataset.dv);
   if (t.dataset.cal) { const f = all().find(x => x.id === t.dataset.cal); if (f) calICS(f); return; }
   if (t.dataset.showmap) { S.open = t.dataset.showmap; setView("mapa", false); render(); setTimeout(focusSelection, 60); return; }
   if (t.dataset.edit) return openSheet("edit", t.dataset.edit);
