@@ -1406,6 +1406,32 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .ac-row b{font-weight:600;text-align:right}
 .ac-row small{color:var(--muted);font-weight:500}
 .aptcard .btn{margin-top:8px;justify-content:center}
+.fxbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer;flex:none}
+.fxbtn svg{width:16px;height:16px}
+.fxbtn.on{background:var(--ink);color:var(--bg)}
+.fxbtn.on .fxl{display:none}
+#p-list > header{flex-wrap:nowrap}
+#p-list > header h2{flex:none}
+@media (max-width:699px){
+  #p-list > header{gap:8px}
+  .fxbtn{width:34px;height:34px;padding:0;justify-content:center;position:relative}
+  .fxbtn .fxl{display:none}
+  .fxbtn .fxn{position:absolute;top:-4px;right:-6px;box-shadow:0 0 0 2px var(--surface)}
+  .fxbtn.on{padding:0}
+  #p-list .tabs button{padding:0 11px}
+}
+@media (min-width:700px){.fxbtn.on{padding:0 8px 0 10px}}
+.fxbtn.on .fxl{display:none}
+.fxbtn .fxn{min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;display:inline-grid;place-items:center;padding:0 5px}
+.fx-sheet .fx-sec{padding:4px 0 10px}
+.fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fx-chips{display:flex;flex-wrap:wrap;gap:6px}
+.fxc{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer}
+.fxc small{font-weight:500;color:var(--muted);font-size:12px}
+.fxc[aria-pressed="true"]{background:var(--accent);color:#fff}
+.fxc[aria-pressed="true"] small{color:rgba(255,255,255,.8)}
+.fx-foot{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:12px 0 4px;background:inherit;border-top:1px solid var(--line);margin-top:6px}
+.fx-foot .btn[disabled]{opacity:.45}
 .ac-cities{border-top:1px solid var(--line);padding:5px 0 3px;font-size:13px}
 .ac-cities > span{color:var(--muted);display:block;margin-bottom:5px}
 .ac-cities > div{display:flex;flex-wrap:wrap;gap:4px}
@@ -1479,6 +1505,7 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
       <div class="grab" aria-hidden="true"></div>
       <header>
         <h2 id="list-title">Vuelos</h2>
+        <button class="fxbtn" type="button" id="fx-btn" aria-label="Filtros" title="Filtros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="fxl">Filtros</span><b class="fxn" id="fx-n" hidden></b></button>
         <button class="plc-edit" type="button" id="plc-edit" hidden>Editar</button>
         <div class="tabs" role="tablist" id="list-tabs">
           <button role="tab" id="t-up" aria-selected="true" type="button">Próximos<span class="n" id="n-up"></span></button>
@@ -1744,7 +1771,7 @@ function enrich(f) {
 
 /* ---------- state ---------- */
 const S = {
-  real: [], loaded: false, plcOpen: new Set(), rankOpen: new Set(), drill: null, listBack: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", tab: "up", open: null, confirmDel: null,
+  real: [], loaded: false, plcOpen: new Set(), rankOpen: new Set(), drill: null, listBack: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", fx: { trip:"", al:"", cc:"", ac:"", cls:"" }, tab: "up", open: null, confirmDel: null,
   col: null, sample: null, downloads: null, mapReady: false,
 };
 const DEMO = buildDemo();
@@ -2623,7 +2650,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101826";
+const BUILD = "202610101831";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2646,8 +2673,21 @@ const flag = cc => /^[A-Z]{2}$/.test(cc || "") ? `<img class="flag" src="${asset
 document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG" && t.classList.contains("flag")) t.remove(); }, true);
 
 /* ---------- derived views ---------- */
-const filteredM = memo(y => { const a = all(); return y === "all" ? a : a.filter(f => f.year === y); });
-function filtered() { return filteredM(S.year); }
+/* filters (button in the flights list): year, trip, airline, country, aircraft, class */
+const fxKey = () => Object.entries(S.fx).map(([k, v]) => k + "=" + v).join("&");
+const fxLabels = () => { const x = S.fx; return [x.trip && tripName(x.trip), x.al && alLabel(x.al), x.cc && country(x.cc), x.ac, x.cls && (CLASSES[x.cls] || x.cls)].filter(Boolean); };
+const fxActive = () => Object.values(S.fx).filter(Boolean).length + (S.year !== "all" ? 1 : 0);
+const fxMatch = (f, skip) => {
+  const x = S.fx;
+  if (x.trip && skip !== "trip" && f.tripId !== x.trip) return false;
+  if (x.al && skip !== "al" && alKey(f) !== x.al) return false;
+  if (x.cc && skip !== "cc" && f.from?.cc !== x.cc && f.to?.cc !== x.cc) return false;
+  if (x.ac && skip !== "ac" && (f.aircraft || "").trim() !== x.ac) return false;
+  if (x.cls && skip !== "cls" && (f.cls || "") !== x.cls) return false;
+  return true;
+};
+const filteredM = memo((y, k) => { const a = all(); return a.filter(f => (y === "all" || f.year === y) && (k === "" || fxMatch(f))); });
+function filtered() { return filteredM(S.year, Object.values(S.fx).some(Boolean) ? fxKey() : ""); }
 function relDays(ms) {
   const d0 = new Date(); d0.setHours(0,0,0,0);
   const d1 = new Date(ms); d1.setHours(0,0,0,0);
@@ -2665,9 +2705,44 @@ function renderFilters() {
   const unit = isPlaces() ? ["lugar", "lugares"] : ["vuelo", "vuelos"], tot = isPlaces() ? placesAll().length : all().length;
   YEAR_OPTS = [{ v:"all", l:"Todos los años", s:`${tot} ${tot === 1 ? unit[0] : unit[1]}` }, ...years.map(y => { const k = n(y); return { v:y, l:y, s:`${k} ${k === 1 ? unit[0] : unit[1]}` }; })];
   const dv = document.body.dataset.dv === "stats" ? "stats" : "map";
-  $("#filters").innerHTML = `<button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? `<span class="yl">Todos los años</span><span class="ys">Todos</span>` : esc(S.year)}${CHEV_DOWN}</button><div class="layerpill dvseg" role="group" aria-label="Sección"><button type="button" data-dv="map" aria-pressed="${dv === "map"}" title="Mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Mapa</span></button><button type="button" data-dv="stats" aria-pressed="${dv === "stats"}" title="Stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Stats</span></button></div><span class="fsep" aria-hidden="true"></span>
+  const fn = fxActive(), fb = $("#fx-n"); if (fb) { fb.hidden = !fn; fb.textContent = fn; } const fbb = $("#fx-btn"); if (fbb) fbb.classList.toggle("on", !!fn);
+  $("#filters").innerHTML = `<div class="layerpill dvseg" role="group" aria-label="Sección"><button type="button" data-dv="map" aria-pressed="${dv === "map"}" title="Mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Mapa</span></button><button type="button" data-dv="stats" aria-pressed="${dv === "stats"}" title="Stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Stats</span></button></div><span class="fsep" aria-hidden="true"></span>
     <div class="layerpill" role="group" aria-label="Vuelos o lugares"><button type="button" data-layer="vuelos" aria-pressed="${!isPlaces()}" title="Vuelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span>Vuelos</span></button><button type="button" data-layer="lugares" aria-pressed="${isPlaces()}" title="Lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Lugares</span></button></div>`;
 }
+function openFilters() {
+  const lp = isPlaces(), A = all(), x = S.fx;
+  const cnt = (skip, fn) => { const m = new Map(); for (const f of A) { if (!lp && !fxMatch(f, skip)) continue; if (skip !== "year" && S.year !== "all" && f.year !== S.year) continue; for (const k of [].concat(fn(f))) if (k) m.set(k, (m.get(k) || 0) + 1); } return m; };
+  const chips = (key, cur, items, all = "Todos") => `<div class="fx-chips">${[["", all, null], ...items].map(([v, l, n]) => `<button type="button" class="fxc" data-fxk="${key}" data-fxv="${esc(v)}" aria-pressed="${v === cur}">${esc(l)}${n != null ? `<small>${n}</small>` : ""}</button>`).join("")}</div>`;
+  const sec = (t, body) => `<section class="fx-sec"><h4>${t}</h4>${body}</section>`;
+  let html = "";
+  const yrs = lp ? YEAR_OPTS.filter(o => o.v !== "all").map(o => [o.v, o.l, null]) : [...cnt("year", f => f.year)].sort((a, b) => b[0].localeCompare(a[0])).map(([y, n]) => [y, y, n]);
+  html += sec("Año", chips("year", S.year === "all" ? "" : S.year, yrs));
+  if (!lp) {
+    const trips = cnt("trip", f => f.tripId && f.trip ? f.tripId : ""), tl = tripList().filter(t => trips.has(t.id)).map(t => [t.id, t.name, trips.get(t.id)]);
+    if (tl.length || x.trip) html += sec("Viaje", chips("trip", x.trip, tl));
+    const al = [...cnt("al", alKey)].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, alLabel(k), n]);
+    if (al.length) html += sec("Aerolínea", chips("al", x.al, al.slice(0, 40), "Todas"));
+    const cc = [...cnt("cc", f => [...new Set([f.from?.cc, f.to?.cc])])].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, country(k), n]);
+    if (cc.length) html += sec("País", chips("cc", x.cc, cc.slice(0, 60)));
+    const ac = [...cnt("ac", f => (f.aircraft || "").trim())].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, k, n]);
+    if (ac.length) html += sec("Avión", chips("ac", x.ac, ac.slice(0, 30)));
+    const cl = [...cnt("cls", f => f.cls || "")].map(([k, n]) => [k, CLASSES[k] || k, n]);
+    if (cl.length) html += sec("Clase", chips("cls", x.cls, cl, "Todas"));
+  }
+  const n = lp ? placesShown().length : filtered().length;
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fx-t">
+    <div class="hd"><h2 id="fx-t">Filtros</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    ${html}
+    <div class="fx-foot"><button class="btn" type="button" data-fxclear ${fxActive() ? "" : "disabled"}>Quitar filtros</button><button class="btn primary" type="button" data-close>Ver ${n} ${lp ? (n === 1 ? "lugar" : "lugares") : (n === 1 ? "vuelo" : "vuelos")}</button></div>
+  </div></div>`;
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest && e.target.closest("#fx-btn, [data-fxk], [data-fxclear]"); if (!t) return;
+  if (t.id === "fx-btn") { e.stopPropagation(); return openFilters(); }
+  if (t.dataset.fxclear !== undefined) { S.fx = { trip:"", al:"", cc:"", ac:"", cls:"" }; S.year = "all"; }
+  else { const k = t.dataset.fxk, v = t.dataset.fxv; if (k === "year") S.year = v || "all"; else S.fx = { ...S.fx, [k]:v }; }
+  S.open = null; S.focusIds = null; render(); focusSelection(); openFilters();
+});
 /* ---------- year dropdown: tap to open, or press and slide to an option and let go (it scrolls near the edges) ---------- */
 const CHEV_DOWN = `<svg class="ydd-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
 let YEAR_OPTS = [], JUMP_OPTS = [], ddMenu = null;
@@ -3743,7 +3818,7 @@ function renderStats() {
   const past = fl.filter(f => f.past), upAll = allF.filter(f => !f.past).sort((a, b) => a.depT - b.depT);
   const card = (title, body, cls = "", icon = "") => `<section class="scard ${cls}"><h3>${icon ? `<span class="sic">${ICON[icon]}</span>` : ""}${title}</h3>${body}</section>`;
   const sec = (t, sub) => `<h3 class="ssec">${t}${sub ? `<small>${sub}</small>` : ""}</h3>`;
-  let html = `<h2 class="stitle">Stats${S.year !== "all" ? ` <span>${esc(S.year)}</span>` : ""}</h2>`;
+  let html = `<h2 class="stitle">Stats${[S.year !== "all" ? S.year : "", ...fxLabels()].filter(Boolean).map(t => ` <span>${esc(t)}</span>`).join("")}</h2>`;
   const nx = upAll[0];
   if (nx) {
     const r = relDays(nx.depT), d = new Date(nx.depT);
