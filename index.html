@@ -2270,7 +2270,26 @@ function makeWorld(raw) {
   const bb = l => { let a = 180, b = 90, c = -180, d = -90; for (const p of l) { if (p[0] < a) a = p[0]; if (p[1] < b) b = p[1]; if (p[0] > c) c = p[0]; if (p[1] > d) d = p[1]; } return [a, b, c, d]; };
   const borders = !Array.isArray(raw) && raw.b ? raw.b.map(([l, r, line]) => ({ seg:line, cc:[l || null, r || null], bb:bb(line) })) : null;
   if (!Array.isArray(raw)) raw = raw.c;
-  return { id:++WORLD_N, type:"FeatureCollection", borders, features: raw.map(([id, coords]) => ({ type:"Feature", id, cc: /^[A-Z]{2}$/.test(id) ? id : (ISO_N2A[id] || null), properties:{}, geometry:{ type:"MultiPolygon", coordinates:coords } })) };
+  const feats = raw.map(([id, coords]) => ({ type:"Feature", id, cc: /^[A-Z]{2}$/.test(id) ? id : (ISO_N2A[id] || null), properties:{}, geometry:{ type:"MultiPolygon", coordinates:coords } }));
+  // France's overseas lands come inside France's shape: split them off, so visiting France does not tint them
+  // (each one is only marked when you visit it: French Guiana, Réunion, Martinique, Guadeloupe, Mayotte)
+  const OVERSEAS = [["GF", -55, 2, -51, 6.5], ["RE", 55, -21.5, 56, -20.7], ["MQ", -61.4, 14.2, -60.7, 15], ["GP", -62, 15.7, -60.9, 16.6], ["YT", 44.9, -13.2, 45.4, -12.5]];
+  const fr = feats.find(f => f.cc === "FR");
+  if (fr) {
+    const home = [], away = new Map();
+    for (const poly of fr.geometry.coordinates) {
+      const r = poly[0]; let x = 0, y = 0; for (const q of r) { x += q[0]; y += q[1]; } x /= r.length; y /= r.length;
+      if (x > -6 && x < 11 && y > 41 && y < 52) { home.push(poly); continue; }
+      const o = OVERSEAS.find(([, a, b, c, d]) => x >= a && x <= c && y >= b && y <= d), k = o ? o[0] : "";
+      if (!away.has(k)) away.set(k, []); away.get(k).push(poly);
+    }
+    if (home.length && away.size) {
+      fr.geometry = { type:"MultiPolygon", coordinates:home };
+      for (const [k, polys] of away) if (!feats.some(f => k && f.cc === k)) feats.push({ type:"Feature", id:"FR-" + (k || "o"), cc:k || null, properties:{}, geometry:{ type:"MultiPolygon", coordinates:polys } });
+        else feats.find(f => f.cc === k).geometry.coordinates.push(...polys);
+    }
+  }
+  return { id:++WORLD_N, type:"FeatureCollection", borders, features:feats };
 }
 /* the light map while the globe is being turned, the detailed one the rest of the time */
 function useWorld(w) { setBase(w, true); setHi(null, null); }
@@ -2582,7 +2601,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101755";
+const BUILD = "202610101756";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
