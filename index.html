@@ -749,23 +749,25 @@ body{overflow-x:clip}
 .dpcred{flex-basis:100%;font-weight:500!important;font-size:10.5px!important}
 .dpcred:empty{display:none}
 .dpcred a{color:inherit}
-.planeart{width:100%;max-width:240px;height:auto}
-.planeart .pa-body{fill:var(--surface);stroke:color-mix(in srgb,var(--ink) 55%,transparent);stroke-width:1}
-.planeart .pa-hump{fill:var(--surface)}
-.planeart .pa-humpl{fill:none;stroke:color-mix(in srgb,var(--ink) 55%,transparent);stroke-width:1}
-.planeart .pa-fin,.planeart .pa-fin2{fill:var(--brand,var(--accent));stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.6}
-.planeart .pa-stab{fill:var(--brand,var(--accent));stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.6}
-.planeart .pa-cheat{stroke:var(--brand,var(--accent));stroke-width:1.3;opacity:.85}
-.planeart .pa-mask{fill:color-mix(in srgb,var(--ink) 80%,#000)}
-.planeart .pa-disc{fill:color-mix(in srgb,var(--ink) 25%,transparent)}
-.planeart .pa-eng-c{stroke:var(--brand,var(--accent));stroke-width:1.2;opacity:.6}
-.planeart .far{opacity:.55}
-.planeart .pa-wing{fill:color-mix(in srgb,var(--ink) 18%,var(--surface));stroke:color-mix(in srgb,var(--ink) 45%,transparent);stroke-width:.8}
-.planeart .pa-eng{fill:color-mix(in srgb,var(--ink) 12%,var(--surface));stroke:color-mix(in srgb,var(--ink) 50%,transparent);stroke-width:.9}
-.planeart .pa-eng-in,.planeart .pa-prop{fill:color-mix(in srgb,var(--ink) 55%,transparent)}
-.planeart .pa-win rect{fill:color-mix(in srgb,var(--ink) 55%,transparent)}
-.planeart .pa-ck{fill:color-mix(in srgb,var(--ink) 70%,transparent)}
-.planeart .pa-line{stroke:var(--accent);stroke-width:1.6;opacity:.8}
+.planeart{width:100%;max-width:240px;height:auto;overflow:visible}
+.planeart .pa-body{fill:#fff;stroke:color-mix(in srgb,var(--ink) 38%,transparent);stroke-width:.55;stroke-linejoin:round}
+.planeart .pa-belly{fill:#E4E7EC}
+.planeart .pa-cheat{fill:var(--brand,var(--accent));opacity:.9}
+.planeart .pa-fin{fill:var(--brand,var(--accent));stroke:color-mix(in srgb,var(--ink) 25%,transparent);stroke-width:.4;stroke-linejoin:round}
+.planeart .pa-stab{fill:#D5DAE1;stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:.4}
+.planeart .pa-wing{fill:#C9CFD8;stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.45;stroke-linejoin:round}
+.planeart .pa-wl{fill:#C9CFD8;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.35}
+.planeart .pa-pyl{fill:#D8DDE3;stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:.35}
+.planeart .pa-eng{fill:#EEF0F3;stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.5}
+.planeart .pa-eng-in{fill:#3A3F47}
+.planeart .pa-eng-c{stroke:color-mix(in srgb,var(--ink) 22%,transparent);stroke-width:.4}
+.planeart .pa-disc{fill:color-mix(in srgb,var(--ink) 16%,transparent)}
+.planeart .pa-win rect{fill:#2E3A4A}
+.planeart .pa-door{fill:none;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.35}
+.planeart .pa-ck{fill:#1F2833}
+.planeart .pa-mask{fill:#111}
+.planeart .pa-shadow{fill:color-mix(in srgb,var(--ink) 10%,transparent)}
+.planeart .far{opacity:.6}
 @media (max-width:420px){.ddate-big{min-width:88px}.ddd{font-size:34px}}
 .al-ic.xl{width:48px;height:48px;margin:0;border-radius:50%}
 .al-ic.xl b{font-size:13px}
@@ -2700,7 +2702,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610102016";
+const BUILD = "202610102021";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3015,86 +3017,127 @@ function acKind(t) {
   if (/A3[0-1]0|A33|A34|A35|76[0-9]|767|77[0-9]|777|78[0-9]|787|MD-?11|DC-?10|IL-?96|L-?1011|A300|A310/.test(t)) return "wide";
   return "narrow";
 }
-/* ---------- aircraft drawing: a side view shaped like the actual model (length, nose, tail, engines, decks),
-   painted with the airline's colour and its logo on the tail ---------- */
+/* ---------- aircraft drawing: a realistic side view of the actual model (proportions, nose, tail, engines,
+   decks, wingtips), painted with the airline's colour and its logo on the tail ---------- */
 function acSpec(type) {
   const t = String(type || "").toUpperCase().replace(/\s+/g, " ");
-  const S0 = { L:146, h:10.5, nose:"airbus", fin:24, eng:2, ew:21, eh:7.5, pos:"wing", tt:false, high:false, prop:false, deck2:false, hump:0, mask:false };
+  const S0 = { r:9.4, nose:"a", fin:1.55, eng:"2", nac:.6, nl:.11, wl:"sharklet", tt:false, hump:0, deck2:false, mask:false, win:1 };
   const R = [
-    [/A ?380|A38\d/, { L:190, h:17, fin:30, eng:4, ew:22, eh:9, deck2:true }],
-    [/74[78]|747|JUMBO/, { L:188, h:13.5, fin:30, eng:4, ew:22, eh:8.5, nose:"boeing", hump:/74[78]-?8|747-8/.test(t) ? 82 : 66 }],
-    [/A ?34\d|A34[0-6]/, { L:184, h:12.5, fin:28, eng:4, ew:18, eh:7.5 }],
-    [/A ?35\d|A35[0-9]K?|A350/, { L:182, h:13, fin:29, ew:30, eh:11, mask:true }],
-    [/A ?33\d|A33[0-9]|A330/, { L:174, h:12.5, fin:28, ew:27, eh:10 }],
-    [/A ?30\d|A310|A300/, { L:160, h:12.5, fin:27, ew:25, eh:9.5 }],
-    [/77[0-9]|777|B77/, { L:186, h:13.5, fin:30, ew:34, eh:12.5, nose:"boeing" }],
-    [/78[0-9]|787|B78/, { L:170, h:12.5, fin:28, ew:30, eh:11, nose:"787" }],
-    [/76[0-9]|767|B76/, { L:160, h:12, fin:27, ew:26, eh:10, nose:"boeing" }],
-    [/75[0-9]|757|B75/, { L:162, h:10, fin:25, ew:24, eh:9, nose:"boeing" }],
-    [/MD-?11|DC-?10/, { L:176, h:12.5, fin:24, ew:25, eh:9.5, nose:"boeing", tri:true }],
-    [/A ?321|A21N|A321/, { L:158 }], [/A ?319|A19N|A319/, { L:134 }], [/A ?318|A318/, { L:126 }], [/A ?32\d|A20N|A320|A32N/, { L:146 }],
-    [/73[0-9]|737|B73|B3[89]M|MAX/, { L:/7[3]7-?9|739|MAX ?9|B39M|737-900/.test(t) ? 156 : /737-?7|73G|737-700/.test(t) ? 134 : 148, h:10, fin:25, ew:19, eh:8.5, nose:"737" }],
-    [/A ?220|BCS[13]|CS[13]00/, { L:132, h:9.5, fin:22, ew:20, eh:8 }],
-    [/E-?19[05]|E19[05]|E2|EMBRAER 19|ERJ ?19|E290|E295/, { L:130, h:9.5, fin:23, ew:18, eh:7.5, nose:"emb" }],
-    [/E-?17[05]|E17[05]|EMBRAER 17|ERJ ?17/, { L:120, h:9, fin:22, ew:17, eh:7, nose:"emb" }],
-    [/ERJ|EMB ?1[34]5|E1[34]5|CRJ|CL-?600|CANADAIR/, { L:/CRJ ?9|CRJ ?10|CRJ900|CRJ1000/.test(t) ? 128 : 116, h:8.5, fin:21, ew:17, eh:6.5, pos:"rear", tt:true, nose:"emb" }],
-    [/FOKKER ?1?00|F100|F70|FOKKER ?70/, { L:120, h:9, fin:22, ew:17, eh:6.5, pos:"rear", tt:true }],
-    [/BAE ?146|AVRO|RJ ?[0-9]{2}/, { L:116, h:10, fin:22, eng:4, ew:12, eh:6, high:true, tt:true }],
-    [/SUPERJET|SSJ|SU9/, { L:126, h:9.5, fin:23, ew:19, eh:7.5 }],
-    [/ATR|AT[4-7]\d/, { L:/72|AT7/.test(t) ? 112 : 100, h:9, fin:21, ew:14, eh:6, high:true, prop:true, tt:true, nose:"emb" }],
-    [/DASH ?8|DHC-?8|Q400|DH8/, { L:120, h:9, fin:24, ew:15, eh:6, high:true, prop:true, tt:true, nose:"emb" }],
-    [/SAAB|JETSTREAM|BEECH|DORNIER|TWIN OTTER|CESSNA|DHC-?6|FOKKER ?50|F50/, { L:96, h:8, fin:19, ew:13, eh:5.5, high:/OTTER|DHC-?6|FOKKER|F50|DORNIER/.test(t), prop:true }],
+    [/A ?380|A38\d/, { r:8.4, fin:1.25, eng:"4", nac:.42, nl:.075, deck2:true, wl:"fence" }],
+    [/74[78]|747|JUMBO/, { r:10.6, nose:"b", fin:1.45, eng:"4", nac:.42, nl:.075, hump:/74[78]-?8|747-8|748/.test(t) ? .36 : .29, wl:/74[78]-?4|747-4|744/.test(t) ? "winglet" : "raked" }],
+    [/A ?34\d|A34[0-6]/, { r:/34[56]|-[56]00/.test(t) ? 12.3 : 10.6, fin:1.5, eng:"4", nac:.38, nl:.08, wl:"winglet" }],
+    [/A ?35\d|A35[0-9]K?|A350/, { r:/1000|35K/.test(t) ? 12.3 : 11.1, fin:1.55, nac:.62, nl:.1, mask:true, wl:"curved", win:1.15 }],
+    [/A ?33\d|A33[0-9]|A330/, { r:/-?2|332/.test(t) ? 10.2 : 11.3, fin:1.6, nac:.55, nl:.1, wl:"winglet" }],
+    [/A ?30\d|A310|A300/, { r:/310/.test(t) ? 8.7 : 9.6, fin:1.6, nac:.5, nl:.1, wl:"fence" }],
+    [/77[0-9]|777|B77/, { r:/-?3|773|77W/.test(t) ? 11.9 : 10.2, nose:"b", fin:1.45, nac:.62, nl:.1, wl:"raked" }],
+    [/78[0-9]|787|B78/, { r:/-?10|78J/.test(t) ? 11.8 : /-?8|788/.test(t) ? 9.8 : 10.9, nose:"p", fin:1.5, nac:.56, nl:.1, wl:"raked", win:1.25 }],
+    [/76[0-9]|767|B76/, { r:/-?4/.test(t) ? 12.5 : /-?3|763/.test(t) ? 11.2 : 9.6, nose:"b", fin:1.6, nac:.55, nl:.1, wl:/-?4|763.*W|300ER/.test(t) ? "winglet" : "none" }],
+    [/75[0-9]|757|B75/, { r:/-?3|753/.test(t) ? 14.2 : 12.4, nose:"b", fin:1.55, nac:.6, nl:.11, wl:"winglet" }],
+    [/MD-?11|DC-?10/, { r:11.2, nose:"b", fin:1.25, nac:.5, nl:.1, wl:/MD/.test(t) ? "winglet" : "none", tri:true }],
+    [/A ?321|A21N|A321/, { r:11.2 }], [/A ?319|A19N|A319/, { r:8.4 }], [/A ?318|A318/, { r:7.8 }], [/A ?32\d|A20N|A320|A32N/, { r:9.4 }],
+    [/73[0-9]|737|B73|B3[89]M|MAX/, { r:/737-?9|739|MAX ?9|B39M|737-900/.test(t) ? 11.2 : /737-?7|73G|737-700|MAX ?7/.test(t) ? 8.9 : 10.4, nose:"b737", fin:1.6, nac:.5, nl:.1, wl:/MAX|B3[89]M/.test(t) ? "split" : "winglet", flat:true }],
+    [/A ?220|BCS[13]|CS[13]00/, { r:/-?100|BCS1|CS100/.test(t) ? 9.6 : 10.6, fin:1.65, nac:.58, nl:.11, wl:"raked" }],
+    [/E-?19[05]|E19[05]|E2|EMBRAER 19|ERJ ?19|E290|E295/, { r:/195|295/.test(t) ? 11.5 : 10.8, nose:"e", fin:1.65, nac:.55, nl:.12, wl:"winglet" }],
+    [/E-?17[05]|E17[05]|EMBRAER 17|ERJ ?17/, { r:/175/.test(t) ? 10.6 : 9.9, nose:"e", fin:1.7, nac:.55, nl:.12, wl:"winglet" }],
+    [/ERJ|EMB ?1[34]5|E1[34]5|CRJ|CL-?600|CANADAIR/, { r:/CRJ ?9|CRJ ?10|CRJ900|CRJ1000|CRJ ?7|CRJ700/.test(t) ? 12.8 : 11.6, nose:"e", fin:1.7, eng:"rear", nac:.5, nl:.14, tt:true, wl:"winglet" }],
+    [/FOKKER ?1?00|F100|F70|FOKKER ?70|MD-?8|MD-?9|DC-?9|B717|717/, { r:/F70|FOKKER ?70/.test(t) ? 9.6 : 11.5, nose:"b", fin:1.55, eng:"rear", nac:.45, nl:.14, tt:true, wl:"none" }],
+    [/BAE ?146|AVRO|RJ ?[0-9]{2}/, { r:/100|RJ ?100/.test(t) ? 9.2 : 8.4, nose:"e", fin:1.6, eng:"high4", nac:.32, nl:.09, tt:true, wl:"none" }],
+    [/SUPERJET|SSJ|SU9/, { r:9.6, fin:1.65, nac:.55, nl:.11, wl:"winglet" }],
+    [/ATR|AT[4-7]\d/, { r:/72|AT7/.test(t) ? 10.6 : 9.4, nose:"t", fin:1.85, eng:"prop", tt:true, wl:"none" }],
+    [/DASH ?8|DHC-?8|Q400|DH8/, { r:/Q400|-?400|DH8D/.test(t) ? 12 : 9.4, nose:"t", fin:2, eng:"prop", tt:true, wl:"none" }],
+    [/SAAB|JETSTREAM|BEECH|DORNIER|TWIN OTTER|CESSNA|DHC-?6|FOKKER ?50|F50/, { r:8.6, nose:"t", fin:1.7, eng:"prop", low:/SAAB|JETSTREAM|BEECH/.test(t), wl:"none" }],
   ];
   for (const [re, o] of R) if (re.test(t)) return { ...S0, ...o };
   return S0;
 }
 let paN = 0;
 function planeArt(type, code) {
-  const s = acSpec(type), id = "pa" + (++paN), L = s.L, h = s.h, x0 = (200 - L) / 2 + 2, y = 38, nose = x0 + L, top = y - h / 2, bot = y + h / 2;
-  const nl = s.nose === "787" ? h * 2.1 : s.nose === "737" ? h * 1.75 : s.nose === "boeing" ? h * 1.6 : s.nose === "emb" ? h * 1.6 : h * 1.35;
-  let nosePath;
-  if (s.nose === "airbus") nosePath = `C${nose - nl * .35} ${top} ${nose} ${y - h * .22} ${nose} ${y + h * .12} C${nose} ${bot - h * .12} ${nose - nl * .45} ${bot} ${nose - nl} ${bot}`;
-  else if (s.nose === "787") nosePath = `C${nose - nl * .45} ${top} ${nose - 1} ${y - h * .05} ${nose} ${y + h * .2} C${nose - nl * .25} ${bot} ${nose - nl * .6} ${bot} ${nose - nl} ${bot}`;
-  else nosePath = `C${nose - nl * .4} ${top} ${nose - 1} ${y - h * .12} ${nose} ${y + h * .16} C${nose - 1} ${bot - h * .1} ${nose - nl * .4} ${bot} ${nose - nl} ${bot}`;
-  const tc = L * (s.prop ? .2 : .22);                      // tail cone: the belly sweeps up towards the tail
-  const body = `M${x0 + 2} ${top} H${nose - nl} ${nosePath} H${x0 + tc} C${x0 + tc * .45} ${bot} ${x0 + 4} ${y - h * .05} ${x0} ${top + h * .22} Q${x0 - .5} ${top} ${x0 + 2} ${top} Z`;
-  // fin: swept, with the logo on it
-  const fb = L * (s.prop ? .2 : .19), fh = s.fin, F = { a:[x0 + 1, top + .8], b:[x0 + fb, top + .4], c:[x0 + fb * .58, top - fh], d:[x0 + fb * .2, top - fh] };
-  const fin = `M${F.a} L${F.b} L${F.c} L${F.d} Z`;
-  let g = "";
-  // wing (side view: a thin swept blade) and engines
-  const wx = nose - L * (s.high ? .56 : .6), ww = L * .24;
-  const wing = s.high ? `M${wx} ${top + .5} L${wx + ww} ${top - .2} L${wx + ww + 3} ${top + 1.6} L${wx + 2} ${top + 2.4} Z` : `M${wx} ${bot - 1.2} L${wx + ww} ${bot - 2.2} L${wx + ww + 4} ${bot + .4} L${wx + 3} ${bot + 1.8} Z`;
-  const engAt = (ex, ey, w, hh, far) => `<g class="pa-e${far ? " far" : ""}"><rect class="pa-eng" x="${ex}" y="${ey}" width="${w}" height="${hh}" rx="${hh / 2}"/><rect class="pa-eng-in" x="${ex + w - 2.6}" y="${ey + 1.2}" width="2.2" height="${hh - 2.4}" rx="1.1"/><path class="pa-eng-c" d="M${ex + w * .25} ${ey + hh * .5} H${ex + w * .8}"/></g>`;
-  let engs = "", engsBack = "";
-  if (s.prop) {
-    const ex = wx + ww * .32, ey = s.high ? top - .5 : bot - 1;
-    engs = `<rect class="pa-eng" x="${ex}" y="${ey}" width="${s.ew}" height="${s.eh}" rx="${s.eh / 2}"/><ellipse class="pa-disc" cx="${ex + s.ew + .8}" cy="${ey + s.eh / 2}" rx="1.4" ry="${s.eh * 1.9}"/>`;
-  } else if (s.pos === "rear") {
-    engs = engAt(x0 + fb * .78, top - s.eh * .55, s.ew, s.eh);
-  } else {
-    const ey = s.high ? top - s.eh + 1 : bot + .3;
-    if (s.eng === 4) { engsBack = engAt(wx + ww * .02, ey - .8, s.ew * .92, s.eh * .92, true); engs = engAt(wx + ww * .48, ey + .4, s.ew, s.eh); }
-    else engs = engAt(wx + ww * .3, ey, s.ew, s.eh);
-    if (s.tri) engs += engAt(x0 + fb * .3, top - fh * .45, s.ew * .85, s.eh * .85);
+  const s = acSpec(type), id = "pa" + (++paN);
+  const W = 200, L = 176, xn = (W + L) / 2, x0 = xn - L, D = Math.min(24, L / s.r * (s.deck2 ? 1.25 : 1));
+  const yT = 42 - D, yB = 42, yc = yT + D / 2, X = t => xn - t * L, f = n => n.toFixed(2);
+  // ---- fuselage ----
+  const ln = D * ({ a:1.5, b:1.75, b737:1.85, p:2.25, e:1.7, t:1.6 }[s.nose] || 1.5), nyT = s.nose === "b737" ? .18 : s.nose === "p" ? .1 : .14;
+  const tip = [xn, yc + D * nyT];
+  const up = s.nose === "p" ? `C${f(xn - D * .05)} ${f(yT + D * .22)} ${f(xn - ln * .5)} ${f(yT)} ${f(xn - ln)} ${f(yT)}`
+    : s.nose === "b737" ? `C${f(xn - D * .1)} ${f(yT + D * .3)} ${f(xn - ln * .42)} ${f(yT)} ${f(xn - ln)} ${f(yT)}`
+    : `C${f(xn - D * .01)} ${f(yT + D * .2)} ${f(xn - ln * .4)} ${f(yT)} ${f(xn - ln)} ${f(yT)}`;
+  const tailEnd = s.eng === "prop" ? .82 : .78, tTipY = yT + D * (s.eng === "prop" ? .22 : .3);
+  const lowRise = s.eng === "prop" ? .3 : s.flat ? .25 : .29;
+  let topLine = "";
+  if (s.hump) {   // 747: the upper deck rises behind the cockpit and blends back into the roof
+    const hx = X(s.hump), hh = D * .3;
+    topLine = `M${f(tip[0])} ${f(tip[1])} C${f(xn - D * .02)} ${f(yT - hh * .4)} ${f(xn - ln * .5)} ${f(yT - hh)} ${f(xn - ln * 1.1)} ${f(yT - hh)} L${f(hx + D * 1.4)} ${f(yT - hh)} C${f(hx + D * .5)} ${f(yT - hh)} ${f(hx)} ${f(yT)} ${f(hx - D * 1.2)} ${f(yT)}`;
+  } else if (s.deck2) {
+    topLine = `M${f(tip[0])} ${f(tip[1])} C${f(xn - D * .02)} ${f(yT + D * .05)} ${f(xn - ln * .55)} ${f(yT)} ${f(xn - ln * 1.05)} ${f(yT)}`;
+  } else topLine = `M${f(tip[0])} ${f(tip[1])} ${up}`;
+  const body = `${topLine} L${f(X(tailEnd))} ${f(yT)} C${f(X(tailEnd + .08))} ${f(yT)} ${f(X(.985))} ${f(tTipY - D * .12)} ${f(x0)} ${f(tTipY)}`
+    + ` L${f(x0 - .6)} ${f(tTipY + D * .08)} C${f(X(.96))} ${f(yT + D * .62)} ${f(X(1 - lowRise * .55))} ${f(yB)} ${f(X(1 - lowRise))} ${f(yB)}`
+    + ` L${f(xn - ln * .85)} ${f(yB)} C${f(xn - ln * .35)} ${f(yB)} ${f(xn - D * .02)} ${f(yc + D * .42)} ${f(tip[0])} ${f(tip[1])} Z`;
+  // ---- tail: fin (with a fillet into the roof) and horizontal stabiliser ----
+  const fh = D * s.fin * .92, fr0 = s.eng === "prop" ? .79 : .81, ftf = fr0 + (s.tt ? .1 : .125) * (fh / D) / 1.55;
+  const fin = `M${f(X(fr0 - .035))} ${f(yT + .15)} Q${f(X(fr0 - .005))} ${f(yT)} ${f(X(fr0 + .012))} ${f(yT - D * .22)} L${f(X(Math.min(.955, ftf)))} ${f(yT - fh)} L${f(X(Math.min(.995, ftf + .055)))} ${f(yT - fh)} L${f(X(.992))} ${f(tTipY - D * .04)} L${f(X(.975))} ${f(yT + D * .22)} Z`;
+  const stab = s.tt ? `M${f(X(Math.min(.955, ftf) - .02))} ${f(yT - fh + D * .02)} L${f(X(1.02))} ${f(yT - fh - D * .12)} L${f(X(1.022))} ${f(yT - fh + D * .04)} L${f(X(.99))} ${f(yT - fh + D * .16)} Z`
+    : `M${f(X(.87))} ${f(yc + D * .05)} L${f(X(1.005))} ${f(yc - D * .14)} L${f(X(1.008))} ${f(yc - D * .05)} L${f(X(.91))} ${f(yc + D * .16)} Z`;
+  // ---- wing: the near wing seen almost edge-on, sweeping back and up; its tip device ----
+  const high = s.eng === "prop" ? !s.low : s.eng === "high4";
+  // seen from the side the near wing is a thin airfoil just under the belly (on top for high-wing planes), rising slightly to the tip
+  const wr = s.eng === "rear" ? .5 : .42, wt = wr + (s.eng === "prop" ? .1 : .17), wy = high ? yT + D * .02 : yB - D * .06, wty = high ? yT - D * .12 : yB - D * .26, th = D * .1;
+  const wing = `M${f(X(wr))} ${f(wy)} Q${f(X(wr + .02))} ${f(wy - th)} ${f(X(wr + .06))} ${f(wy - th * .7)} L${f(X(wt))} ${f(wty)} L${f(X(wt + .015))} ${f(wty + th * .35)} L${f(X(wr + .12))} ${f(wy + th * .5)} Z`;
+  const tx = X(wt + .005), tyy = wty;
+  const wl = s.wl === "sharklet" || s.wl === "curved" ? `M${f(tx + D * .2)} ${f(tyy + D * .02)} Q${f(tx + D * .05)} ${f(tyy - D * .15)} ${f(tx - D * .25)} ${f(tyy - D * .62)} L${f(tx - D * .45)} ${f(tyy - D * .62)} Q${f(tx - D * .3)} ${f(tyy - D * .2)} ${f(tx - D * .35)} ${f(tyy + D * .03)} Z`
+    : s.wl === "winglet" ? `M${f(tx + D * .1)} ${f(tyy)} L${f(tx - D * .25)} ${f(tyy - D * .55)} L${f(tx - D * .45)} ${f(tyy - D * .55)} L${f(tx - D * .3)} ${f(tyy + D * .03)} Z`
+    : s.wl === "split" ? `M${f(tx + D * .1)} ${f(tyy)} L${f(tx - D * .25)} ${f(tyy - D * .55)} L${f(tx - D * .42)} ${f(tyy - D * .55)} L${f(tx - D * .3)} ${f(tyy)} L${f(tx - D * .38)} ${f(tyy + D * .3)} L${f(tx - D * .5)} ${f(tyy + D * .3)} L${f(tx - D * .32)} ${f(tyy + D * .05)} Z`
+    : s.wl === "fence" ? `M${f(tx + D * .05)} ${f(tyy - D * .2)} L${f(tx - D * .3)} ${f(tyy - D * .2)} L${f(tx - D * .32)} ${f(tyy + D * .22)} L${f(tx + D * .03)} ${f(tyy + D * .22)} Z` : "";
+  // ---- engines ----
+  const nac = (cx, cy, len, dia, cls = "") => {
+    const x1 = cx + len / 2, x2 = cx - len / 2, r = dia / 2;
+    return `<g class="pa-e ${cls}"><path class="pa-eng" d="M${f(x1)} ${f(cy - r)} L${f(x2 + r * .4)} ${f(cy - r * .85)} Q${f(x2)} ${f(cy - r * .6)} ${f(x2 - r * .5)} ${f(cy)} Q${f(x2)} ${f(cy + r * .6)} ${f(x2 + r * .4)} ${f(cy + r * .85)} L${f(x1)} ${f(cy + r)} Q${f(x1 + r * .35)} ${f(cy)} ${f(x1)} ${f(cy - r)} Z"/>`
+      + `<path class="pa-eng-in" d="M${f(x1)} ${f(cy - r)} Q${f(x1 + r * .35)} ${f(cy)} ${f(x1)} ${f(cy + r)} Q${f(x1 - r * .2)} ${f(cy)} ${f(x1)} ${f(cy - r)} Z"/><path class="pa-eng-c" d="M${f(x1 - len * .18)} ${f(cy - r * .98)} V${f(cy + r * .98)}"/></g>`;
+  };
+  const NL = L * s.nl, ND = D * s.nac;
+  let engs = "", engsBack = "", pylons = "";
+  if (s.eng === "2" || s.eng === "4") {
+    const cx = X(wr - .045), cy = yB + ND * .18;
+    pylons += `<path class="pa-pyl" d="M${f(cx + NL * .1)} ${f(cy - ND * .48)} L${f(X(wr + .03))} ${f(wy - D * .02)} L${f(X(wr + .085))} ${f(wy + D * .05)} L${f(cx - NL * .45)} ${f(cy - ND * .4)} Z"/>`;
+    if (s.eng === "4") engsBack = nac(X(wr + .07), cy - D * .2, NL * .95, ND * .95, "far");
+    engs = nac(cx, cy, NL, ND);
+    if (s.tri) engs += nac(X(.84), yT - D * .55, NL * .85, ND * .8);
+  } else if (s.eng === "rear") {
+    const cx = X(.8), cy = yT + D * .05;
+    pylons += `<path class="pa-pyl" d="M${f(cx + NL * .2)} ${f(cy + ND * .3)} L${f(cx - NL * .2)} ${f(cy + ND * .3)} L${f(cx - NL * .25)} ${f(yT + D * .35)} L${f(cx + NL * .25)} ${f(yT + D * .35)} Z"/>`;
+    engs = nac(cx, cy, NL, ND);
+  } else if (s.eng === "high4") {
+    engsBack = nac(X(wr + .06), yT + D * .3, NL, ND, "far"); engs = nac(X(wr - .01), yT + D * .38, NL, ND);
+  } else if (s.eng === "prop") {
+    const cx = X(wr + .015), cy = high ? yT + D * .32 : yc + D * .1, nlen = L * .13, nd = D * .42;
+    engs = `<path class="pa-eng" d="M${f(cx + nlen * .45)} ${f(cy - nd * .4)} Q${f(cx + nlen * .55)} ${f(cy)} ${f(cx + nlen * .45)} ${f(cy + nd * .45)} L${f(cx - nlen * .5)} ${f(cy + nd * .3)} Q${f(cx - nlen * .6)} ${f(cy)} ${f(cx - nlen * .4)} ${f(cy - nd * .5)} Z"/>`
+      + `<ellipse class="pa-disc" cx="${f(cx + nlen * .55)}" cy="${f(cy)}" rx="${f(D * .06)}" ry="${f(D * 1.05)}"/><circle class="pa-eng-in" cx="${f(cx + nlen * .56)}" cy="${f(cy)}" r="${f(nd * .22)}"/>`;
   }
-  const stab = s.tt ? `<path class="pa-fin2" d="M${F.d[0] - 4} ${F.d[1] + .3} H${F.c[0] + 5} L${F.c[0] + 2} ${F.c[1] + 2.6} H${F.d[0] - 3} Z"/>` : `<path class="pa-stab" d="M${x0 + 1} ${y - 1.4} L${x0 + fb * 1.02} ${y - .6} L${x0 + fb * 1.08} ${y + 1.1} L${x0 + 4} ${y + 1.2} Z"/>`;
-  // windows (two rows on the A380), cockpit
-  const w0 = x0 + tc * .95, w1 = nose - nl - 2, sp = s.prop ? 5.4 : 4.4; let wins = "";
-  const row = yy => { for (let x = w0; x < w1; x += sp) wins += `<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="2" height="2.4" rx="1"/>`; };
-  if (s.deck2) { row(y - h * .3); row(y + h * .05); } else row(y - h * .2);
-  const ck = s.mask ? `<path class="pa-mask" d="M${nose - nl * .78} ${top + h * .12} C${nose - nl * .4} ${top + h * .05} ${nose - nl * .12} ${y - h * .22} ${nose - 1.2} ${y - h * .02} L${nose - nl * .7} ${y - h * .02} Z"/>`
-    : `<path class="pa-ck" d="M${nose - nl * .62} ${y - h * .3} L${nose - nl * .22} ${y - h * .26} L${nose - nl * .1} ${y - h * .05} L${nose - nl * .62} ${y - h * .08} Z"/>`;
-  const hump = s.hump ? `<path class="pa-body" d="M${nose - nl - s.hump * .55} ${top + .8} C${nose - nl - s.hump * .25} ${top - 5.5} ${nose - nl * .8} ${top - 5.6} ${nose - nl * .25} ${top + h * .18} L${nose - nl * .25} ${top + 2.5} L${nose - nl - s.hump * .55} ${top + 2.5} Z"/>` : "";
-  const cheat = `<path class="pa-cheat" d="M${x0 + tc * .7} ${y + h * .28} H${nose - nl * .55}"/>`;
-  // the airline's logo, in white, on the tail
-  const logo = code && hasLogo(code) ? `<image href="${asset(`logos/${code}.png`) || `logos/${code}.png?v=${BUILD}`}" x="${(F.a[0] + F.b[0] + F.c[0] + F.d[0]) / 4 - fh * .3}" y="${top - fh * .78}" width="${fh * .6}" height="${fh * .6}" clip-path="url(#${id}c)" filter="url(#${id}w)" preserveAspectRatio="xMidYMid meet"/>` : "";
-  g += `<defs><clipPath id="${id}c"><path d="${fin}"/></clipPath><filter id="${id}w" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter></defs>`;
-  g += engsBack + `<path class="pa-wing far" d="${wing}" transform="translate(-6 -1.2)"/>`;
-  g += `<path class="pa-fin" d="${fin}"/>${logo}${stab}`;
-  g += `<path class="pa-body" d="${body}"/>${hump}${cheat}<g class="pa-win">${wins}</g>${ck}`;
-  g += `<path class="pa-wing" d="${wing}"/>${engs}`;
-  return `<svg class="planeart" viewBox="0 0 200 64" aria-hidden="true"${code ? ` data-al="${esc(code)}"` : ""}>${g}</svg>`;
+  // ---- windows, doors, cockpit ----
+  let wins = "";
+  const ws = Math.max(1.3, D * .085 * s.win), wh = ws * 1.3, gap = Math.max(2.6, D * .2);
+  const row = (yy, a, b) => { for (let x = X(a); x > X(b); x -= gap) wins += `<rect x="${f(x - ws / 2)}" y="${f(yy)}" width="${f(ws)}" height="${f(wh)}" rx="${f(ws / 2)}"/>`; };
+  const wA = ln / L + .05, wB = tailEnd - .02;
+  if (s.deck2) { row(yT + D * .2, wA + .02, wB - .05); row(yT + D * .55, wA, wB); }
+  else { row(yc - D * .2, wA, wB); if (s.hump) row(yT - D * .15, ln / L + .02, s.hump - .06); }
+  const door = (t, yy = yc - D * .3) => `<rect class="pa-door" x="${f(X(t) - D * .1)}" y="${f(yy)}" width="${f(D * .2)}" height="${f(D * .5)}" rx="${f(D * .04)}"/>`;
+  const doors = door(ln / L + .02) + door(tailEnd - .015);
+  const ckY = s.hump ? yT - D * .15 : s.deck2 ? yT + D * .32 : yT + D * .22;
+  const ck = s.mask ? `<path class="pa-mask" d="M${f(xn - ln * .7)} ${f(yT + D * .14)} C${f(xn - ln * .35)} ${f(yT + D * .1)} ${f(xn - D * .25)} ${f(yT + D * .25)} ${f(xn - D * .08)} ${f(yc - D * .02)} L${f(xn - ln * .62)} ${f(yc - D * .04)} Z"/>`
+    : `<path class="pa-ck" d="M${f(xn - ln * .66)} ${f(ckY)} L${f(xn - ln * .3)} ${f(ckY + D * .015)} L${f(xn - ln * .14)} ${f(ckY + D * .16)} L${f(xn - ln * .66)} ${f(ckY + D * .17)} Z"/>`;
+  // two-tone belly and a thin stripe in the airline's colour
+  const belly = `<rect class="pa-belly" x="${f(x0 - 2)}" y="${f(yc + D * .22)}" width="${f(L + 4)}" height="${f(D)}" clip-path="url(#${id}b)"/>`;
+  const cheat = `<rect class="pa-cheat" x="${f(x0 - 2)}" y="${f(yc + D * .14)}" width="${f(L + 4)}" height="${f(Math.max(.8, D * .06))}" clip-path="url(#${id}b)"/>`;
+  const fcx = (X(fr0 + .012) + X(Math.min(.955, ftf)) + X(Math.min(.995, ftf + .055)) + X(.992)) / 4 - D * .05, fs = Math.min(fh * .55, L * .1);
+  const logo = code && hasLogo(code) ? `<image href="${asset(`logos/${code}.png`) || `logos/${code}.png?v=${BUILD}`}" x="${f(fcx - fs / 2 + D * .05)}" y="${f(yT - fh * .52 - fs / 2)}" width="${f(fs)}" height="${f(fs)}" clip-path="url(#${id}c)" filter="url(#${id}w)" preserveAspectRatio="xMidYMid meet"/>` : "";
+  let g = `<defs><clipPath id="${id}c"><path d="${fin}"/></clipPath><clipPath id="${id}b"><path d="${body}"/></clipPath><filter id="${id}w" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .95 0"/></filter></defs>`;
+  g += `<ellipse class="pa-shadow" cx="${f(W / 2)}" cy="${f(yB + D * .55 + 3)}" rx="${f(L * .4)}" ry="1.6"/>`;
+  g += engsBack;
+  g += `<path class="pa-fin" d="${fin}"/>${logo}<path class="pa-stab" d="${stab}"/>`;
+  g += `<path class="pa-body" d="${body}"/>${belly}${cheat}<g class="pa-win">${wins}</g>${doors}${ck}`;
+  g += pylons + `<path class="pa-wing" d="${wing}"/>${engs}`;
+  const topY = yT - fh - (s.tt ? D * .15 : 0), botY = yB + D * .55 + 5, dy = (64 - (botY - topY)) / 2 - topY;
+  return `<svg class="planeart" viewBox="0 0 200 64" aria-hidden="true"${code ? ` data-al="${esc(code)}"` : ""}><g transform="translate(0 ${f(dy)})">${g}</g></svg>`;
 }
 /* the airline's colour, taken from its logo once (most common vivid colour), so tail, stripe and engines match */
 const AL_COLOR = new Map();
