@@ -1429,6 +1429,19 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .fx-sheet .fx-sec{padding:4px 0 10px}
 .fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .fx-sheet .hd > div{flex:1;min-width:0}
+.replaylbl{position:absolute;left:14px;top:14px;z-index:3;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14);pointer-events:none;min-width:180px}
+.replaylbl b{font-size:18px;font-weight:700;text-transform:capitalize}
+.replaylbl .rt{font-size:13.5px;font-weight:600}
+.replaylbl .nn{font-size:12px;color:var(--muted)}
+.replaylbl.done{box-shadow:0 0 0 2px var(--accent),0 4px 14px rgba(0,0,0,.14)}
+@media (max-width:699px){body[data-view="vuelos"] .replaylbl{position:fixed;top:calc(env(safe-area-inset-top,0px) + 64px);left:12px}}
+#mapcard.replaying .apt{opacity:.55}
+.map .arc.rp{stroke:var(--route);opacity:.9}
+#z-play svg{width:15px;height:15px}
+.yrbtn{margin-left:auto;border:0;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:13px;border-radius:999px;padding:5px 12px;cursor:pointer;text-transform:none;letter-spacing:0}
+.yc-img{margin:14px 0 6px;border-radius:18px;overflow:hidden;background:var(--fill);aspect-ratio:1080/1350;display:grid;place-items:center}
+.yc-img img{width:100%;height:100%;display:block}
+.yc-wait{color:var(--muted);font-size:14px}
 .fx-on{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
 .fxon{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 12px;border:0;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:13.5px;cursor:pointer;max-width:100%}
 .fxon .xx{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:color-mix(in srgb,var(--accent) 18%,transparent);font-size:14px;line-height:1}
@@ -1503,6 +1516,7 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
       <button type="button" id="z-out" aria-label="Alejar">−</button>
       <button type="button" id="z-view" aria-label="Cambiar vista del mapa" title="Cambiar vista del mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
       <button type="button" id="z-type" class="show-phone" aria-label="Tipo de mapa" title="Tipo de mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
+      <button type="button" id="z-play" aria-label="Repetir mis vuelos" title="Repetir mis vuelos en orden"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></button>
       <button type="button" id="z-fit" aria-label="Mapa a pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
     </div>
     <div class="mapfoot">
@@ -2664,7 +2678,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101912";
+const BUILD = "202610101916";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3915,7 +3929,7 @@ function renderStats() {
   for (const f of past) { for (const a of [f.from, f.to]) if (a) { aptSet.add(a.iata); if (a.cc) ccSet.add(a.cc); } const k = alKey(f); if (k) alSet.add(k); }
 
   /* ---- summary ---- */
-  html += sec("Resumen");
+  html += sec("Resumen", `<button type="button" class="yrbtn" data-yrcard>Crear resumen del año</button>`);
   const tile = (icon, v, k, list, more) => `<${list ? `button type="button" class="tbtn" data-list="${list}"` : "div"}><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}${list ? `<span class="chev-r" aria-hidden="true">›</span>` : ""}</span>${more ? `<small class="tmore">${more}</small>` : ""}</${list ? "button" : "div"}>`;
   const top3 = arr => count(arr).slice(0, 3).map(([k]) => k);
   const yrsF = [...new Set(past.map(f => f.year))].sort(), nUp = upAll.length;
@@ -5740,6 +5754,130 @@ function showCountryCard(cc, x, y) {
   else { let lx = x + 14, ty = y - 20; if (lx + w > vw - 10) lx = x - w - 14; lx = Math.max(10, Math.min(vw - w - 10, lx)); ty = Math.max(10, Math.min(vh - h - 10, ty)); el.style.left = lx + "px"; el.style.top = ty + "px"; }
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-ctryopen]"); if (!b) return; const cc = b.dataset.ctryopen; closeAptCard(); countryTap(cc); });
+/* ---------- replay: your flights drawn on the map one after another, in the order you flew them ---------- */
+const ICON_PLAY = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>`;
+const ICON_STOP = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>`;
+let replay = null;
+function stopReplay() {
+  if (!replay) return;
+  clearTimeout(replay.t); replay.g.interrupt().remove(); replay.g.selectAll("*").interrupt();
+  if (gArcs) gArcs.style("display", null);
+  document.getElementById("replaylbl")?.remove(); document.getElementById("mapcard")?.classList.remove("replaying");
+  const b = document.getElementById("z-play"); if (b) { b.innerHTML = ICON_PLAY; b.setAttribute("aria-label", "Repetir mis vuelos"); }
+  replay = null;
+}
+function startReplay() {
+  if (replay) return stopReplay();
+  if (!S.mapReady || !gLayer) return;
+  const fl = filtered().filter(f => f.past && validApt(f.from) && validApt(f.to)).sort((a, b) => a.depT - b.depT);
+  if (!fl.length) return toast("No hay vuelos volados para repetir");
+  closeAptCard();
+  if (isPlaces()) setLayer && setLayer("vuelos");
+  gArcs.style("display", "none");
+  const g = gLayer.append("g").attr("class", "replay");
+  const card = document.getElementById("mapcard"); card.classList.add("replaying");
+  const lbl = document.createElement("div"); lbl.id = "replaylbl"; lbl.className = "replaylbl"; lbl.setAttribute("aria-live", "polite"); card.appendChild(lbl);
+  const b = document.getElementById("z-play"); if (b) { b.innerHTML = ICON_STOP; b.setAttribute("aria-label", "Detener"); }
+  const per = Math.max(110, Math.min(700, 22000 / fl.length)), k = d3.zoomTransform(svgSel.node()).k;
+  let i = 0, km = 0; const cc = new Set(), seen = new Set();
+  replay = { g, t:0 };
+  const step = () => {
+    if (!replay) return;
+    if (i >= fl.length) { lbl.classList.add("done"); replay.t = setTimeout(stopReplay, 3500); return; }
+    const f = fl[i++]; km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
+    const again = seen.has(f.from.iata + f.to.iata) || seen.has(f.to.iata + f.from.iata); seen.add(f.from.iata + f.to.iata);
+    const p = g.append("path").attr("class", "arc past rp").attr("fill", "none").attr("stroke-width", (again ? 1.1 : 1.7) / k)
+      .attr("d", geoPath({ type:"LineString", coordinates:[[+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]] }));
+    const len = p.node().getTotalLength() || 1;
+    p.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len)
+      .transition().duration(Math.max(260, per * 1.6)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0).on("end", function () { d3.select(this).attr("stroke-dasharray", null); });
+    const m = f.date ? MONTH_FULL[+f.date.slice(5, 7) - 1] : "";
+    lbl.innerHTML = `<b>${esc(m)} ${esc(f.year || "")}</b><span class="rt">${esc(f.from.city || f.from.iata)} → ${esc(f.to.city || f.to.iata)}</span><span class="nn">${i} ${i === 1 ? "vuelo" : "vuelos"} · ${fmt(km)} km · ${cc.size} ${cc.size === 1 ? "país" : "países"}</span>`;
+    replay.t = setTimeout(step, per);
+  };
+  step();
+}
+
+/* ---------- year in review: one picture with the year's numbers and map, made on this device to keep or share ---------- */
+async function yearCardBlob(year) {
+  const fl = all().filter(f => f.past && (year === "all" || f.year === year) && validApt(f.from) && validApt(f.to));
+  const W2 = 1080, H2 = 1350, c = document.createElement("canvas"); c.width = W2; c.height = H2;
+  const x = c.getContext("2d"), FONT = '-apple-system, "SF Pro Display", "Segoe UI", system-ui, sans-serif';
+  const mix = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(",")})`; };
+  const acc = /^#[0-9a-f]{6}$/i.test(ACCENT) ? ACCENT : "#0087E0", accL = mix(acc, "#ffffff", .35);
+  const bg = x.createLinearGradient(0, 0, W2, H2); bg.addColorStop(0, mix(acc, "#000000", .82)); bg.addColorStop(1, mix(acc, "#000000", .55));
+  x.fillStyle = bg; x.fillRect(0, 0, W2, H2);
+  // title
+  x.fillStyle = "rgba(255,255,255,.6)"; x.font = `600 30px ${FONT}`; x.fillText("MIS VUELOS", 72, 110);
+  x.fillStyle = "#fff"; x.font = `800 ${year === "all" ? 96 : 150}px ${FONT}`; x.fillText(year === "all" ? "Todos los años" : year, 66, year === "all" ? 215 : 250);
+  // map
+  const MY = 300, MH = 470;
+  if (BASE && BASE.features) {
+    const pr = d3.geoEqualEarth().fitExtent([[60, MY], [W2 - 60, MY + MH]], { type:"Sphere" }), gp = d3.geoPath(pr, x);
+    const vis = new Set(fl.flatMap(f => [f.from.cc, f.to.cc]));
+    for (const ft of BASE.features) { x.beginPath(); gp(ft); x.fillStyle = ft.cc && vis.has(ft.cc) ? mix(acc, "#ffffff", .1) : "rgba(255,255,255,.09)"; x.fill(); }
+    const rk = new Map(); for (const f of fl) { const k = [f.from.iata, f.to.iata].sort().join(); rk.set(k, (rk.get(k) || 0) + 1); }
+    x.lineCap = "round"; x.shadowColor = accL; x.shadowBlur = 10;
+    for (const f of fl) { x.beginPath(); gp({ type:"LineString", coordinates:[[+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]] }); x.strokeStyle = "rgba(255,255,255,.75)"; x.lineWidth = 2.2; x.stroke(); }
+    x.shadowBlur = 0;
+    const apts = new Map(); for (const f of fl) for (const a of [f.from, f.to]) apts.set(a.iata, a);
+    for (const a of apts.values()) { const q = pr([+a.lon, +a.lat]); if (!q) continue; x.beginPath(); x.arc(q[0], q[1], 5, 0, 7); x.fillStyle = "#fff"; x.fill(); x.lineWidth = 2.5; x.strokeStyle = acc; x.stroke(); }
+  }
+  // numbers
+  const km = fl.reduce((s, f) => s + f.km, 0), mins = fl.reduce((s, f) => s + f.mins, 0);
+  const ccs = new Set(fl.flatMap(f => [f.from.cc, f.to.cc]).filter(Boolean)), aps = new Set(fl.flatMap(f => [f.from.iata, f.to.iata])), als = new Set(fl.map(alKey).filter(Boolean));
+  const nums = [[fmt(fl.length), fl.length === 1 ? "vuelo" : "vuelos"], [km >= 100000 ? fmt(km / 1000) + " mil" : fmt(km), "km"], [fmt(mins / 1440, 1), "días en el aire"],
+    [fmt(ccs.size), ccs.size === 1 ? "país" : "países"], [fmt(aps.size), "aeropuertos"], [fmt(als.size), als.size === 1 ? "aerolínea" : "aerolíneas"]];
+  const GY = 820, cw = (W2 - 144 - 2 * 24) / 3;
+  nums.forEach(([v, l], i) => {
+    const cx = 72 + (i % 3) * (cw + 24), cy = GY + Math.floor(i / 3) * 150;
+    x.fillStyle = "rgba(255,255,255,.08)"; x.beginPath(); x.roundRect ? x.roundRect(cx, cy, cw, 130, 26) : x.rect(cx, cy, cw, 130); x.fill();
+    x.fillStyle = "#fff"; x.font = `800 56px ${FONT}`; x.fillText(v, cx + 26, cy + 70);
+    x.fillStyle = "rgba(255,255,255,.65)"; x.font = `500 26px ${FONT}`; x.fillText(l, cx + 26, cy + 108);
+  });
+  // highlights
+  const long = [...fl].sort((a, b) => b.km - a.km)[0];
+  const rt = count(fl.map(f => [f.from.iata, f.to.iata].sort().join(" ⇄ ")))[0], al = count(fl.map(alKey).filter(Boolean))[0];
+  const rows = [long && ["Vuelo más largo", `${long.from.iata} → ${long.to.iata} · ${fmt(long.km)} km`], rt && rt[1] > 1 && ["Ruta favorita", `${rt[0]} · ${rt[1]} veces`], al && ["Aerolínea", `${alLabel(al[0])} · ${al[1]} ${al[1] === 1 ? "vuelo" : "vuelos"}`]].filter(Boolean);
+  let ry = 1150;
+  for (const [k, v] of rows) { x.fillStyle = "rgba(255,255,255,.6)"; x.font = `500 26px ${FONT}`; x.fillText(k, 72, ry); x.fillStyle = "#fff"; x.font = `700 28px ${FONT}`; const w = x.measureText(v).width; x.fillText(v, W2 - 72 - w, ry); ry += 50; }
+  // flags
+  const fls = [...ccs].slice(0, 14), FW = 48, FH = 36;
+  await Promise.all(fls.map((cc, i) => new Promise(res => { const im = new Image(); im.onload = () => { const fx = 72 + i * (FW + 16); x.save(); x.beginPath(); x.roundRect ? x.roundRect(fx, 1270, FW, FH, 6) : x.rect(fx, 1270, FW, FH); x.clip(); x.drawImage(im, fx, 1270, FW, FH); x.restore(); res(); }; im.onerror = res; im.src = asset(`flags/${cc.toLowerCase()}.svg`) || `flags/${cc.toLowerCase()}.svg`; })));
+  if (ccs.size > 14) { x.fillStyle = "rgba(255,255,255,.7)"; x.font = `600 26px ${FONT}`; x.fillText(`+${ccs.size - 14}`, 72 + 14 * (FW + 16), 1298); }
+  x.fillStyle = "rgba(255,255,255,.4)"; x.font = `500 22px ${FONT}`; const ft = "Flights"; x.fillText(ft, W2 - 72 - x.measureText(ft).width, 110);
+  return new Promise(res => c.toBlob(res, "image/png"));
+}
+let yrUrl = null, yrBlob = null;
+async function openYearCard(year) {
+  const ys = [...new Set(all().filter(f => f.past).map(f => f.year).filter(Boolean))].sort().reverse();
+  if (!ys.length) return toast("Todavía no hay vuelos volados");
+  year = year || (S.year !== "all" ? S.year : ys[0]);
+  $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet yr-sheet" role="dialog" aria-modal="true" aria-labelledby="yc-t">
+    <div class="hd"><h2 id="yc-t">Resumen del año</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="fx-chips">${[...ys, "all"].map(y => `<button type="button" class="fxc" data-yrc="${y}" aria-pressed="${y === year}">${y === "all" ? "Todos" : y}</button>`).join("")}</div>
+    <div class="yc-img"><div class="yc-wait">Preparando la imagen…</div></div>
+    <p class="hint">La imagen se crea en este dispositivo; no se envía a ningún sitio salvo que la compartas.</p>
+    <div class="fx-foot"><button class="btn" type="button" id="yc-dl">Guardar</button><button class="btn primary" type="button" id="yc-share">Compartir</button></div>
+  </div></div>`;
+  const blob = await yearCardBlob(year);
+  if (!document.querySelector(".yr-sheet")) return;
+  if (yrUrl) URL.revokeObjectURL(yrUrl); yrBlob = blob; yrUrl = URL.createObjectURL(blob);
+  $(".yc-img").innerHTML = `<img src="${yrUrl}" alt="Resumen de vuelos ${year === "all" ? "de todos los años" : "de " + year}">`;
+  $(".yr-sheet").dataset.year = year;
+}
+document.addEventListener("click", async e => {
+  const t = e.target.closest && e.target.closest("[data-yrc], #yc-dl, #yc-share, [data-yrcard], #z-play"); if (!t) return;
+  if (t.id === "z-play") return startReplay();
+  if (t.dataset.yrcard !== undefined) return openYearCard();
+  if (t.dataset.yrc) return openYearCard(t.dataset.yrc);
+  if (!yrBlob) return;
+  const y = $(".yr-sheet")?.dataset.year || "", name = `flights-${y === "all" ? "todos" : y}.png`;
+  const file = new File([yrBlob], name, { type:"image/png" });
+  if (t.id === "yc-share" && navigator.canShare && navigator.canShare({ files:[file] })) { try { await navigator.share({ files:[file], title:"Mis vuelos " + (y === "all" ? "" : y) }); } catch {} return; }
+  const a = document.createElement("a"); a.href = yrUrl; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  if (t.id === "yc-share") toast("Este navegador no permite compartir: se guardó la imagen");
+});
 function placeDate(d) {
   if (!d) return "";
   const [y, m, dd] = d.split("-");
