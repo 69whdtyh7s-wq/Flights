@@ -2702,7 +2702,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610102025";
+const BUILD = "202610102027";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3175,24 +3175,33 @@ const photoLoading = {};
 /* a real photo, like Flighty: that exact plane (registration, Planespotters) or else the same model in that airline's
    colours (Wikimedia Commons). Only the registration or "airline + model" is sent; the answer is kept on this device */
 function commonsPhoto(airline, model) {
-  const core = (String(model).match(/\d{2,4}/) || [""])[0], aw = norm(String(airline).split(/\s+/)[0] || "");
-  const q = `${airline} ${String(model).replace(/^(Airbus|Boeing|Embraer|Bombardier)\s+/i, m => m)}`;
-  const url = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=15&gsrsearch="
-    + encodeURIComponent(q + " filetype:bitmap") + "&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=640";
-  return fetch(url).then(r => r.ok ? r.json() : null).then(j => {
+  // core of the model ("350", "737", "72") and the airline's main word, to rank what Commons finds
+  const core = (String(model).match(/\d{2,4}/) || [""])[0].toLowerCase();
+  const aw = norm(String(airline)).split(/\s+/).filter(w => w.length > 2 && !/^(air|airlines?|lineas|aereas|airways|the)$/.test(w));
+  const search = q => fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=20&gsrsearch="
+      + encodeURIComponent(q) + "&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=800").then(r => r.ok ? r.json() : null).catch(() => null);
+  const pick = (j, needAl) => {
     const pages = Object.values(j?.query?.pages || {}).sort((x, y) => (x.index || 0) - (y.index || 0));
-    const ok = pages.filter(p => { const ii = p.imageinfo && p.imageinfo[0], tl = norm(p.title || "");
-      return ii && ii.thumburl && ii.width > ii.height * 1.25 && /\.(jpe?g|png|webp)$/i.test(p.title) && (!aw || tl.includes(aw)) && (!core || tl.includes(core.toLowerCase())); });
-    const p = ok[0]; if (!p) return null;
-    const ii = p.imageinfo[0], md = ii.extmetadata || {}, txt = h => String(h || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-    const by = [txt(md.Artist?.value).slice(0, 40), txt(md.LicenseShortName?.value)].filter(Boolean).join(" · ") || "Wikimedia Commons";
-    return { src:ii.thumburl, link:ii.descriptionurl, by:by + " (Wikimedia)" };
-  }).catch(() => null);
+    let best = null, bs = 0;
+    for (const p of pages) {
+      const ii = p.imageinfo && p.imageinfo[0], tl = norm(p.title || "");
+      if (!ii || !ii.thumburl || !(ii.width > ii.height * 1.2) || !/\.(jpe?g|png|webp)$/i.test(p.title || "")) continue;
+      const al = aw.some(w => tl.includes(w)), md = !core || tl.includes(core);
+      const sc = (al ? 2 : 0) + (md ? 1 : 0);
+      if ((needAl ? al && md : md) && sc > bs) { best = p; bs = sc; }
+    }
+    return best;
+  };
+  const toPh = p => { const ii = p.imageinfo[0], md = ii.extmetadata || {}, txt = h => String(h || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    return { src:ii.thumburl, link:ii.descriptionurl, by:([txt(md.Artist?.value).slice(0, 40), txt(md.LicenseShortName?.value)].filter(Boolean).join(" · ") || "Wikimedia Commons") + " (Wikimedia)" }; };
+  // first that airline with that model; else the model alone
+  return search(`${airline} ${model}`).then(j => pick(j, true) || null).then(p => p || search(String(model)).then(j => pick(j, false)))
+    .then(p => p ? toPh(p) : null).catch(() => null);
 }
 function hydratePlanePhotos(root) {
   (root || document).querySelectorAll(".dplane[data-reg], .dplane[data-q]").forEach(el => {
     if (el.dataset.done) return; el.dataset.done = 1;
-    const reg = el.dataset.reg || "", [al, model] = (el.dataset.q || "|").split("|"), ck = "c:" + norm(al + "|" + model);
+    const reg = el.dataset.reg || "", [al, model] = (el.dataset.q || "|").split("|"), ck = "c2:" + norm(al + "|" + model);
     const show = ph => {
       if (!ph || !ph.src || !el.isConnected) return;
       el.classList.add("hasphoto");
