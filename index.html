@@ -813,13 +813,13 @@ body{overflow-x:clip}
 .gmdot{width:10px;height:10px;border-radius:50%;background:var(--place);justify-self:center}
 /* places stats */
 .contgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.contc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--surface-2);border:0;text-align:left;font:inherit;color:var(--muted);min-width:0}
+.contc{display:grid;grid-template-columns:minmax(0,1fr) 92px;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:var(--surface-2);border:0;text-align:left;font:inherit;color:var(--muted);min-width:0}
 .contc .ct{display:flex;flex-direction:column;gap:2px;min-width:0}
 .contc .cmap{width:100%;height:auto;display:block}
 .contc .cmap path{fill:color-mix(in srgb,var(--muted) 30%,transparent);stroke:var(--surface-2);stroke-width:.35}
 .contc .cmap path.nb{fill:color-mix(in srgb,var(--muted) 12%,transparent)}
 .contc .cmap path.v{fill:var(--route)}
-@media (max-width:699px){.contc{grid-template-columns:1fr;gap:6px;padding:10px}.contc .cmap{order:-1}}
+@media (max-width:699px){.contc{grid-template-columns:1fr;gap:6px;padding:10px}.contc .cmap{order:-1;width:64px}}
 .contc.on{color:var(--ink);background:color-mix(in srgb,var(--route) 8%,var(--surface-2));cursor:pointer}
 .contc .cn{font-size:13px;font-weight:600}
 .contc b{font-family:var(--f-round);font-size:24px;font-weight:700}
@@ -2533,7 +2533,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101207";
+const BUILD = "202610101209";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3731,10 +3731,6 @@ function renderStats() {
   const nat = past.filter(f => f.from?.cc && f.to?.cc && f.from.cc === f.to.cc).length;
   html += split("Nacionales e internacionales", "flag", [["Nacionales", nat], ["Internacionales", past.length - nat]]);
   html += split("Distancia", "ruler", [["Cortos", past.filter(f => f.km < 1500).length, "menos de 1.500 km"], ["Medios", past.filter(f => f.km >= 1500 && f.km < 4000).length, "1.500 – 4.000 km"], ["Largos", past.filter(f => f.km >= 4000).length, "más de 4.000 km"]]);
-  const cl = past.filter(f => f.cls);
-  if (cl.length) html += split("Clase", "ticket", Object.entries(CLASSES).map(([k, t]) => [t, cl.filter(f => f.cls === k).length]));
-  const seats = past.map(f => (String(f.seat || "").toUpperCase().match(/[A-L]$/) || [])[0]).filter(Boolean);
-  if (seats.length) html += split("Asiento", "seat", [["Ventanilla", seats.filter(x => "AFKL".includes(x)).length], ["Pasillo", seats.filter(x => "CDGH".includes(x)).length], ["Medio", seats.filter(x => "BEJ".includes(x)).length]]) .replace("</section>", `<p class="hint">Aproximado según la letra del asiento.</p></section>`);
 
   /* ---- top lists with tabs ---- */
   html += sec("Rankings", "Tocá uno para ver sus vuelos");
