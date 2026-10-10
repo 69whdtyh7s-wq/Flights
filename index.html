@@ -1429,6 +1429,12 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .fx-sheet .fx-sec{padding:4px 0 10px}
 .fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .fx-sheet .hd > div{flex:1;min-width:0}
+.fx-on{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
+.fxon{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 12px;border:0;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:13.5px;cursor:pointer;max-width:100%}
+.fxon .xx{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:color-mix(in srgb,var(--accent) 18%,transparent);font-size:14px;line-height:1}
+.fxon .fl-ic.sm{width:18px;height:13.5px;border-radius:2px}
+.fxon.clr{background:transparent;color:var(--muted);padding:0 8px;font-weight:500}
+.fxon:hover .xx{background:var(--accent);color:#fff}
 .fx-res .list{border-radius:14px;overflow:hidden;background:var(--surface)}
 .fx-res .fl{pointer-events:none}
 .fx-hint{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
@@ -1519,6 +1525,7 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
           <button role="tab" id="t-past" aria-selected="false" type="button">Historial<span class="n" id="n-past"></span></button>
         </div>
       </header>
+      <div class="fx-on" id="fx-on" hidden></div>
       <div class="list" id="list"></div>
     </section>
 
@@ -2657,7 +2664,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101907";
+const BUILD = "202610101912";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3146,7 +3153,28 @@ function renderPlacesList() {
     (S.plcEdit ? `<button type="button" class="plc-delall" id="plc-delall">Borrar los ${PLACES.length} lugares agregados</button>` : "") +
     `<p class="hint plc-foot">✈︎ Ciudades de tus vuelos: se suman solas${S.plcEdit ? " y no se borran desde acá" : ""}.</p>`;
 }
+/* the filters in use, as chips above the list: tap one to remove just that one */
+function renderFxChips() {
+  const el = $("#fx-on"); if (!el) return;
+  const x = S.fx, tn = k => tripList().find(t => norm(t.name || "") === k)?.name || k, ch = [];
+  for (const y of yearSel()) ch.push(["year", y, y]);
+  if (!isPlaces()) {
+    x.trip.forEach(v => ch.push(["trip", v, tn(v)])); x.al.forEach(v => ch.push(["al", v, alLabel(v)])); x.cc.forEach(v => ch.push(["cc", v, country(v)]));
+    x.ac.forEach(v => ch.push(["ac", v, v])); x.cls.forEach(v => ch.push(["cls", v, CLASSES[v] || v]));
+  }
+  el.hidden = !ch.length;
+  el.innerHTML = ch.map(([k, v, l]) => `<button type="button" class="fxon" data-fxrm="${k}" data-fxv="${esc(v)}" aria-label="Quitar filtro ${esc(l)}">${k === "cc" ? `<span class="fl-ic sm" aria-hidden="true">${flag(v)}</span>` : ""}${esc(l)}<span class="xx" aria-hidden="true">×</span></button>`).join("")
+    + (ch.length > 1 ? `<button type="button" class="fxon clr" data-fxclear>Quitar todos</button>` : "");
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest && e.target.closest("[data-fxrm]"); if (!t) return;
+  const k = t.dataset.fxrm, v = t.dataset.fxv;
+  if (k === "year") { const ys = yearSel().filter(y => y !== v); S.year = ys.length === 1 ? ys[0] : "all"; S.fx = { ...S.fx, yr:ys.length > 1 ? ys : [] }; }
+  else S.fx = { ...S.fx, [k]:S.fx[k].filter(y => y !== v) };
+  S.open = null; S.focusIds = null; render(); focusSelection();
+});
 function renderList() {
+  renderFxChips();
   const lp = isPlaces();
   $("#list-title").textContent = lp ? "Lugares" : "Vuelos";
   $("#list-tabs").hidden = lp;
