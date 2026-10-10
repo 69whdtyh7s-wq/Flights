@@ -768,6 +768,8 @@ body{overflow-x:clip}
 .planeart .pa-mask{fill:#111}
 .planeart .pa-shadow{fill:color-mix(in srgb,var(--ink) 10%,transparent)}
 .planeart .far{opacity:.6}
+.planeart.generic .pa-fin{fill:#CDD3DB}
+.planeart.generic .pa-cheat{display:none}
 @media (max-width:420px){.ddate-big{min-width:88px}.ddd{font-size:34px}}
 .al-ic.xl{width:48px;height:48px;margin:0;border-radius:50%}
 .al-ic.xl b{font-size:13px}
@@ -1071,6 +1073,21 @@ button.rec2:hover .rk2{color:var(--accent-text)}
   #list .tripbox .fl[aria-expanded="true"] + .detail{margin:0 8px 10px}
 }
 @keyframes dIn{from{opacity:0;transform:translateY(-6px)}}
+.dtiles .dt-wx{grid-column:1 / -1}
+.dtiles .dwx,.dtiles .dwx div{background:none!important;padding:0!important;border-radius:0!important;min-width:0}
+.dtiles .dwx{display:grid!important;grid-template-columns:1fr 1fr;flex-direction:initial!important}
+.dtiles .dwx .wxc{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:8px}
+.dtiles .dwx .wxc > div{display:flex!important;flex-direction:column!important;gap:1px}
+.dwx{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;position:relative;margin-top:2px}
+.wxc{display:flex;align-items:flex-start;gap:8px;min-width:0}
+.wxi{font-size:26px;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.wxc > div{display:flex;flex-direction:column;min-width:0}
+.dtiles .wxn{font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wxc b{font-size:17px;font-weight:700}
+.wxc b small{font-size:12px;font-weight:600;color:var(--muted)}
+.dtiles .wxm{font-size:11px;color:var(--muted);font-weight:500}
+.wxcred{position:absolute;right:0;top:-18px;font-size:10px;color:var(--muted);text-decoration:none}
+@media (max-width:420px){.dwx{grid-template-columns:1fr}}
 .detail .acts .btn{flex:1;justify-content:center}
 @media (max-width:560px){.dcode{font-size:26px}.dtime{font-size:19px}.dmid{min-width:56px}.dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* monogram for airlines without a logo */
@@ -2702,7 +2719,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610102027";
+const BUILD = "202610102032";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2716,6 +2733,7 @@ function logoOk(img) { const ic = img.closest(".al-ic"); if (!ic) return; ic.cla
 function markLogos(root) {
   try { hydratePlanePhotos(root); } catch {}
   try { tintPlanes(root); } catch {}
+  try { hydrateWeather(root); } catch {}
   (root || document).querySelectorAll(".al-ic img").forEach(img => {
     if (img.complete && img.naturalWidth > 0) logoOk(img);
     else if (!img.dataset.watch) { img.dataset.watch = "1"; img.addEventListener("load", () => logoOk(img), { once:true }); }
@@ -3017,6 +3035,57 @@ function acKind(t) {
   if (/A3[0-1]0|A33|A34|A35|76[0-9]|767|77[0-9]|777|78[0-9]|787|MD-?11|DC-?10|IL-?96|L-?1011|A300|A310/.test(t)) return "wide";
   return "narrow";
 }
+/* ---------- weather at both ends of the flight (Open-Meteo, free, no key): the forecast for the hour of departure and of
+   arrival up to 16 days ahead, and what it was like for past flights. Only the airports' position and the date are sent ---------- */
+const WX_KEY = "flights-wx";
+let WX = (() => { try { return JSON.parse(localStorage.getItem(WX_KEY) || "{}"); } catch { return {}; } })();
+const WXC = [[0, "☀️", "Despejado"], [1, "🌤️", "Casi despejado"], [2, "⛅", "Parcialmente nublado"], [3, "☁️", "Nublado"], [45, "🌫️", "Niebla"], [48, "🌫️", "Niebla"],
+  [51, "🌦️", "Llovizna"], [53, "🌦️", "Llovizna"], [55, "🌦️", "Llovizna"], [56, "🌧️", "Llovizna helada"], [57, "🌧️", "Llovizna helada"], [61, "🌧️", "Lluvia débil"], [63, "🌧️", "Lluvia"], [65, "🌧️", "Lluvia fuerte"],
+  [66, "🌧️", "Lluvia helada"], [67, "🌧️", "Lluvia helada"], [71, "🌨️", "Nieve débil"], [73, "🌨️", "Nieve"], [75, "❄️", "Nieve fuerte"], [77, "🌨️", "Granizo fino"], [80, "🌦️", "Chubascos"], [81, "🌧️", "Chubascos"],
+  [82, "⛈️", "Chubascos fuertes"], [85, "🌨️", "Chubascos de nieve"], [86, "🌨️", "Chubascos de nieve"], [95, "⛈️", "Tormenta"], [96, "⛈️", "Tormenta con granizo"], [99, "⛈️", "Tormenta con granizo"]];
+const wxInfo = c => { let r = WXC[0]; for (const w of WXC) if (w[0] <= c) r = w; return r; };
+const addDays = (date, n) => { const [y, m, d] = date.split("-").map(Number), t = new Date(Date.UTC(y, m - 1, d + n)); return t.toISOString().slice(0, 10); };
+function wxTile(f) {
+  if (!validApt(f.from) || !validApt(f.to) || !f.date || f.demo) return null;
+  const today = new Date().toISOString().slice(0, 10), ad = addDays(f.date, +f.arrOffset || 0);
+  const ahead = (Date.parse(f.date) - Date.parse(today)) / DAY;
+  if (ahead > 15) return null;                      // forecasts reach about 16 days ahead
+  const pt = (a, date, t) => `${(+a.lat).toFixed(3)},${(+a.lon).toFixed(3)},${date},${(t || "12:00").slice(0, 2)}`;
+  const q = [pt(f.from, f.date, f.dep), pt(f.to, ad, f.arr)].join("|");
+  return [f.past ? "Tiempo que hizo" : "Pronóstico", `<div class="dwx" data-wx="${esc(q)}" data-c1="${esc(f.from.city || f.from.iata)}" data-c2="${esc(f.to.city || f.to.iata)}"><span class="muted">Cargando…</span></div>`, "wx"];
+}
+function wxFetch(lat, lon, date) {
+  const key = `${lat},${lon},${date}`, now = Date.now(), c = WX[key];
+  const past = Date.parse(date) < Date.parse(new Date().toISOString().slice(0, 10)) - 5 * DAY;   // older days come from the archive
+  if (c && (past || now - c.t < 3 * 3600000)) return Promise.resolve(c);
+  if (navigator.onLine === false) return Promise.resolve(c || null);
+  const base = past ? "https://archive-api.open-meteo.com/v1/archive" : "https://api.open-meteo.com/v1/forecast";
+  const url = `${base}?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode,precipitation_probability,wind_speed_10m&timezone=auto&start_date=${date}&end_date=${date}`;
+  return fetch(url).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.hourly) return c || null;
+    const v = { t:now, h:j.hourly.time.map((tt, i) => [tt.slice(11, 13), j.hourly.temperature_2m[i], j.hourly.weathercode[i], j.hourly.precipitation_probability ? j.hourly.precipitation_probability[i] : null, j.hourly.wind_speed_10m[i]]) };
+    WX[key] = v; const ks = Object.keys(WX); if (ks.length > 300) ks.sort((a, b) => WX[a].t - WX[b].t).slice(0, ks.length - 250).forEach(k => delete WX[k]);
+    try { localStorage.setItem(WX_KEY, JSON.stringify(WX)); } catch {}
+    return v;
+  }).catch(() => c || null);
+}
+function hydrateWeather(root) {
+  (root || document).querySelectorAll(".dwx[data-wx]:not([data-done])").forEach(el => {
+    el.dataset.done = 1;
+    const parts = el.dataset.wx.split("|").map(p => p.split(",")), names = [el.dataset.c1, el.dataset.c2];
+    Promise.all(parts.map(([la, lo, d]) => wxFetch(la, lo, d))).then(rs => {
+      if (!el.isConnected) return;
+      const cells = rs.map((r, i) => {
+        const hh = parts[i][3], row = r && r.h.find(x => x[0] === hh);
+        if (!row || row[1] == null) return `<div class="wxc"><span class="wxn">${esc(names[i])}</span><span class="muted">Sin datos</span></div>`;
+        const [, temp, code, pp, wind] = row, [, ic, lbl] = wxInfo(code);
+        return `<div class="wxc"><span class="wxi" aria-hidden="true">${ic}</span><div><span class="wxn">${i ? "Llegada" : "Salida"} · ${esc(names[i])}</span><b>${Math.round(temp)}° <small>${esc(lbl)}</small></b>`
+          + `<span class="wxm">${pp != null ? `💧 ${pp}% · ` : ""}💨 ${Math.round(wind)} km/h · ${hh}:00</span></div></div>`;
+      });
+      el.innerHTML = cells.join("") + `<a class="wxcred" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>`;
+    });
+  });
+}
 /* ---------- aircraft drawing: a realistic side view of the actual model (proportions, nose, tail, engines,
    decks, wingtips), painted with the airline's colour and its logo on the tail ---------- */
 function acSpec(type) {
@@ -3138,7 +3207,7 @@ function planeArt(type, code) {
   g += `<path class="pa-body" d="${body}" fill="url(#${id}g)"/>${cheat}<g class="pa-win">${wins}</g>${doors}${ck}`;
   g += pylons + `<path class="pa-wing" d="${wing}"/>${engs}`;
   const topY = yT - fh - (s.tt ? D * .15 : 0), botY = yB + D * .55 + 5, dy = (64 - (botY - topY)) / 2 - topY;
-  return `<svg class="planeart" viewBox="0 0 200 64" aria-hidden="true"${code ? ` data-al="${esc(code)}"` : ""}><g transform="translate(0 ${f(dy)})">${g}</g></svg>`;
+  return `<svg class="planeart${code ? "" : " generic"}" viewBox="0 0 200 64" aria-hidden="true"${code ? ` data-al="${esc(code)}"` : ""}><g transform="translate(0 ${f(dy)})">${g}</g></svg>`;
 }
 /* the airline's colour, taken from its logo once (most common vivid colour), so tail, stripe and engines match */
 const AL_COLOR = new Map();
@@ -3179,7 +3248,7 @@ function commonsPhoto(airline, model) {
   const core = (String(model).match(/\d{2,4}/) || [""])[0].toLowerCase();
   const aw = norm(String(airline)).split(/\s+/).filter(w => w.length > 2 && !/^(air|airlines?|lineas|aereas|airways|the)$/.test(w));
   const search = q => fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=20&gsrsearch="
-      + encodeURIComponent(q) + "&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=800").then(r => r.ok ? r.json() : null).catch(() => null);
+      + encodeURIComponent(q) + "&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=800").then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)));
   const pick = (j, needAl) => {
     const pages = Object.values(j?.query?.pages || {}).sort((x, y) => (x.index || 0) - (y.index || 0));
     let best = null, bs = 0;
@@ -3196,7 +3265,7 @@ function commonsPhoto(airline, model) {
     return { src:ii.thumburl, link:ii.descriptionurl, by:([txt(md.Artist?.value).slice(0, 40), txt(md.LicenseShortName?.value)].filter(Boolean).join(" · ") || "Wikimedia Commons") + " (Wikimedia)" }; };
   // first that airline with that model; else the model alone
   return search(`${airline} ${model}`).then(j => pick(j, true) || null).then(p => p || search(String(model)).then(j => pick(j, false)))
-    .then(p => p ? toPh(p) : null).catch(() => null);
+    .then(p => p ? toPh(p) : null);   // a network error is passed on (and not remembered), so it is tried again next time
 }
 function hydratePlanePhotos(root) {
   (root || document).querySelectorAll(".dplane[data-reg], .dplane[data-q]").forEach(el => {
@@ -3216,8 +3285,11 @@ function hydratePlanePhotos(root) {
           return save(reg, p ? { src:(p.thumbnail_large || p.thumbnail || {}).src, link:p.link, by:p.photographer } : null);
         }).catch(() => null));
     const byModel = () => !model || !al ? Promise.resolve(null) : fresh(ck) ? Promise.resolve(PHOTOS[ck]) : navigator.onLine === false ? Promise.resolve(null)
-      : (photoLoading[ck] = photoLoading[ck] || commonsPhoto(al, model).then(ph => save(ck, ph)));
-    byReg().then(ph => ph || byModel()).then(show);
+      : (photoLoading[ck] = photoLoading[ck] || commonsPhoto(al, model).then(ph => save(ck, ph), e => { delete photoLoading[ck]; throw e; }));
+    const cred = el.querySelector(".dpcred"), note = t => { if (cred && !el.classList.contains("hasphoto")) cred.textContent = t; };
+    if ((reg && !fresh(reg)) || (model && al && !fresh(ck))) note("Buscando foto…");
+    byReg().then(ph => ph || byModel()).then(ph => { if (ph) show(ph); else note(model ? "Sin foto real de este modelo" : ""); })
+      .catch(() => note(navigator.onLine === false ? "Sin conexión: foto no disponible" : "No se pudo cargar la foto"));
   });
 }
 function relWhen(f) {
@@ -3240,13 +3312,14 @@ function detail(f) {
   const speed = f.mins > 0 && !f.estimated ? Math.round(f.km / (f.mins / 60)) : null;
   const tz = tzDiff(f);
   const tiles = [
-    ["Avión", `<div class="dplane"${f.reg ? ` data-reg="${esc(f.reg)}"` : ""}${f.aircraft && f.airline ? ` data-q="${esc(f.airline + "|" + f.aircraft)}"` : ""}><div class="dpimg">${planeArt(f.aircraft, code)}</div><div class="dpcap"><b>${f.aircraft ? esc(f.aircraft) : `<span class="muted">Sin dato</span>`}</b>${f.reg ? `<span>${esc(f.reg)}</span>` : ""}<span class="dpcred"></span></div></div>`, "plane"],
+    ["Avión", `<div class="dplane"${f.reg ? ` data-reg="${esc(f.reg)}"` : ""}${f.aircraft && f.airline ? ` data-q="${esc(f.airline + "|" + f.aircraft)}"` : ""}><div class="dpimg">${f.aircraft ? planeArt(f.aircraft, code) : planeArt("", null)}</div><div class="dpcap"><b>${f.aircraft ? esc(f.aircraft) : `<span class="muted">Sin dato</span>`}</b>${f.reg ? `<span>${esc(f.reg)}</span>` : ""}<span class="dpcred"></span></div></div>`, "plane"],
     f.status === "cancelled" ? ["Estado", `<span class="late">Cancelado</span>`] : f.status === "diverted" ? ["Estado", `<span class="late">Desviado</span>`] : null,
     dArr != null ? ["Puntualidad", `<span class="${delayCls(dArr)}">${delayText(dArr, "Llegó")}</span>`] : dDep != null ? ["Puntualidad", `<span class="${delayCls(dDep)}">${delayText(dDep, "Salió")}</span>`] : null,
     ["Duración", hm(f.mins) + (f.estimated ? " aprox." : "")],
     ["Distancia", fmt(f.km) + " km"],
     speed && ["Velocidad media", fmt(speed) + " km/h"],
     tz && ["Diferencia horaria", tz],
+    wxTile(f),
     (f.cls || f.seat) && ["Clase y asiento", [f.cls ? esc(CLASSES[f.cls] || f.cls) : "", f.seat ? "Asiento " + esc(f.seat) : ""].filter(Boolean).join(" · ")],
     f.from?.cc && f.to?.cc && ["Tipo", f.from.cc === f.to.cc ? "Nacional" : "Internacional"],
   ].filter(Boolean);
