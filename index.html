@@ -912,6 +912,8 @@ body{overflow-x:clip}
 .stabs button{flex:none;border:0;border-radius:999px;background:var(--fill);padding:7px 14px;font-weight:600;font-size:14px;color:var(--ink)}
 .stabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .recgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));column-gap:22px}
+.rank .rk-sub{margin-left:8px;font-size:11.5px;color:var(--muted);font-weight:500}
+.rank .ct small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;font-family:var(--f-body)}
 @media (min-width:1100px){#stats .scard.recside{grid-column:span 2}}
 .rec2{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;width:100%;font:inherit;color:var(--ink)}
 button.rec2{cursor:pointer}
@@ -2540,7 +2542,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101223";
+const BUILD = "202610101514";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3802,8 +3804,22 @@ function renderStats() {
   html += sec("Viajes y lugares");
   { const tm = tripList();   // newest first; trips with the same name stay separate
     html += card(`Viajes <span>${tm.length}</span>`, (tm.length ? `<ol class="rank trips">${tm.slice(0, S.rankOpen.has("trips") ? 999 : 6).map(({ id, name, legs:l }) => `<li><button type="button" class="rk" data-tripview="${esc(id)}"><div class="nm"><span><b>${esc(name)}</b> ${tagChips(id)}</span><small>${esc(tripDates(l))} · ${fmt(l.reduce((s, f) => s + f.km, 0))} km</small></div><span class="ct">${l.length}</span></button></li>`).join("")}</ol>${tm.length > 6 ? `<button type="button" class="more" data-more="trips">${S.rankOpen.has("trips") ? "Ver menos" : `Ver todos (${tm.length})`}</button>` : ""}`
-      : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`, "", "pin"); }
-  html += recCard;
+      : `<p class="hint">Agrupá vuelos en viajes desde el detalle de un vuelo o con el botón de abajo.</p>`) + `<button type="button" class="more" data-tripnew>+ Nuevo viaje</button>`, "", "pin");
+    // trips per destination: the farthest city from where each trip started
+    const dest = new Map();
+    for (const { legs:l } of tm) {
+      const o = l.find(f => validApt(f.from))?.from; if (!o) continue;
+      let far = null, best = -1;
+      for (const f of l) if (validApt(f.to)) { const d = haversine(o, f.to); if (d > best) { best = d; far = f.to; } }
+      if (!far) continue;
+      const k = norm(far.city || far.iata) + "|" + (far.cc || ""), x = dest.get(k) || { a:far, n:0, yrs:new Set() };
+      x.n++; x.yrs.add(l[0].year); dest.set(k, x);
+    }
+    if (dest.size) {
+      const ds = [...dest.values()].sort((a, b) => b.n - a.n || (a.a.city || "").localeCompare(b.a.city || "", "es")), max = ds[0].n, open = S.rankOpen.has("dest");
+      html += card(`Destinos <span>${ds.length}</span>`, `<ol class="rank">${ds.slice(0, open ? 999 : 8).map(({ a, n, yrs }) => { const y = [...yrs].filter(Boolean).sort(); return `<li><button type="button" class="rk" data-rk="airport" data-key="${esc(a.iata)}"><div class="nm"><span>${a.cc ? `<span class="fl-ic sm" aria-hidden="true">${flag(a.cc)}</span>` : ""}${esc(a.city || a.iata)}<small class="rk-sub">${y.length ? (y.length > 1 ? `${y[0]}–${y[y.length - 1]}` : y[0]) : ""}</small></span><div class="bar"><i style="width:${(n / max * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}<small>${n === 1 ? "viaje" : "viajes"}</small></span></button></li>`; }).join("")}</ol>${ds.length > 8 ? `<button type="button" class="more" data-more="dest">${open ? "Ver menos" : `Ver todos (${ds.length})`}</button>` : ""}`, "recside", "flag");
+    } }
+  html += recCard.replace('class="scard recside"', 'class="scard wide"');
   $("#stats").innerHTML = html;
   markLogos($("#stats"));
 }
