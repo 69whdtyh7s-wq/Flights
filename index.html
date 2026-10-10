@@ -1426,13 +1426,15 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .fx-sheet .fx-sec{padding:4px 0 10px}
 .fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .fx-sheet .hd > div{flex:1;min-width:0}
+.fx-res .list{border-radius:14px;overflow:hidden;background:var(--surface)}
+.fx-res .fl{pointer-events:none}
 .fx-hint{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
 .fx-chips{display:flex;flex-wrap:wrap;gap:6px}
 .fxc{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer}
 .fxc small{font-weight:500;color:var(--muted);font-size:12px}
 .fxc[aria-pressed="true"]{background:var(--accent);color:#fff}
 .fxc[aria-pressed="true"] small{color:rgba(255,255,255,.8)}
-.fx-foot{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:12px 0 4px;background:inherit;border-top:1px solid var(--line);margin-top:6px}
+.fx-foot{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:12px 0 4px;background:var(--bg);z-index:2;border-top:1px solid var(--line);margin-top:6px}
 .fx-foot .btn[disabled]{opacity:.45}
 .ac-cities{border-top:1px solid var(--line);padding:5px 0 3px;font-size:13px}
 .ac-cities > span{color:var(--muted);display:block;margin-bottom:5px}
@@ -2652,7 +2654,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101838";
+const BUILD = "202610101841";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2739,11 +2741,19 @@ function openFilters() {
     if (cl.length) html += sec("Clase", chips("cls", x.cls, cl, "Todas"));
   }
   const n = lp ? placesShown().length : filtered().length;
+  // with a filter on: the matching flights right here, to scroll through before closing
+  if (!lp && fxActive()) {
+    const res = [...filtered()].sort((a, b) => b.depT - a.depT), MAX = 80;
+    html += `<section class="fx-sec fx-res"><h4>Resultados · ${res.length}</h4>${res.length ? `<div class="list">${res.slice(0, MAX).map(f => flightRow(f, true)).join("")}</div>${res.length > MAX ? `<p class="hint">y ${res.length - MAX} más</p>` : ""}` : `<p class="hint">Ningún vuelo con estos filtros.</p>`}</section>`;
+  }
+  const prev = document.querySelector(".fx-sheet"), top = prev ? prev.scrollTop : 0;
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fx-t">
     <div class="hd"><div><h2 id="fx-t">Filtros</h2><small class="fx-hint">Podés elegir varios en cada grupo</small></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     ${html}
     <div class="fx-foot"><button class="btn" type="button" data-fxclear ${fxActive() ? "" : "disabled"}>Quitar filtros</button><button class="btn primary" type="button" data-close>Ver ${n} ${lp ? (n === 1 ? "lugar" : "lugares") : (n === 1 ? "vuelo" : "vuelos")}</button></div>
   </div></div>`;
+  const sh = document.querySelector(".fx-sheet"); if (sh && top) sh.scrollTop = top;   // keep your place while ticking options
+  markLogos(sh);
 }
 document.addEventListener("click", e => {
   const t = e.target.closest && e.target.closest("#fx-btn, [data-fxk], [data-fxclear]"); if (!t) return;
