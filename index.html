@@ -329,22 +329,18 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
 @media (min-width:1500px){#stats{grid-template-columns:repeat(3,minmax(0,1fr))}#stats .sec:nth-child(3){border-top:0}#stats .sec:nth-child(odd){border-right:0}#stats .sec{border-right:1px solid var(--line)}}
 
 /* computer and iPad: one section at a time (Mapa or Stats), chosen in the header */
-.dvseg{display:none}
+.dvseg,.fsep{display:none!important}
 @media (min-width:700px){
-  .dvseg{display:inline-flex;background:var(--fill);border-radius:999px;padding:3px;gap:2px;margin-inline:auto 0;flex:none}
-  .top .dvseg{margin-left:auto;margin-right:6px}
-  .dvseg button{border:0;background:transparent;border-radius:999px;height:32px;padding:0 18px;font:inherit;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer}
-  .dvseg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.14)}
-  .top{align-items:center}
+  .dvseg{display:inline-flex!important}
+  .fsep{display:block!important;width:1px;height:22px;background:var(--line);margin:0 4px;flex:none}
+  .layerpill.dvseg button[aria-pressed="true"] svg{color:var(--accent-text)}
   body[data-dv="stats"] #mapcard,body[data-dv="stats"] #p-list{display:none!important}
   body[data-dv="map"] #stats,body[data-dv="map"] #claudenote,#board{display:none!important}   /* the summary tiles live in Stats now */
   #stats .stitle{display:none}
   body[data-dv="map"] .grid{grid-template-columns:minmax(0,1fr)!important}
   body[data-dv="stats"] .grid{grid-template-columns:minmax(0,1fr)!important}
-  body[data-dv="map"] #mapcard .map{height:min(68vh,760px);min-height:380px}
+
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dvseg button[aria-pressed="true"]{background:#636366}}
-:root[data-theme="dark"] .dvseg button[aria-pressed="true"]{background:#636366}
 @media (min-width:1100px){
   body[data-dv="map"] #p-list{max-height:calc(100dvh - 32px)}
   body[data-dv="stats"] .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "demo" "filters" "stats" "note"}
@@ -1047,6 +1043,15 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .phone-only{display:none!important}
 @media (max-width:699px){.scard.phone-only{display:flex!important}.stitle{font-size:30px}}
 .tiles6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (min-width:700px){
+  .tiles6{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  .tiles6 > div,.tiles6 > button.tbtn{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;row-gap:0;align-items:center;padding:8px 10px!important}
+  .tiles6 .ti{grid-row:1 / span 2;margin:0!important;width:20px!important;height:20px!important}.tiles6 .ti svg{width:20px!important;height:20px!important}
+  .tiles6 b{font-size:18px!important}
+  .tiles6 > * > span:last-child{font-size:11.5px}
+}
+@media (min-width:700px) and (max-width:1000px){.tiles6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1100px){body[data-dv="stats"] .pvgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 .tiles6 div,.fun div{background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tiles6 b{font-family:var(--f-round);font-size:22px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 .tiles6 b small{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:600;margin-left:2px}
@@ -1396,7 +1401,6 @@ body.mapfull #mapcard .mapctl{top:calc(env(safe-area-inset-top,0px) + 12px)!impo
       <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
       <div><h1>Flights</h1><small id="sub">Cargando…</small></div>
     </div>
-    <div class="dvseg" role="group" aria-label="Sección"><button type="button" data-dv="map" aria-pressed="true">Mapa</button><button type="button" data-dv="stats" aria-pressed="false">Stats</button></div>
     <div class="rgrp">
     <button class="btn themebtn rbtn" id="b-search" type="button" aria-label="Buscar" title="Buscar (/)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
     <button class="btn rbtn show-phone" id="b-stats" type="button" aria-label="Stats" title="Stats"><svg class="i-stats" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><svg class="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></button>
@@ -2512,7 +2516,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101144";
+const BUILD = "202610101155";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2553,7 +2557,8 @@ function renderFilters() {
   const n = y => isPlaces() ? placesAll().filter(p => p.auto ? p.years.has(y) : placeYear(p) === y).length : all().filter(f => f.year === y).length;
   const unit = isPlaces() ? ["lugar", "lugares"] : ["vuelo", "vuelos"], tot = isPlaces() ? placesAll().length : all().length;
   YEAR_OPTS = [{ v:"all", l:"Todos los años", s:`${tot} ${tot === 1 ? unit[0] : unit[1]}` }, ...years.map(y => { const k = n(y); return { v:y, l:y, s:`${k} ${k === 1 ? unit[0] : unit[1]}` }; })];
-  $("#filters").innerHTML = `<button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? `<span class="yl">Todos los años</span><span class="ys">Todos</span>` : esc(S.year)}${CHEV_DOWN}</button>
+  const dv = document.body.dataset.dv === "stats" ? "stats" : "map";
+  $("#filters").innerHTML = `<div class="layerpill dvseg" role="group" aria-label="Sección"><button type="button" data-dv="map" aria-pressed="${dv === "map"}" title="Mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Mapa</span></button><button type="button" data-dv="stats" aria-pressed="${dv === "stats"}" title="Stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg><span>Stats</span></button></div><span class="fsep" aria-hidden="true"></span><button class="ydd${S.year !== "all" ? " on" : ""}" type="button" data-ydd="year" aria-haspopup="listbox" aria-label="Año">${S.year === "all" ? `<span class="yl">Todos los años</span><span class="ys">Todos</span>` : esc(S.year)}${CHEV_DOWN}</button>
     <div class="layerpill" role="group" aria-label="Vuelos o lugares"><button type="button" data-layer="vuelos" aria-pressed="${!isPlaces()}" title="Vuelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span>Vuelos</span></button><button type="button" data-layer="lugares" aria-pressed="${isPlaces()}" title="Lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Lugares</span></button></div>`;
 }
 /* ---------- year dropdown: tap to open, or press and slide to an option and let go (it scrolls near the edges) ---------- */
@@ -5524,9 +5529,12 @@ function setDV(v, save = true) {
 /* on a computer the map fills the window below the header (the list scrolls on its own beside it) */
 function fitDeskMap() {
   const m = document.getElementById("map"); if (!m) return;
-  if (window.innerWidth < 1100 || document.body.dataset.dv !== "map" || document.body.classList.contains("mapfull")) { if (window.innerWidth < 1100 || document.body.dataset.dv !== "map") m.style.height = ""; return; }
+  if (isPhone() || document.body.dataset.dv !== "map" || document.body.classList.contains("mapfull")) { if (isPhone() || document.body.dataset.dv !== "map") m.style.height = ""; return; }
+  // the whole world: as tall as the map's own proportions ask, never taller than the window
+  const w = m.getBoundingClientRect().width, full = Math.round(w * H / W);
   const top = m.getBoundingClientRect().top + window.scrollY, foot = document.querySelector("#mapcard .mapfoot")?.offsetHeight || 0;
-  const h = Math.max(380, Math.round(window.innerHeight - top - foot - 18));
+  const avail = window.innerWidth >= 1100 ? Math.round(window.innerHeight - top - foot - 18) : full;
+  const h = Math.max(300, Math.min(full, avail));
   if (m.style.height !== h + "px") { m.style.height = h + "px"; if (S.mapReady) requestAnimationFrame(() => { updateZoomExtent(); renderMap(); }); }
 }
 window.addEventListener("resize", () => requestAnimationFrame(fitDeskMap));
