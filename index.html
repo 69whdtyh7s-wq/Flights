@@ -1425,6 +1425,8 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .fxbtn .fxn{min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;display:inline-grid;place-items:center;padding:0 5px}
 .fx-sheet .fx-sec{padding:4px 0 10px}
 .fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fx-sheet .hd > div{flex:1;min-width:0}
+.fx-hint{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
 .fx-chips{display:flex;flex-wrap:wrap;gap:6px}
 .fxc{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer}
 .fxc small{font-weight:500;color:var(--muted);font-size:12px}
@@ -1771,7 +1773,7 @@ function enrich(f) {
 
 /* ---------- state ---------- */
 const S = {
-  real: [], loaded: false, plcOpen: new Set(), rankOpen: new Set(), drill: null, listBack: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", fx: { trip:"", al:"", cc:"", ac:"", cls:"" }, tab: "up", open: null, confirmDel: null,
+  real: [], loaded: false, plcOpen: new Set(), rankOpen: new Set(), drill: null, listBack: null, collapsed: new Set(), focusTrip: null, focusIds: null, storage: "pending", year: "all", fx: { yr:[], trip:[], al:[], cc:[], ac:[], cls:[] }, tab: "up", open: null, confirmDel: null,
   col: null, sample: null, downloads: null, mapReady: false,
 };
 const DEMO = buildDemo();
@@ -2650,7 +2652,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101833";
+const BUILD = "202610101837";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -2673,21 +2675,27 @@ const flag = cc => /^[A-Z]{2}$/.test(cc || "") ? `<img class="flag" src="${asset
 document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG" && t.classList.contains("flag")) t.remove(); }, true);
 
 /* ---------- derived views ---------- */
-/* filters (button in the flights list): year, trip, airline, country, aircraft, class */
-const fxKey = () => Object.entries(S.fx).map(([k, v]) => k + "=" + v).join("&");
-const fxLabels = () => { const x = S.fx; return [x.trip && (tripList().find(t => norm(t.name || "") === x.trip)?.name || x.trip), x.al && alLabel(x.al), x.cc && country(x.cc), x.ac, x.cls && (CLASSES[x.cls] || x.cls)].filter(Boolean); };
-const fxActive = () => Object.values(S.fx).filter(Boolean).length + (S.year !== "all" ? 1 : 0);
+/* filters (button in the flights list): year, trip, airline, country, aircraft, class. Several values per group are allowed
+   (any of them matches); groups combine with each other. One year alone uses S.year, like the rest of the app */
+const FX0 = () => ({ yr:[], trip:[], al:[], cc:[], ac:[], cls:[] });
+const fxKey = () => Object.entries(S.fx).map(([k, v]) => k + "=" + v.join(",")).join("&");
+const fxOn = () => Object.values(S.fx).some(v => v.length);
+const yearSel = () => S.year !== "all" ? [S.year] : S.fx.yr;
+const fxLabels = () => { const x = S.fx, tn = k => tripList().find(t => norm(t.name || "") === k)?.name || k;
+  return [x.yr.join(", "), x.trip.map(tn).join(", "), x.al.map(alLabel).join(", "), x.cc.map(country).join(", "), x.ac.join(", "), x.cls.map(k => CLASSES[k] || k).join(", ")].filter(Boolean); };
+const fxActive = () => Object.values(S.fx).reduce((n, v) => n + v.length, 0) + (S.year !== "all" ? 1 : 0);
 const fxMatch = (f, skip) => {
   const x = S.fx;
-  if (x.trip && skip !== "trip" && (!f.tripId || norm(f.trip || "") !== x.trip)) return false;   // trips with the same name count as one
-  if (x.al && skip !== "al" && alKey(f) !== x.al) return false;
-  if (x.cc && skip !== "cc" && f.from?.cc !== x.cc && f.to?.cc !== x.cc) return false;
-  if (x.ac && skip !== "ac" && (f.aircraft || "").trim() !== x.ac) return false;
-  if (x.cls && skip !== "cls" && (f.cls || "") !== x.cls) return false;
+  if (x.yr.length && skip !== "year" && !x.yr.includes(f.year)) return false;
+  if (x.trip.length && skip !== "trip" && (!f.tripId || !x.trip.includes(norm(f.trip || "")))) return false;   // trips with the same name count as one
+  if (x.al.length && skip !== "al" && !x.al.includes(alKey(f))) return false;
+  if (x.cc.length && skip !== "cc" && !x.cc.includes(f.from?.cc) && !x.cc.includes(f.to?.cc)) return false;
+  if (x.ac.length && skip !== "ac" && !x.ac.includes((f.aircraft || "").trim())) return false;
+  if (x.cls.length && skip !== "cls" && !x.cls.includes(f.cls || "")) return false;
   return true;
 };
 const filteredM = memo((y, k) => { const a = all(); return a.filter(f => (y === "all" || f.year === y) && (k === "" || fxMatch(f))); });
-function filtered() { return filteredM(S.year, Object.values(S.fx).some(Boolean) ? fxKey() : ""); }
+function filtered() { return filteredM(S.year, fxOn() ? fxKey() : ""); }
 function relDays(ms) {
   const d0 = new Date(); d0.setHours(0,0,0,0);
   const d1 = new Date(ms); d1.setHours(0,0,0,0);
@@ -2712,15 +2720,15 @@ function renderFilters() {
 function openFilters() {
   const lp = isPlaces(), A = all(), x = S.fx;
   const cnt = (skip, fn) => { const m = new Map(); for (const f of A) { if (!lp && !fxMatch(f, skip)) continue; if (skip !== "year" && S.year !== "all" && f.year !== S.year) continue; for (const k of [].concat(fn(f))) if (k) m.set(k, (m.get(k) || 0) + 1); } return m; };
-  const chips = (key, cur, items, all = "Todos") => `<div class="fx-chips">${[["", all, null], ...items].map(([v, l, n]) => `<button type="button" class="fxc" data-fxk="${key}" data-fxv="${esc(v)}" aria-pressed="${v === cur}">${esc(l)}${n != null ? `<small>${n}</small>` : ""}</button>`).join("")}</div>`;
+  const chips = (key, cur, items, all = "Todos") => `<div class="fx-chips">${[["", all, null], ...items].map(([v, l, n]) => `<button type="button" class="fxc" data-fxk="${key}" data-fxv="${esc(v)}" aria-pressed="${v === "" ? !cur.length : cur.includes(v)}">${esc(l)}${n != null ? `<small>${n}</small>` : ""}</button>`).join("")}</div>`;
   const sec = (t, body) => `<section class="fx-sec"><h4>${t}</h4>${body}</section>`;
   let html = "";
   const yrs = lp ? YEAR_OPTS.filter(o => o.v !== "all").map(o => [o.v, o.l, null]) : [...cnt("year", f => f.year)].sort((a, b) => b[0].localeCompare(a[0])).map(([y, n]) => [y, y, n]);
-  html += sec("Año", chips("year", S.year === "all" ? "" : S.year, yrs));
+  html += sec("Año", chips("year", yearSel(), yrs));
   if (!lp) {
     const trips = cnt("trip", f => f.tripId && f.trip ? norm(f.trip) : ""), seen = new Set();
     const tl = tripList().filter(t => { const k = norm(t.name || ""); if (!trips.has(k) || seen.has(k)) return false; seen.add(k); return true; }).map(t => [norm(t.name), t.name, trips.get(norm(t.name))]);
-    if (tl.length || x.trip) html += sec("Viaje", chips("trip", x.trip, tl));
+    if (tl.length || x.trip.length) html += sec("Viaje", chips("trip", x.trip, tl));
     const al = [...cnt("al", alKey)].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, alLabel(k), n]);
     if (al.length) html += sec("Aerolínea", chips("al", x.al, al.slice(0, 40), "Todas"));
     const cc = [...cnt("cc", f => [...new Set([f.from?.cc, f.to?.cc])])].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, country(k), n]);
@@ -2732,7 +2740,7 @@ function openFilters() {
   }
   const n = lp ? placesShown().length : filtered().length;
   $("#sheet-root").innerHTML = `<div class="scrim" data-close><div class="sheet fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fx-t">
-    <div class="hd"><h2 id="fx-t">Filtros</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+    <div class="hd"><div><h2 id="fx-t">Filtros</h2><small class="fx-hint">Podés elegir varios en cada grupo</small></div><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
     ${html}
     <div class="fx-foot"><button class="btn" type="button" data-fxclear ${fxActive() ? "" : "disabled"}>Quitar filtros</button><button class="btn primary" type="button" data-close>Ver ${n} ${lp ? (n === 1 ? "lugar" : "lugares") : (n === 1 ? "vuelo" : "vuelos")}</button></div>
   </div></div>`;
@@ -2740,8 +2748,15 @@ function openFilters() {
 document.addEventListener("click", e => {
   const t = e.target.closest && e.target.closest("#fx-btn, [data-fxk], [data-fxclear]"); if (!t) return;
   if (t.id === "fx-btn") { e.stopPropagation(); return openFilters(); }
-  if (t.dataset.fxclear !== undefined) { S.fx = { trip:"", al:"", cc:"", ac:"", cls:"" }; S.year = "all"; }
-  else { const k = t.dataset.fxk, v = t.dataset.fxv; if (k === "year") S.year = v || "all"; else S.fx = { ...S.fx, [k]:v }; }
+  if (t.dataset.fxclear !== undefined) { S.fx = FX0(); S.year = "all"; }
+  else {
+    const k = t.dataset.fxk, v = t.dataset.fxv;
+    const tog = arr => { if (!v) return []; const st = new Set(arr); st.has(v) ? st.delete(v) : st.add(v); return [...st]; };
+    if (k === "year") {
+      const ys = isPlaces() ? (v && S.year !== v ? [v] : []) : tog(yearSel());   // places: one year at a time
+      S.year = ys.length === 1 ? ys[0] : "all"; S.fx = { ...S.fx, yr:ys.length > 1 ? ys.sort() : [] };
+    } else S.fx = { ...S.fx, [k]:tog(S.fx[k]) };
+  }
   S.open = null; S.focusIds = null; render(); focusSelection(); openFilters();
 });
 /* ---------- year dropdown: tap to open, or press and slide to an option and let go (it scrolls near the edges) ---------- */
@@ -3599,7 +3614,7 @@ function searchPick(k, v) {
     if (k === "place") setTimeout(() => { const r = svgSel.node().getBoundingClientRect(); showPlaceCard(v, r.left + r.width / 2, r.top + r.height / 2); }, 650);
     return;
   }
-  if (k === "year") { closeSheet(); S.year = v; S.open = null; render(); focusSelection(); toast("Mostrando " + v); return; }
+  if (k === "year") { closeSheet(); S.year = v; S.fx = { ...S.fx, yr:[] }; S.open = null; render(); focusSelection(); toast("Mostrando " + v); return; }
   if (k === "flight") {
     const f = all().find(x => x.id === v); if (!f) return;
     closeSheet(); S.tab = f.past ? "past" : "up"; S.year = "all"; S.open = v; S.popList = true; S.focusIds = null;
@@ -6004,7 +6019,7 @@ document.addEventListener("click", e => {
   if (t.id === "b-stats") { if (document.body.dataset.view === "stats") goHome(); else { closeSheet(); setView("stats", false); } return; }
   if (t.id === "z-type") { const ts = ["estandar", "satelite", "noche"], n = ts[(ts.indexOf(mapType) + 1) % ts.length]; setMapType(n); toast(n === "estandar" ? "Mapa estándar" : n === "satelite" ? "Mapa satélite" : "Mapa de noche"); return; }
   if (t.id === "t-up" || t.id === "t-past") { S.tab = t.id === "t-up" ? "up" : "past"; S.open = null; return render(); }
-  if (t.dataset.year) { S.year = S.year === t.dataset.year && t.classList.contains("c") ? "all" : t.dataset.year; S.open = null; return render(); }
+  if (t.dataset.year) { S.fx = { ...S.fx, yr:[] }; S.year = S.year === t.dataset.year && t.classList.contains("c") ? "all" : t.dataset.year; S.open = null; return render(); }
   if (t.dataset.jump !== undefined) { const h = document.getElementById("yr-" + t.dataset.jump); if (h) h.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); return; }
   if (t.dataset.trip) {
     const id = t.dataset.trip;
