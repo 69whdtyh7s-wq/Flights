@@ -1063,19 +1063,21 @@ button.rec2:hover .rk2{color:var(--accent-text)}
   #list .tripbox .fl[aria-expanded="true"] + .detail{margin:0 8px 10px}
 }
 @keyframes dIn{from{opacity:0;transform:translateY(-6px)}}
-.dtiles .dt-wx{grid-column:1 / -1}
-.dtiles .dwx,.dtiles .dwx div{background:none!important;padding:0!important;border-radius:0!important;min-width:0}
-.dtiles .dwx{display:grid!important;grid-template-columns:1fr 1fr;flex-direction:initial!important}
-.dtiles .dwx .wxc{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:8px}
-.dtiles .dwx .wxc > div{display:flex!important;flex-direction:column!important;gap:1px}
+.dwxcard{background:var(--surface);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;position:relative}
+.dwxcard > span{font-size:11.5px;font-weight:600;color:var(--muted)}
+.dwxcard .wxn,.dwxcard .wxm{display:block}
+
+
+
+
 .dwx{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;position:relative;margin-top:2px}
 .wxc{display:flex;align-items:flex-start;gap:8px;min-width:0}
 .wxi{font-size:26px;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
 .wxc > div{display:flex;flex-direction:column;min-width:0}
-.dtiles .wxn{font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dwx .wxn{font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wxc b{font-size:17px;font-weight:700}
 .wxc b small{font-size:12px;font-weight:600;color:var(--muted)}
-.dtiles .wxm{font-size:11px;color:var(--muted);font-weight:500}
+.dwx .wxm{font-size:11px;color:var(--muted);font-weight:500}
 .wxcred{position:absolute;right:0;top:-18px;font-size:10px;color:var(--muted);text-decoration:none}
 @media (max-width:420px){.dwx{grid-template-columns:1fr}}
 .detail .acts .btn{flex:1;justify-content:center}
@@ -3183,7 +3185,6 @@ function detail(f) {
     ["Distancia", fmt(f.km) + " km"],
     speed && ["Velocidad media", fmt(speed) + " km/h"],
     tz && ["Diferencia horaria", tz],
-    wxTile(f),
     (f.cls || f.seat) && ["Clase y asiento", [f.cls ? esc(CLASSES[f.cls] || f.cls) : "", f.seat ? "Asiento " + esc(f.seat) : ""].filter(Boolean).join(" · ")],
     f.from?.cc && f.to?.cc && ["Tipo", f.from.cc === f.to.cc ? "Nacional" : "Internacional"],
   ].filter(Boolean);
@@ -3197,6 +3198,7 @@ function detail(f) {
     <div class="droute">${ap(f.from, f.dep, niceDate(f.date), false, f.depReal, dDep)}
       <div class="dmid"><span>${hm(f.mins)}</span><div class="dline">${PLANE}</div><span>${fmt(f.km)} km</span></div>
       ${ap(f.to, f.arr, niceDate(f.date, +f.arrOffset || 0), true, f.arrReal, dArr)}</div>
+    ${(w => w ? `<div class="dwxcard"><span>${w[0]}</span>${w[1]}</div>` : "")(wxTile(f))}
     ${liveHTML(f)}
     <div class="dtiles">${tiles.map(([k, v, cls]) => `<div${cls ? ` class="dt-${cls}"` : ""}><span>${k}</span>${cls ? v : `<b>${v}</b>`}</div>`).join("")}</div>
     ${f.notes ? `<div class="dnotes"><span>Notas</span><p>${esc(f.notes)}</p></div>` : ""}
