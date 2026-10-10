@@ -750,7 +750,7 @@ body{overflow-x:clip}
 .dpcred:empty{display:none}
 .dpcred a{color:inherit}
 .planeart{width:100%;max-width:240px;height:auto;overflow:visible}
-.planeart .pa-body{fill:#fff;stroke:color-mix(in srgb,var(--ink) 38%,transparent);stroke-width:.55;stroke-linejoin:round}
+.planeart .pa-body{stroke:color-mix(in srgb,var(--ink) 38%,transparent);stroke-width:.55;stroke-linejoin:round}
 .planeart .pa-belly{fill:#E4E7EC}
 .planeart .pa-cheat{fill:var(--brand,var(--accent));opacity:.9}
 .planeart .pa-fin{fill:var(--brand,var(--accent));stroke:color-mix(in srgb,var(--ink) 25%,transparent);stroke-width:.4;stroke-linejoin:round}
@@ -758,7 +758,7 @@ body{overflow-x:clip}
 .planeart .pa-wing{fill:#C9CFD8;stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.45;stroke-linejoin:round}
 .planeart .pa-wl{fill:#C9CFD8;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.35}
 .planeart .pa-pyl{fill:#D8DDE3;stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:.35}
-.planeart .pa-eng{fill:#EEF0F3;stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.5}
+.planeart .pa-eng{stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.5}
 .planeart .pa-eng-in{fill:#3A3F47}
 .planeart .pa-eng-c{stroke:color-mix(in srgb,var(--ink) 22%,transparent);stroke-width:.4}
 .planeart .pa-disc{fill:color-mix(in srgb,var(--ink) 16%,transparent)}
@@ -801,7 +801,7 @@ body{overflow-x:clip}
 .dt-plane .dplane{display:flex;flex-direction:column}
 .dtiles .dt-plane .dpimg,.dtiles .dt-plane .dplane.hasphoto .dpimg{display:block;flex:none;min-height:0;max-height:none;margin:3px 0 2px;text-align:left}
 .dt-plane .planeart{display:block;width:100%;max-width:180px;margin-left:-6px}
-.dt-plane .dplane.hasphoto .dpimg img{width:100%;height:52px;border-radius:8px;object-fit:cover}
+.dt-plane .dplane.hasphoto .dpimg img{width:100%;height:84px;border-radius:10px;object-fit:cover}
 .dt-plane .dplane.hasphoto .dpcap{position:static;background:none;color:inherit;padding:0}
 .dt-plane .dplane.hasphoto .dpcap span,.dt-plane .dplane.hasphoto .dpcap a{color:var(--muted)}
 .dtiles .dt-plane .dpcap{display:flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 6px}
@@ -2702,7 +2702,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610102021";
+const BUILD = "202610102025";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3089,9 +3089,10 @@ function planeArt(type, code) {
     : s.wl === "split" ? `M${f(tx + D * .1)} ${f(tyy)} L${f(tx - D * .25)} ${f(tyy - D * .55)} L${f(tx - D * .42)} ${f(tyy - D * .55)} L${f(tx - D * .3)} ${f(tyy)} L${f(tx - D * .38)} ${f(tyy + D * .3)} L${f(tx - D * .5)} ${f(tyy + D * .3)} L${f(tx - D * .32)} ${f(tyy + D * .05)} Z`
     : s.wl === "fence" ? `M${f(tx + D * .05)} ${f(tyy - D * .2)} L${f(tx - D * .3)} ${f(tyy - D * .2)} L${f(tx - D * .32)} ${f(tyy + D * .22)} L${f(tx + D * .03)} ${f(tyy + D * .22)} Z` : "";
   // ---- engines ----
+  const EG = `url(#${id}e)`;
   const nac = (cx, cy, len, dia, cls = "") => {
     const x1 = cx + len / 2, x2 = cx - len / 2, r = dia / 2;
-    return `<g class="pa-e ${cls}"><path class="pa-eng" d="M${f(x1)} ${f(cy - r)} L${f(x2 + r * .4)} ${f(cy - r * .85)} Q${f(x2)} ${f(cy - r * .6)} ${f(x2 - r * .5)} ${f(cy)} Q${f(x2)} ${f(cy + r * .6)} ${f(x2 + r * .4)} ${f(cy + r * .85)} L${f(x1)} ${f(cy + r)} Q${f(x1 + r * .35)} ${f(cy)} ${f(x1)} ${f(cy - r)} Z"/>`
+    return `<g class="pa-e ${cls}"><path class="pa-eng" fill="${EG}" d="M${f(x1)} ${f(cy - r)} L${f(x2 + r * .4)} ${f(cy - r * .85)} Q${f(x2)} ${f(cy - r * .6)} ${f(x2 - r * .5)} ${f(cy)} Q${f(x2)} ${f(cy + r * .6)} ${f(x2 + r * .4)} ${f(cy + r * .85)} L${f(x1)} ${f(cy + r)} Q${f(x1 + r * .35)} ${f(cy)} ${f(x1)} ${f(cy - r)} Z"/>`
       + `<path class="pa-eng-in" d="M${f(x1)} ${f(cy - r)} Q${f(x1 + r * .35)} ${f(cy)} ${f(x1)} ${f(cy + r)} Q${f(x1 - r * .2)} ${f(cy)} ${f(x1)} ${f(cy - r)} Z"/><path class="pa-eng-c" d="M${f(x1 - len * .18)} ${f(cy - r * .98)} V${f(cy + r * .98)}"/></g>`;
   };
   const NL = L * s.nl, ND = D * s.nac;
@@ -3110,7 +3111,7 @@ function planeArt(type, code) {
     engsBack = nac(X(wr + .06), yT + D * .3, NL, ND, "far"); engs = nac(X(wr - .01), yT + D * .38, NL, ND);
   } else if (s.eng === "prop") {
     const cx = X(wr + .015), cy = high ? yT + D * .32 : yc + D * .1, nlen = L * .13, nd = D * .42;
-    engs = `<path class="pa-eng" d="M${f(cx + nlen * .45)} ${f(cy - nd * .4)} Q${f(cx + nlen * .55)} ${f(cy)} ${f(cx + nlen * .45)} ${f(cy + nd * .45)} L${f(cx - nlen * .5)} ${f(cy + nd * .3)} Q${f(cx - nlen * .6)} ${f(cy)} ${f(cx - nlen * .4)} ${f(cy - nd * .5)} Z"/>`
+    engs = `<path class="pa-eng" fill="${EG}" d="M${f(cx + nlen * .45)} ${f(cy - nd * .4)} Q${f(cx + nlen * .55)} ${f(cy)} ${f(cx + nlen * .45)} ${f(cy + nd * .45)} L${f(cx - nlen * .5)} ${f(cy + nd * .3)} Q${f(cx - nlen * .6)} ${f(cy)} ${f(cx - nlen * .4)} ${f(cy - nd * .5)} Z"/>`
       + `<ellipse class="pa-disc" cx="${f(cx + nlen * .55)}" cy="${f(cy)}" rx="${f(D * .06)}" ry="${f(D * 1.05)}"/><circle class="pa-eng-in" cx="${f(cx + nlen * .56)}" cy="${f(cy)}" r="${f(nd * .22)}"/>`;
   }
   // ---- windows, doors, cockpit ----
@@ -3130,11 +3131,11 @@ function planeArt(type, code) {
   const cheat = `<rect class="pa-cheat" x="${f(x0 - 2)}" y="${f(yc + D * .14)}" width="${f(L + 4)}" height="${f(Math.max(.8, D * .06))}" clip-path="url(#${id}b)"/>`;
   const fcx = (X(fr0 + .012) + X(Math.min(.955, ftf)) + X(Math.min(.995, ftf + .055)) + X(.992)) / 4 - D * .05, fs = Math.min(fh * .55, L * .1);
   const logo = code && hasLogo(code) ? `<image href="${asset(`logos/${code}.png`) || `logos/${code}.png?v=${BUILD}`}" x="${f(fcx - fs / 2 + D * .05)}" y="${f(yT - fh * .52 - fs / 2)}" width="${f(fs)}" height="${f(fs)}" clip-path="url(#${id}c)" filter="url(#${id}w)" preserveAspectRatio="xMidYMid meet"/>` : "";
-  let g = `<defs><clipPath id="${id}c"><path d="${fin}"/></clipPath><clipPath id="${id}b"><path d="${body}"/></clipPath><filter id="${id}w" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .95 0"/></filter></defs>`;
+  let g = `<defs><clipPath id="${id}c"><path d="${fin}"/></clipPath><clipPath id="${id}b"><path d="${body}"/></clipPath><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#F7F8FA"/><stop offset=".8" stop-color="#DCE0E6"/><stop offset="1" stop-color="#B9C0C9"/></linearGradient><linearGradient id="${id}e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFBFC"/><stop offset=".6" stop-color="#DDE1E6"/><stop offset="1" stop-color="#A9B1BB"/></linearGradient><linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient><filter id="${id}w" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .95 0"/></filter></defs>`;
   g += `<ellipse class="pa-shadow" cx="${f(W / 2)}" cy="${f(yB + D * .55 + 3)}" rx="${f(L * .4)}" ry="1.6"/>`;
   g += engsBack;
-  g += `<path class="pa-fin" d="${fin}"/>${logo}<path class="pa-stab" d="${stab}"/>`;
-  g += `<path class="pa-body" d="${body}"/>${belly}${cheat}<g class="pa-win">${wins}</g>${doors}${ck}`;
+  g += `<path class="pa-fin" d="${fin}"/><path d="${fin}" fill="url(#${id}s)"/>${logo}<path class="pa-stab" d="${stab}"/>`;
+  g += `<path class="pa-body" d="${body}" fill="url(#${id}g)"/>${cheat}<g class="pa-win">${wins}</g>${doors}${ck}`;
   g += pylons + `<path class="pa-wing" d="${wing}"/>${engs}`;
   const topY = yT - fh - (s.tt ? D * .15 : 0), botY = yB + D * .55 + 5, dy = (64 - (botY - topY)) / 2 - topY;
   return `<svg class="planeart" viewBox="0 0 200 64" aria-hidden="true"${code ? ` data-al="${esc(code)}"` : ""}><g transform="translate(0 ${f(dy)})">${g}</g></svg>`;
@@ -3171,24 +3172,43 @@ function tintPlanes(root) {
 const PHOTO_KEY = "flights-acphotos";
 let PHOTOS = (() => { try { return JSON.parse(localStorage.getItem(PHOTO_KEY) || "{}"); } catch { return {}; } })();
 const photoLoading = {};
+/* a real photo, like Flighty: that exact plane (registration, Planespotters) or else the same model in that airline's
+   colours (Wikimedia Commons). Only the registration or "airline + model" is sent; the answer is kept on this device */
+function commonsPhoto(airline, model) {
+  const core = (String(model).match(/\d{2,4}/) || [""])[0], aw = norm(String(airline).split(/\s+/)[0] || "");
+  const q = `${airline} ${String(model).replace(/^(Airbus|Boeing|Embraer|Bombardier)\s+/i, m => m)}`;
+  const url = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=15&gsrsearch="
+    + encodeURIComponent(q + " filetype:bitmap") + "&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=640";
+  return fetch(url).then(r => r.ok ? r.json() : null).then(j => {
+    const pages = Object.values(j?.query?.pages || {}).sort((x, y) => (x.index || 0) - (y.index || 0));
+    const ok = pages.filter(p => { const ii = p.imageinfo && p.imageinfo[0], tl = norm(p.title || "");
+      return ii && ii.thumburl && ii.width > ii.height * 1.25 && /\.(jpe?g|png|webp)$/i.test(p.title) && (!aw || tl.includes(aw)) && (!core || tl.includes(core.toLowerCase())); });
+    const p = ok[0]; if (!p) return null;
+    const ii = p.imageinfo[0], md = ii.extmetadata || {}, txt = h => String(h || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    const by = [txt(md.Artist?.value).slice(0, 40), txt(md.LicenseShortName?.value)].filter(Boolean).join(" · ") || "Wikimedia Commons";
+    return { src:ii.thumburl, link:ii.descriptionurl, by:by + " (Wikimedia)" };
+  }).catch(() => null);
+}
 function hydratePlanePhotos(root) {
-  (root || document).querySelectorAll(".dplane[data-reg]").forEach(el => {
-    const reg = el.dataset.reg; if (!reg || el.dataset.done) return;
+  (root || document).querySelectorAll(".dplane[data-reg], .dplane[data-q]").forEach(el => {
+    if (el.dataset.done) return; el.dataset.done = 1;
+    const reg = el.dataset.reg || "", [al, model] = (el.dataset.q || "|").split("|"), ck = "c:" + norm(al + "|" + model);
     const show = ph => {
-      el.dataset.done = 1; if (!ph || !ph.src) return;
+      if (!ph || !ph.src || !el.isConnected) return;
       el.classList.add("hasphoto");
-      el.querySelector(".dpimg").innerHTML = `<img src="${esc(ph.src)}" alt="Foto del avión ${esc(reg)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.dplane').classList.remove('hasphoto');this.remove()">`;
+      el.querySelector(".dpimg").innerHTML = `<img src="${esc(ph.src)}" alt="Foto ${esc(reg || model)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.dplane').classList.remove('hasphoto');this.remove()">`;
       const c = el.querySelector(".dpcred"); if (c) c.innerHTML = `Foto: <a href="${esc(ph.link)}" target="_blank" rel="noopener">${esc(ph.by || "Planespotters.net")}</a>`;
     };
-    if (reg in PHOTOS && (PHOTOS[reg] || Date.now() - (PHOTOS["_t_" + reg] || 0) < 7 * DAY)) return show(PHOTOS[reg]);
-    if (navigator.onLine === false) return;
-    (photoLoading[reg] = photoLoading[reg] || fetch("https://api.planespotters.net/pub/photos/reg/" + encodeURIComponent(reg)).then(r => r.ok ? r.json() : null).then(j => {
-      const p = j && j.photos && j.photos[0];
-      const ph = p ? { src:(p.thumbnail_large || p.thumbnail || {}).src, link:p.link, by:p.photographer } : null;
-      PHOTOS[reg] = ph; PHOTOS["_t_" + reg] = Date.now();
-      try { localStorage.setItem(PHOTO_KEY, JSON.stringify(PHOTOS)); } catch {}
-      return ph;
-    }).catch(() => null)).then(ph => { if (el.isConnected) show(ph); });
+    const fresh = k => k in PHOTOS && (PHOTOS[k] || Date.now() - (PHOTOS["_t_" + k] || 0) < 7 * DAY);
+    const save = (k, ph) => { PHOTOS[k] = ph; PHOTOS["_t_" + k] = Date.now(); try { localStorage.setItem(PHOTO_KEY, JSON.stringify(PHOTOS)); } catch {} return ph; };
+    const byReg = () => !reg ? Promise.resolve(null) : fresh(reg) ? Promise.resolve(PHOTOS[reg]) : navigator.onLine === false ? Promise.resolve(null)
+      : (photoLoading[reg] = photoLoading[reg] || fetch("https://api.planespotters.net/pub/photos/reg/" + encodeURIComponent(reg)).then(r => r.ok ? r.json() : null).then(j => {
+          const p = j && j.photos && j.photos[0];
+          return save(reg, p ? { src:(p.thumbnail_large || p.thumbnail || {}).src, link:p.link, by:p.photographer } : null);
+        }).catch(() => null));
+    const byModel = () => !model || !al ? Promise.resolve(null) : fresh(ck) ? Promise.resolve(PHOTOS[ck]) : navigator.onLine === false ? Promise.resolve(null)
+      : (photoLoading[ck] = photoLoading[ck] || commonsPhoto(al, model).then(ph => save(ck, ph)));
+    byReg().then(ph => ph || byModel()).then(show);
   });
 }
 function relWhen(f) {
@@ -3211,7 +3231,7 @@ function detail(f) {
   const speed = f.mins > 0 && !f.estimated ? Math.round(f.km / (f.mins / 60)) : null;
   const tz = tzDiff(f);
   const tiles = [
-    ["Avión", `<div class="dplane"${f.reg ? ` data-reg="${esc(f.reg)}"` : ""}><div class="dpimg">${planeArt(f.aircraft, code)}</div><div class="dpcap"><b>${f.aircraft ? esc(f.aircraft) : `<span class="muted">Sin dato</span>`}</b>${f.reg ? `<span>${esc(f.reg)}</span>` : ""}<span class="dpcred"></span></div></div>`, "plane"],
+    ["Avión", `<div class="dplane"${f.reg ? ` data-reg="${esc(f.reg)}"` : ""}${f.aircraft && f.airline ? ` data-q="${esc(f.airline + "|" + f.aircraft)}"` : ""}><div class="dpimg">${planeArt(f.aircraft, code)}</div><div class="dpcap"><b>${f.aircraft ? esc(f.aircraft) : `<span class="muted">Sin dato</span>`}</b>${f.reg ? `<span>${esc(f.reg)}</span>` : ""}<span class="dpcred"></span></div></div>`, "plane"],
     f.status === "cancelled" ? ["Estado", `<span class="late">Cancelado</span>`] : f.status === "diverted" ? ["Estado", `<span class="late">Desviado</span>`] : null,
     dArr != null ? ["Puntualidad", `<span class="${delayCls(dArr)}">${delayText(dArr, "Llegó")}</span>`] : dDep != null ? ["Puntualidad", `<span class="${delayCls(dDep)}">${delayText(dDep, "Salió")}</span>`] : null,
     ["Duración", hm(f.mins) + (f.estimated ? " aprox." : "")],
