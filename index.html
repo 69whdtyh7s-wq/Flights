@@ -3581,6 +3581,9 @@ function renderPlaceStats() {
   if (!ps.length) { $("#stats").innerHTML = html + card("Todavía no hay lugares", `<p class="hint">Las ciudades de tus vuelos aparecen solas; agregá también pueblos y lugares a los que fuiste por tierra o por mar.</p>`, "wide"); return; }
   const ccs = count(ps.map(p => p.cc).filter(Boolean)), conts = count(ps.map(p => continent(p.cc)).filter(Boolean));
   const own = ps.filter(p => !p.auto), flown = new Set(all.filter(p => p.auto).map(p => p.cc));
+  // flags
+  html += sec("Banderas", `${ccs.length} ${ccs.length === 1 ? "país" : "países"}`);
+  html += `<section class="scard wide"><div class="flagrow big">${ccs.map(([c, n]) => `<button type="button" class="flagb" data-sqk="placecountry" data-sqv="${esc(c)}" title="${esc(country(c))}: ${n}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><small>${esc(country(c))}</small></button>`).join("")}</div></section>`;
   const tile = (icon, v, k, more) => `<div><span class="ti">${ICON[icon]}</span><b>${v}</b><span>${k}</span>${more ? `<small class="tmore">${more}</small>` : ""}</div>`;
   html += sec("Resumen");
   const flownPl = ps.filter(p => p.auto).sort((a, b) => b.n - a.n), ownByDate = own.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.added || 0) - (a.added || 0));
@@ -3638,9 +3641,6 @@ function renderPlaceStats() {
   </div>`, "recside", "trophy");
   const regions = count(own.map(p => (p.sub || "").split(",")[0].trim()).filter(r => r && !ccs.some(([c]) => country(c) === r))).slice(0, 8);
   if (regions.length) html += card("Regiones", `<ol class="rank">${regions.map(([r, n]) => `<li><div class="rk" style="display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px"><div class="nm"><span>${esc(r)}</span><div class="bar"><i style="width:${(n / regions[0][1] * 100).toFixed(1)}%"></i></div></div><span class="ct">${n}</span></div></li>`).join("")}</ol><p class="hint">De los lugares agregados a mano.</p>`, "", "pin");
-  // flags
-  html += sec("Banderas", `${ccs.length} ${ccs.length === 1 ? "país" : "países"}`);
-  html += `<section class="scard wide"><div class="flagrow big">${ccs.map(([c, n]) => `<button type="button" class="flagb" data-sqk="placecountry" data-sqv="${esc(c)}" title="${esc(country(c))}: ${n}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><small>${esc(country(c))}</small></button>`).join("")}</div></section>`;
   $("#stats").innerHTML = html;
 }
 function renderStats() {
