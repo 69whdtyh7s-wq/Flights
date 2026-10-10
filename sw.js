@@ -1,5 +1,5 @@
 // Flights service worker: the whole app works offline. It never stores flight data (that lives in the browser's localStorage).
-const CACHE = "flights-202610101733";          // this version's page
+const CACHE = "flights-202610101736";          // this version's page
 const STATIC = "flights-static-v1";      // logos, flags, map textures, airport lists, d3: kept across versions
 const TILES = "flights-tiles-v1";        // map imagery tiles (pictures of the Earth only), kept across versions
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
@@ -27,10 +27,10 @@ self.addEventListener("fetch", e => {
       .catch(() => caches.match(req, { ignoreSearch:true }).then(h => h || caches.match("./index.html", { ignoreSearch:true })).then(hit => hit || caches.match("./", { ignoreSearch:true }))));
     return;
   }
-  // map imagery tiles (pictures of the Earth, no personal data): kept on the phone so they show at once next time
-  if (["server.arcgisonline.com", "gibs.earthdata.nasa.gov", "tiles.maps.eox.at"].includes(url.host)) {
+  // map imagery tiles and plane photos (public pictures, no personal data): kept on the phone so they show at once and offline
+  if (["server.arcgisonline.com", "gibs.earthdata.nasa.gov", "tiles.maps.eox.at"].includes(url.host) || /(^|\.)plnspttrs\.net$/.test(url.host)) {
     e.respondWith(caches.open(TILES).then(c => c.match(req.url).then(hit => hit || fetch(req).then(r => {
-      if (r.ok) { c.put(req.url, r.clone()); if (Math.random() < 0.02) c.keys().then(ks => { if (ks.length > 3000) ks.slice(0, ks.length - 2500).forEach(k => c.delete(k)); }); }
+      if (r.ok || (r.type === "opaque" && /plnspttrs/.test(url.host))) { c.put(req.url, r.clone()); if (Math.random() < 0.02) c.keys().then(ks => { if (ks.length > 5000) ks.slice(0, ks.length - 4500).forEach(k => c.delete(k)); }); }
       return r;
     }))));
     return;

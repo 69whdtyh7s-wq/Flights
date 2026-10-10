@@ -950,10 +950,10 @@ button.rec2:hover .rk2{color:var(--accent-text)}
   .layerpill button{padding:0 8px;height:28px}.layerpill button span{display:none}
   body[data-view="vuelos"] #filters.filters{right:186px;padding-left:10px;gap:6px}
   body[data-view="vuelos"] #filters .ydd{padding:0 9px 0 11px}
-  body[data-view="vuelos"] #filters .ydd{height:44px;font-size:15px}
-  body[data-view="vuelos"] #filters .layerpill{height:44px;align-items:center}
-  body[data-view="vuelos"] #filters .layerpill button{height:36px;width:40px;padding:0;justify-content:center}
-  body[data-view="vuelos"] #filters .layerpill button svg{width:20px;height:20px}
+  #filters .ydd{height:44px;font-size:15px}
+  #filters .layerpill{height:44px;align-items:center}
+  #filters .layerpill button{height:38px;width:42px;padding:0;justify-content:center}
+  #filters .layerpill button svg{width:20px;height:20px}
   body[data-view="vuelos"] #filters .layerpill{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 }
 /* year dropdown */
@@ -1290,7 +1290,7 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 #mapcard .map .land,#mapcard .map .land.visited{stroke:none!important}
 .map .bord,.map .bord-v{fill:none;pointer-events:none;stroke-linejoin:round;stroke-linecap:round}
 .map .bord{stroke:#BFC8D2;stroke-width:calc(.45px * var(--bz,1))}
-.map .bord-v{stroke:#ffffff;stroke-width:calc(.6px * var(--bz,1))}
+.map .bord-v{stroke:color-mix(in srgb,var(--route) 70%,#ffffff);stroke-width:calc(.7px * var(--bz,1))}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .map .bord{stroke:#33373D}:root:not([data-theme="light"]) .map .bord-v{stroke:color-mix(in srgb,var(--route) 65%,#ffffff)}}
 :root[data-theme="dark"] .map .bord{stroke:#33373D}
 :root[data-theme="dark"] .map .bord-v{stroke:color-mix(in srgb,var(--route) 65%,#ffffff)}
@@ -1986,7 +1986,7 @@ async function rasterHi() {
   const src = TILE_SRC[type];
   let z = Math.ceil(Math.log2(360 / (256 * dlon)) - 0.35);              // up to ~1.3x enlargement is invisible and needs a quarter of the tiles
   z = Math.max(0, Math.min(src.max, z));
-  const useTiles = navigator.onLine !== false;
+  const useTiles = true;   // saved tiles also work without internet; whatever is missing falls back to the built-in picture
   const n = 2 ** z, N = LON.length;
   const merc = lat => { const s2 = Math.sin(Math.max(-85.05, Math.min(85.05, lat)) * Math.PI / 180); return (0.5 - Math.log((1 + s2) / (1 - s2)) / (4 * Math.PI)) * n; };
   const c = document.createElement("canvas"); c.width = cw; c.height = ch;
@@ -2047,6 +2047,7 @@ async function rasterHi() {
     for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], i = pxUV[o] * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; O[j4 + 3] = 255; }
   });
   if (!got) {
+    if (navigator.onLine === false) return failBack();
     if (!rasterHi.warned) { rasterHi.warned = true; toast("No se pudo cargar el detalle del mapa (imágenes satelitales): se usa la imagen básica."); }
     return failBack();
   }
@@ -2059,6 +2060,7 @@ async function rasterHi() {
     miss.forEach((sl, m) => { const d = parents[m]; if (!d) return; const ox = (keys[sl][0] & 1) * 128, oy = (keys[sl][1] & 1) * 128;
       for (let q = counts[sl]; q < counts[sl + 1]; q++) { const o = order[q], uv = pxUV[o], u = ox + ((uv & 255) >> 1), v = oy + ((uv >> 8) >> 1), i = (v * 256 + u) * 4, j4 = o * 4; O[j4] = d[i]; O[j4 + 1] = d[i + 1]; O[j4 + 2] = d[i + 2]; O[j4 + 3] = 255; } });
   }
+  fillBuiltIn(true);      // spots with no saved tile (e.g. offline): the built-in picture instead of a hole
   await commit(false);
   if (cr) { cr.textContent = src.credit; cr.hidden = false; }
 }
@@ -2254,6 +2256,7 @@ function setHi(feats, box) {
   const hi = gLayer.select(".lands-hi"), on = !!(feats && feats.length);
   hi.selectAll("path").data(on ? feats : [], d => d.id + "|" + (d.cc || "") + "|" + (d._i ??= Math.random())).join("path")
     .attr("class", d => "land" + (d.cc && visitedCC.has(d.cc) ? " visited" : (svgSel && svgSel.classed("isol") ? " out" : ""))).attr("d", geoPath).attr("vector-effect","non-scaling-stroke");
+  HI_FEATS = on ? feats : [];
   const covered = new Set(on ? feats.map(f => f.cc).filter(Boolean) : []);
   gLayer.select(".lands").selectAll("path").classed("under", d => !!d.cc && covered.has(d.cc));
   world = on ? WORLD_HI : BASE;
@@ -2304,12 +2307,17 @@ function buildBorders() {
   }
   BORDERS = out;
 }
+let HI_FEATS = [];
 function drawBorders() {
   if (!gLayer || !BORDERS.length) return;
-  const all = [], both = [];
-  for (const b of BORDERS) { all.push(b.seg); if (b.cc.every(c => c && visitedCC.has(c))) both.push(b.seg); }
+  const all = [];
+  for (const b of BORDERS) all.push(b.seg);
   gLayer.select(".bord").attr("d", geoPath({ type:"MultiLineString", coordinates:all }));
-  gLayer.select(".bord-v").attr("d", geoPath({ type:"MultiLineString", coordinates:both }));
+  // visited countries: the outline of the whole country (land borders and coast), detailed where the detailed shapes are drawn
+  const covered = new Set(HI_FEATS.map(f => f.cc).filter(Boolean)), rings = [];
+  for (const f of HI_FEATS) if (f.cc && visitedCC.has(f.cc)) rings.push(...f.geometry.coordinates);
+  if (BASE) for (const f of BASE.features) if (f.cc && visitedCC.has(f.cc) && !covered.has(f.cc)) rings.push(...f.geometry.coordinates);
+  gLayer.select(".bord-v").attr("d", rings.length ? geoPath({ type:"MultiPolygon", coordinates:rings }) : null);
 }
 function sizeApts() {
   if (!gApts) return;
@@ -2546,7 +2554,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610101733";
+const BUILD = "202610101736";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -5863,18 +5871,39 @@ if (STANDALONE && "serviceWorker" in navigator && (location.protocol === "https:
   navigator.serviceWorker.addEventListener("controllerchange", () => { if (!reloaded && !$(".scrim") && !$(".dlg-scrim")) { reloaded = true; location.reload(); } });
 }
 setInterval(() => { if (S.loaded && !$(".scrim")) render(); }, 60000);
-/* offline: once the app is saved, quietly download the logos and flags your flights use so they also show without internet */
+/* offline: once the app is saved, quietly download what it shows so it also works without internet:
+   every airline logo and flag, plane photos already looked up, and the world map pictures (satellite and night)
+   at low zoom plus more detail around your airports. Only public pictures are requested, never your flights. */
 function warmOffline() {
   if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller || navigator.onLine === false) return;
-  const urls = new Set();
-  for (const f of S.real) {
-    const c = alCode(f); if (c && hasLogo(c)) urls.add(`logos/${c}.png?v=${BUILD}`);
-    for (const a of [f.from, f.to]) if (a && /^[A-Z]{2}$/.test(a.cc || "")) urls.add(`flags/${a.cc.toLowerCase()}.svg`);
+  const conn = navigator.connection; if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ""))) return;
+  const urls = new Set(), pics = new Set();
+  for (const c of LOGO_CODES) urls.add(`logos/${c}.png?v=${BUILD}`);
+  const ccs = new Set(); for (const a of AIRPORTS.values()) if (a && /^[A-Z]{2}$/.test(a.cc || "")) ccs.add(a.cc);
+  try { for (const p of placesAll()) if (/^[A-Z]{2}$/.test(p.cc || "")) ccs.add(p.cc); } catch {}
+  for (const f of S.real) for (const a of [f.from, f.to]) if (a && /^[A-Z]{2}$/.test(a.cc || "")) ccs.add(a.cc);
+  for (const cc of ccs) urls.add(`flags/${cc.toLowerCase()}.svg`);
+  for (const cc of "ad ae af ag ai al am ao aq ar as at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bv bw by bz ca cc cd cf cg ch ci ck cl cm cn co cp cr cu cv cw cx cy cz de dg dj dk dm do dz ec ee eg eh er es et eu fi fj fk fm fo fr ga gb gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nu nz om pa pc pe pf pg ph pk pl pm pn pr ps pt pw py qa re ro rs ru rw sa sb sc sd se sg sh si sj sk sl sm sn so sr ss st sv sx sy sz tc td tf tg th tj tk tl tm tn to tr tt tv tw tz ua ug um un us uy uz va vc ve vg vi vn vu wf ws xk xx ye yt za zm zw".split(" ")) urls.add(`flags/${cc}.svg`);
+  // map pictures: the whole world up to zoom 3, then zoom 4–6 around every airport you have flown to
+  const tileXY = (lon, lat, z) => { const n = 2 ** z, s2 = Math.sin(Math.max(-85, Math.min(85, lat)) * Math.PI / 180);
+    return [Math.floor((lon + 180) / 360 * n) % n, Math.max(0, Math.min(n - 1, Math.floor((0.5 - Math.log((1 + s2) / (1 - s2)) / (4 * Math.PI)) * n)))]; };
+  const apts = new Map(); for (const f of S.real) for (const a of [f.from, f.to]) if (validApt(a)) apts.set(a.iata, a);
+  for (const type of ["satelite", "noche"]) {
+    const src = TILE_SRC[type], u = src.urls[0];
+    for (let z = 0; z <= 3; z++) for (let x = 0; x < 2 ** z; x++) for (let y = 0; y < 2 ** z; y++) pics.add(u(z, x, y));
+    for (const a of apts.values()) for (let z = 4; z <= Math.min(6, src.max); z++) { const [x, y] = tileXY(a.lon, a.lat, z); pics.add(u(z, x, y)); }
   }
-  const list = [...urls]; let i = 0;
-  const next = () => { if (i >= list.length) return; const u = list[i++]; fetch(u).catch(() => {}).finally(() => setTimeout(next, 30)); };
+  const photos = new Set(); for (const k in PHOTOS) if (!k.startsWith("_t_") && PHOTOS[k] && PHOTOS[k].src) photos.add(PHOTOS[k].src);
+  const list = [...[...urls].map(u => [u, 0]), ...[...photos].map(u => [u, 2]), ...[...pics].map(u => [u, 1])]; let i = 0;
+  const next = () => {
+    if (i >= list.length || navigator.onLine === false) return;
+    const [u, ext] = list[i++];
+    (ext ? fetch(u, { mode:ext === 2 ? "no-cors" : "cors", credentials:"omit", referrerPolicy:"no-referrer" }) : fetch(u)).catch(() => {}).finally(() => setTimeout(next, 40));
+  };
   for (let k = 0; k < 4; k++) next();
 }
+addEventListener("offline", () => toast("Sin conexión: Flights sigue funcionando con lo guardado"));
+addEventListener("online", () => { toast("Conexión recuperada"); if (TEX_URL[mapType]) scheduleHi(300); });
 if ("serviceWorker" in navigator) {
   const go = () => setTimeout(() => (window.requestIdleCallback || setTimeout)(warmOffline), 3000);
   if (navigator.serviceWorker.controller) go(); else navigator.serviceWorker.addEventListener("controllerchange", go, { once:true });
