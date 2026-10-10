@@ -3651,12 +3651,6 @@ function renderStats() {
   const card = (title, body, cls = "", icon = "") => `<section class="scard ${cls}"><h3>${icon ? `<span class="sic">${ICON[icon]}</span>` : ""}${title}</h3>${body}</section>`;
   const sec = (t, sub) => `<h3 class="ssec">${t}${sub ? `<small>${sub}</small>` : ""}</h3>`;
   let html = `<h2 class="stitle">Stats${S.year !== "all" ? ` <span>${esc(S.year)}</span>` : ""}</h2>`;
-  // flags of every country you have been to (by plane or not), like in Places
-  { const cs = count(placesAll().map(p => p.cc).filter(Boolean));
-    if (cs.length) {
-      html += sec("Banderas", `${cs.length} ${cs.length === 1 ? "país" : "países"}`);
-      html += `<section class="scard wide"><div class="flagrow big">${cs.map(([c, n]) => `<button type="button" class="flagb" data-ctap="${esc(c)}" title="${esc(country(c))}: ${n}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><small>${esc(country(c))}</small></button>`).join("")}</div></section>`;
-    } }
   const nx = upAll[0];
   if (nx) {
     const r = relDays(nx.depT), d = new Date(nx.depT);
@@ -3664,6 +3658,12 @@ function renderStats() {
       <div><div class="rt">${esc(nx.from?.city || nx.from?.iata)} → ${esc(nx.to?.city || nx.to?.iata)}</div>
       <div class="when">${esc(nx.num)} · ${d.toLocaleDateString("es-ES", { weekday:"long", day:"numeric", month:"long" })}${nx.dep ? " · " + esc(nx.dep) : ""}</div>${livePill(nx) ? `<div class="when">${livePill(nx)}</div>` : ""}</div><span class="chev-r" aria-hidden="true">›</span></button>`, "wide", "plane");
   }
+  // flags of every country you have been to (by plane or not), like in Places
+  { const cs = count(placesAll().map(p => p.cc).filter(Boolean));
+    if (cs.length) {
+      html += sec("Banderas", `${cs.length} ${cs.length === 1 ? "país" : "países"}`);
+      html += `<section class="scard wide"><div class="flagrow big">${cs.map(([c, n]) => `<button type="button" class="flagb" data-ctap="${esc(c)}" title="${esc(country(c))}: ${n}"><span class="fl-ic" aria-hidden="true">${flag(c)}</span><small>${esc(country(c))}</small></button>`).join("")}</div></section>`;
+    } }
   if (!past.length) {
     html += card("Todavía no hay datos", `<p class="hint">Cuando tengas vuelos volados ${S.year === "all" ? "" : "en " + esc(S.year) + " "}vas a ver acá el resumen, los rankings de aerolíneas, aeropuertos, rutas y aviones, y los países visitados.</p>`, "wide");
     $("#stats").innerHTML = html; return;
