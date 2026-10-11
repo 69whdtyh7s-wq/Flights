@@ -1463,16 +1463,26 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .fx-sheet .fx-sec{padding:4px 0 10px}
 .fx-sheet .fx-sec h4{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .fx-sheet .hd > div{flex:1;min-width:0}
-.replaylbl{position:absolute;left:14px;top:auto;bottom:calc(var(--rpfoot,56px) + 60px);z-index:3;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14);pointer-events:none;min-width:180px}
+.replaylbl{position:absolute;left:14px;top:auto;bottom:calc(var(--rpfoot,56px) + 112px);z-index:3;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14);pointer-events:none;min-width:180px}
 .replaylbl b{font-size:18px;font-weight:700;text-transform:capitalize}
 .replaylbl .rt{font-size:13.5px;font-weight:600}
 .replaylbl .nn{font-size:12px;color:var(--muted)}
 .replaylbl.done{box-shadow:0 0 0 2px var(--accent),0 4px 14px rgba(0,0,0,.14)}
-@media (max-width:699px){body[data-view="vuelos"] .replaylbl{position:fixed;top:auto;bottom:calc(var(--rpb,120px) + 46px);left:12px;right:12px;min-width:0}}
+@media (max-width:699px){body[data-view="vuelos"] .replaylbl{position:fixed;top:auto;bottom:calc(var(--rpb,120px) + 100px);left:12px;right:12px;min-width:0}}
 #mapcard.replaying .apt{opacity:.55}
-.replayspd{position:absolute;left:14px;top:auto;bottom:calc(var(--rpfoot,56px) + 12px);z-index:3;background:var(--glass)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.replayspd{position:absolute;left:14px;top:auto;bottom:calc(var(--rpfoot,56px) + 64px);z-index:3;background:var(--glass)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14)}
 .replayspd button{min-width:42px;justify-content:center;font-variant-numeric:tabular-nums}
-@media (max-width:699px){body[data-view="vuelos"] .replayspd{position:fixed;top:auto;bottom:var(--rpb,120px);left:12px}}
+@media (max-width:699px){body[data-view="vuelos"] .replayspd{position:fixed;top:auto;bottom:calc(var(--rpb,120px) + 54px);left:12px}}
+.replaytl{position:absolute;left:14px;right:70px;max-width:620px;bottom:calc(var(--rpfoot,56px) + 12px);z-index:3;display:flex;align-items:center;gap:10px;padding:8px 14px 18px 8px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.rp-pp{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer}
+.rp-pp svg{width:14px;height:14px}
+.rp-track{position:relative;flex:1;min-width:0}
+.rp-track input{width:100%;margin:0;accent-color:var(--accent);height:22px;cursor:pointer}
+.rp-years{position:absolute;left:8px;right:8px;top:24px;height:12px;pointer-events:none}
+.rp-years span{position:absolute;transform:translateX(-50%);font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rp-years span::before{content:"";position:absolute;left:50%;top:-6px;width:1px;height:4px;background:var(--muted);opacity:.6}
+.rp-years span.minor{width:0}
+@media (max-width:699px){body[data-view="vuelos"] .replaytl{position:fixed;left:12px;right:12px;max-width:none;bottom:var(--rpb,120px)}}
 .map .arc.rp.past{stroke:var(--route)}
 #z-play svg{width:15px;height:15px}
 .fx-on{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
@@ -2713,7 +2723,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610111156";
+const BUILD = "202610111200";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -5896,13 +5906,14 @@ function smoothGeo(A, B, off = 0) {
 }
 /* ---------- replay: your flights drawn on the map one after another, in the order you flew them ---------- */
 const ICON_PLAY = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>`;
+const ICON_PAUSE = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5.5" width="4" height="13" rx="1.2"/><rect x="13.5" y="5.5" width="4" height="13" rx="1.2"/></svg>`;
 const ICON_STOP = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>`;
 let replay = null;
 function stopReplay() {
   if (!replay) return;
   clearTimeout(replay.t); replay.g.interrupt().remove(); replay.g.selectAll("*").interrupt();
   if (gArcs) gArcs.interrupt().style("display", null).style("opacity", null);
-  document.getElementById("replaylbl")?.remove(); document.getElementById("replayspd")?.remove(); document.getElementById("mapcard")?.classList.remove("replaying");
+  ["replaylbl", "replayspd", "replaytl"].forEach(id => document.getElementById(id)?.remove()); document.getElementById("mapcard")?.classList.remove("replaying");
   const b = document.getElementById("z-play"); if (b) { b.innerHTML = ICON_PLAY; b.setAttribute("aria-label", "Repetir mis vuelos"); }
   replay = null;
 }
@@ -5912,7 +5923,7 @@ function startReplay() {
   // every flight on the map (flown, then upcoming), drawn exactly as the map draws it, so the end matches the map
   const fl = filtered().filter(f => validApt(f.from) && validApt(f.to)).sort((a, b) => a.depT - b.depT);
   if (!fl.length) return toast("No hay vuelos para repetir");
-  const rkey = f => [f.from.iata, f.to.iata].sort().join("-") + (f.past ? "" : "|u"), rtot = new Map(), rnow = new Map();
+  const rkey = f => [f.from.iata, f.to.iata].sort().join("-") + (f.past ? "" : "|u"), rtot = new Map();
   const rorder = new Map();   // the map draws each route from the airports of the first flight it saw on it
   for (const f of filtered()) if (validApt(f.from) && validApt(f.to) && !rorder.has(rkey(f))) rorder.set(rkey(f), [f.from, f.to]);
   for (const f of fl) rtot.set(rkey(f), (rtot.get(rkey(f)) || 0) + 1);
@@ -5927,9 +5938,21 @@ function startReplay() {
   const spd = document.createElement("div"); spd.id = "replayspd"; spd.className = "replayspd layerpill"; spd.setAttribute("role", "group"); spd.setAttribute("aria-label", "Velocidad");
   spd.innerHTML = [0.25, 0.5, 1, 2].map(v => `<button type="button" data-rpspd="${v}" aria-pressed="${v === sp}">${v === 0.25 ? "¼" : v === 0.5 ? "½" : v}×</button>`).join("");
   card.appendChild(spd);
+  // timeline: the years along a slider you can drag to any moment (the playback pauses while you hold it)
+  const N = fl.length, yrFirst = [];
+  fl.forEach((f, j) => { if (f.year && (!yrFirst.length || yrFirst[yrFirst.length - 1][0] !== f.year)) yrFirst.push([f.year, j]); });
+  const tl = document.createElement("div"); tl.id = "replaytl"; tl.className = "replaytl";
+  tl.innerHTML = `<button type="button" class="rp-pp" aria-label="Pausa">${ICON_PAUSE}</button><div class="rp-track"><input type="range" min="0" max="${N}" step="1" value="0" aria-label="Línea temporal">`
+    + `<div class="rp-years">${yrFirst.map(([y, j]) => `<span style="left:${(j / N * 100).toFixed(2)}%">${y}</span>`).join("")}</div></div>`;
+  card.appendChild(tl);
+  const range = tl.querySelector("input"), ppb = tl.querySelector(".rp-pp");
+  // year labels never overlap: a label too close to the one before it is hidden (the last year always shows)
+  requestAnimationFrame(() => { const sp2 = [...tl.querySelectorAll(".rp-years span")].filter(x => x.textContent); let lastR = -1e9;
+    sp2.forEach((x, j) => { const r = x.getBoundingClientRect(); if (j === sp2.length - 1 && r.left < lastR + 4) { const prev = sp2.slice(0, j).reverse().find(y => !y.classList.contains("minor")); if (prev) { prev.textContent = ""; prev.classList.add("minor"); } }
+      else if (r.left < lastR + 4) { x.textContent = ""; x.classList.add("minor"); return; } lastR = r.right; }); });
   // computer / iPad: bottom left of the map, just above the map-type bar
   if (!isPhone()) { const ft = card.querySelector(".mapfoot"), full = document.body.classList.contains("mapfull"); card.style.setProperty("--rpfoot", (ft && ft.offsetHeight ? ft.offsetHeight + (full ? 12 : 0) : 0) + "px"); }
-  // iPhone: both at the bottom of the screen, just above the flights panel (lowered so the map shows)
+  // iPhone: at the bottom of the screen, just above the flights panel (lowered so the map shows)
   if (isPhone()) {
     try { if (typeof sheetState !== "undefined" && sheetState !== "peek" && !document.body.classList.contains("mapfull")) setSheet("peek", false); } catch {}
     const placeRp = () => { let b = 24; try { b = document.body.classList.contains("mapfull") ? 24 : Math.max(24, window.innerHeight - sheetTopPx() + 12); } catch {} document.documentElement.style.setProperty("--rpb", `calc(${Math.round(b)}px + env(safe-area-inset-bottom,0px) * ${document.body.classList.contains("mapfull") ? 1 : 0})`); };
@@ -5938,35 +5961,52 @@ function startReplay() {
   spd.addEventListener("click", e => { const b2 = e.target.closest("[data-rpspd]"); if (!b2 || !replay) return; replay.sp = +b2.dataset.rpspd; try { localStorage.setItem("flights-replay-speed", replay.sp); } catch {} spd.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b2)); });
   const b = document.getElementById("z-play"); if (b) { b.innerHTML = ICON_STOP; b.setAttribute("aria-label", "Detener"); }
   const per = Math.max(110, Math.min(700, 22000 / fl.length)), k = d3.zoomTransform(svgSel.node()).k;
-  // same line as on the map (1.3 px on screen): map units per screen pixel at this zoom, while it draws
-  const rr0 = svgSel.node().getBoundingClientRect(), ex0 = zoom.extent().call(svgSel.node()), u0 = rr0.width ? (ex0[1][0] - ex0[0][0]) / rr0.width : 1, LW = 1.3;
-  let i = 0, km = 0; const cc = new Set(), seen = new Set();
-  replay = { g, t:0, sp };
+  const rr0 = svgSel.node().getBoundingClientRect(), ex0 = zoom.extent().call(svgSel.node()), u0 = rr0.width ? (ex0[1][0] - ex0[0][0]) / rr0.width : 1;
+  replay = { g, t:0, sp, i:0, paused:false };
+  let rnow = new Map(), km = 0, cc = new Set();
+  const label = i => {
+    if (!i) { lbl.innerHTML = `<b>${esc(fl[0].year || "")}</b><span class="nn">0 vuelos</span>`; return; }
+    const f = fl[i - 1], m = f.date ? MONTH_FULL[+f.date.slice(5, 7) - 1] : "";
+    lbl.innerHTML = `<b>${esc(m)} ${esc(f.year || "")}</b><span class="rt">${esc(f.from.city || f.from.iata)} → ${esc(f.to.city || f.to.iata)}</span><span class="nn">${i} ${i === 1 ? "vuelo" : "vuelos"} · ${fmt(km)} km · ${cc.size} ${cc.size === 1 ? "país" : "países"}</span>`;
+  };
+  const draw = (f, animate) => {
+    if (f.past) km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
+    const rk = rkey(f), n = f.past ? Math.min(rtot.get(rk), 14) : 1, ri = rnow.get(rk) || 0; rnow.set(rk, ri + 1);
+    if (ri >= n) return;
+    const [fa, fb] = rorder.get(rk) || [f.from, f.to], A = [+fa.lon, +fa.lat], B = [+fb.lon, +fb.lat], pa = proj(A), pb = proj(B), chord = pa && pb ? Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) : 0;
+    const gap = Math.min(1.1, Math.max(0.25, chord * 0.012)), off = n > 1 ? (ri - (n - 1) / 2) * gap : 0, lw = f.past ? (n > 1 ? 0.7 : 1.3) : 1.6, op = f.past ? (n > 1 ? 0.85 : 0.6) : 0.9;
+    const p = g.append("path").attr("class", "arc " + (f.past ? "past" : "up") + " rp").attr("fill", "none").attr("opacity", op).attr("d", smoothGeo(A, B, off));
+    if (!animate) { p.attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw); return; }
+    if (f.past) {
+      const len = p.node().getTotalLength() || 1;
+      p.attr("stroke-width", lw * u0 / k).attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", fa.iata === f.from.iata ? len : -len)   // drawn from where it took off
+        .transition().duration(Math.max(140, per * 1.6 / replay.sp)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+        .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null).attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw); });
+    } else p.attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw).attr("opacity", 0).transition().duration(400).attr("opacity", op);   // upcoming: dashed, fades in
+  };
+  // jump to any point: everything before it is drawn at once
+  const seek = to => {
+    g.selectAll("*").interrupt(); g.selectAll("path").remove(); rnow = new Map(); km = 0; cc = new Set();
+    for (let j = 0; j < to; j++) draw(fl[j], false);
+    replay.i = to; range.value = to; label(to); lbl.classList.toggle("done", to >= N);
+  };
+  const setPaused = v => { replay.paused = v; ppb.innerHTML = v ? ICON_PLAY : ICON_PAUSE; ppb.setAttribute("aria-label", v ? "Seguir" : "Pausa"); if (v) clearTimeout(replay.t); };
   const step = () => {
-    if (!replay) return;
-    if (i >= fl.length) {   // done: hand over to the normal map with a soft cross-fade (it looks the same)
-      lbl.classList.add("done");
-      replay.t = setTimeout(() => { if (!replay) return; gArcs.style("opacity", 0).style("display", null).transition().duration(500).style("opacity", 1); replay.g.transition().duration(500).style("opacity", 0); replay.t = setTimeout(stopReplay, 520); }, 3000);
+    if (!replay || replay.paused) return;
+    if (replay.i >= N) {   // done: hand over to the normal map with a soft cross-fade (it looks the same)
+      lbl.classList.add("done"); setPaused(true);
+      replay.t = setTimeout(() => { if (!replay || replay.i < N) return; gArcs.style("opacity", 0).style("display", null).transition().duration(500).style("opacity", 1); replay.g.transition().duration(500).style("opacity", 0); replay.t = setTimeout(stopReplay, 520); }, 4000);
       return;
     }
-    const f = fl[i++]; if (f.past) km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
-    const rk = rkey(f), n = f.past ? Math.min(rtot.get(rk), 14) : 1, ri = rnow.get(rk) || 0; rnow.set(rk, ri + 1);
-    if (ri < n) {
-      const [fa, fb] = rorder.get(rk) || [f.from, f.to], A = [+fa.lon, +fa.lat], B = [+fb.lon, +fb.lat], pa = proj(A), pb = proj(B), chord = pa && pb ? Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) : 0;
-      const gap = Math.min(1.1, Math.max(0.25, chord * 0.012)), off = n > 1 ? (ri - (n - 1) / 2) * gap : 0, lw = f.past ? (n > 1 ? 0.7 : 1.3) : 1.6, op = f.past ? (n > 1 ? 0.85 : 0.6) : 0.9;
-      const p = g.append("path").attr("class", "arc " + (f.past ? "past" : "up") + " rp").attr("fill", "none").attr("opacity", op).attr("d", smoothGeo(A, B, off));
-      if (f.past) {
-        const len = p.node().getTotalLength() || 1;
-        p.attr("stroke-width", lw * u0 / k).attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", fa.iata === f.from.iata ? len : -len)   // drawn from where it took off
-          .transition().duration(Math.max(140, per * 1.6 / replay.sp)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
-          .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null).attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw); });
-      } else p.attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw).attr("opacity", 0).transition().duration(400).attr("opacity", op);   // upcoming: dashed, fades in
-    }
-    const m = f.date ? MONTH_FULL[+f.date.slice(5, 7) - 1] : "";
-    lbl.innerHTML = `<b>${esc(m)} ${esc(f.year || "")}</b><span class="rt">${esc(f.from.city || f.from.iata)} → ${esc(f.to.city || f.to.iata)}</span><span class="nn">${i} ${i === 1 ? "vuelo" : "vuelos"} · ${fmt(km)} km · ${cc.size} ${cc.size === 1 ? "país" : "países"}</span>`;
+    draw(fl[replay.i], true); replay.i++; range.value = replay.i; label(replay.i);
     replay.t = setTimeout(step, per / replay.sp);
   };
-  step();
+  let wasPaused = false;
+  range.addEventListener("pointerdown", () => { if (!replay) return; wasPaused = replay.paused; setPaused(true); });
+  range.addEventListener("input", () => { if (replay) seek(+range.value); });
+  range.addEventListener("change", () => { if (!replay) return; if (!wasPaused && replay.i < N) { setPaused(false); step(); } });
+  ppb.addEventListener("click", () => { if (!replay) return; if (replay.paused) { if (replay.i >= N) seek(0); setPaused(false); step(); } else setPaused(true); });
+  label(0); step();
 }
 
 document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#z-play")) startReplay(); });
