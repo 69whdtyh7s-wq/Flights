@@ -219,8 +219,6 @@ button{cursor:pointer}
 .rank .bar{height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden}
 .rank .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
 .rank .ct{font-family:var(--f-mono);font-size:13px;text-align:right}
-.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
-@media (max-width:460px){.cols2{grid-template-columns:minmax(0,1fr)}}
 .recs{display:flex;flex-direction:column;gap:8px}
 .rec{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;border-bottom:1px dashed var(--line);padding-bottom:7px}
 .rec:last-child{border-bottom:0;padding-bottom:0}
@@ -412,7 +410,6 @@ textarea.big{min-height:180px;font-family:var(--f-mono);font-size:13px;resize:ve
 .clist .bar i{display:block;height:100%;background:var(--route)}
 .clist .ct{font-family:var(--f-mono);font-size:15px;font-weight:700;text-align:right;line-height:1.1}
 .clist .ct small{display:block;font-size:10px;font-weight:400;color:var(--muted)}
-@media (min-width:1100px){#stats .sec-countries{grid-column:1 / -1;border-right:0!important}}
 
 /* trip groups: label + always-visible legs */
 .tripgrp{border-top:1px dashed var(--line);border-left:3px solid var(--accent);margin-left:8px}
@@ -668,10 +665,6 @@ body{overflow-x:clip}
 .swatch.custom{background:conic-gradient(#ff3b30,#ff9500,#ffcc00,#34c759,#00c7be,#007aff,#5856d6,#af52de,#ff2d55,#ff3b30);display:block;overflow:hidden}
 .swatch.custom[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--c)}
 .swatch.custom input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
-.icons2{display:flex;gap:18px}
-.iconopt{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px;color:var(--ink);font-weight:600;font-size:13px}
-.iconopt img{width:64px;height:64px;border-radius:15px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.iconopt[aria-pressed="true"] img{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent)}
 
 .brand{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px}
 .brand:active .mark{transform:scale(.94)}
@@ -730,11 +723,6 @@ body{overflow-x:clip}
 /* ---- flight detail card ---- */
 .detail{background:var(--surface-2);border-radius:18px;margin:2px 12px 12px;padding:16px;gap:16px}
 .dhead{display:flex;align-items:center;gap:12px}
-.dhero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:stretch}
-.ddate-big{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:104px;padding:10px 12px;background:var(--surface);border-radius:14px;text-align:center}
-.ddw{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--danger)}
-.ddd{font-family:var(--f-round);font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0}
-.ddm{font-size:13px;font-weight:600;text-transform:capitalize}
 .ddr{margin-top:6px;font-size:11.5px;font-weight:600;color:var(--muted);background:var(--fill);border-radius:999px;padding:2px 9px;white-space:nowrap}
 .ddr.up{color:var(--sky);background:var(--sky-soft)}
 .dplane{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 10%,var(--surface)),var(--surface));border-radius:14px;overflow:hidden;min-width:0}
@@ -760,7 +748,6 @@ body{overflow-x:clip}
 .planeart .pa-win rect{fill:color-mix(in srgb,var(--ink) 55%,transparent)}
 .planeart .pa-ck{fill:color-mix(in srgb,var(--ink) 70%,transparent)}
 .planeart .pa-line{stroke:var(--accent);stroke-width:1.6;opacity:.8}
-@media (max-width:420px){.ddate-big{min-width:88px}.ddd{font-size:34px}}
 .al-ic.xl{width:48px;height:48px;margin:0;border-radius:50%}
 .al-ic.xl b{font-size:13px}
 .dal{display:flex;flex-direction:column;min-width:0;margin-right:auto}
@@ -934,7 +921,6 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .pvic.big.ontime{color:var(--ok)}.pvic.big.late{color:var(--danger)}
 @media (max-width:560px){.punct{grid-template-columns:1fr;justify-items:center}.punct .recgrid{width:100%}}
 .flagrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.flagrow .more-n{font-size:12px;font-weight:600;color:var(--muted)}
 .nextbtn{border:0;background:transparent;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
 .nextbtn .chev-r{margin-left:auto;color:var(--muted)}
 /* flights / places pill, next to the year */
@@ -984,8 +970,6 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .map .plcl{font-family:var(--f-body);font-weight:600;font-size:9.5px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 #mapcard[data-type="satelite"] .map .plcl,#mapcard[data-type="noche"] .map .plcl{fill:#fff;stroke:rgba(0,0,0,.6)}
 .legend i.pl{width:10px;height:10px;border:2px solid var(--route);border-radius:50%;background:#fff;box-sizing:border-box}
-.mapfoot .layerseg{margin-left:0;margin-right:auto}
-@media (max-width:699px){.mapfoot .layerseg{margin-inline:auto}}
 .mapctl #z-layer.on{color:var(--place)!important}
 .dlive{background:var(--surface);border-radius:16px;padding:12px 14px;margin:0 0 10px;display:grid;gap:6px}
 .lv-h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -1094,8 +1078,7 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .scard.wide{grid-column:1 / -1}
 .scard h3{margin:0;font-family:var(--f-display);font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--ink);text-transform:none;display:flex;align-items:baseline;gap:8px}
 .scard h3 span{font-size:14px;font-weight:600;color:var(--muted)}
-.phone-only{display:none!important}
-@media (max-width:699px){.scard.phone-only{display:flex!important}.stitle{font-size:30px}}
+@media (max-width:699px){.stitle{font-size:30px}}
 .tiles6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .tiles6 .tmore{display:block;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:699px){.tiles6 .tmore{display:none}}
@@ -1346,7 +1329,6 @@ html.standalone,html.standalone body{overscroll-behavior-y:none}
 .flpop .pophd .x:hover{background:color-mix(in srgb,var(--ink) 12%,transparent);color:var(--ink)}
 @media (max-width:699px){.flpop{display:none}}
 /* manual trips */
-.triptag{font-size:11.5px;font-weight:600;color:var(--accent-text);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:999px;padding:2px 8px;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .dtrip{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;background:var(--surface);border-radius:14px;padding:12px 14px}
 .dtrip > span{grid-column:1 / -1;font-size:12px;color:var(--muted)}
 .dtrip > b{font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2190,6 +2172,7 @@ function isVisible(lon, lat) {
   const r = proj.rotate();
   return d3.geoDistance([lon, lat], [-r[0], -r[1]]) < Math.PI / 2 - 0.01;
 }
+let dragRaf = 0;
 function redrawGeo() {
   if (!gLayer) return;
   gLayer.select(".sphere").attr("d", geoPath({ type:"Sphere" }));
@@ -2302,8 +2285,9 @@ function initMap() {
   $("#z-view").onclick = () => { const i = MAP_VIEWS.indexOf(mapView); setMapView(MAP_VIEWS[(i + 1) % MAP_VIEWS.length]); };
   svgSel.call(d3.drag().filter(e => mapView === "globo" && !e.button && !(e.touches && e.touches.length > 1))
     .on("start", () => { dragging = true; })
-    .on("drag", e => { const r = proj.rotate(), k = 70 / proj.scale() / curK; proj.rotate([r[0] + e.dx * k * 1.2, Math.max(-85, Math.min(85, r[1] - e.dy * k * 1.2))]); redrawGeo(); })
-    .on("end", () => { dragging = false; redrawGeo(); }));
+    .on("drag", e => { const r = proj.rotate(), k = 70 / proj.scale() / curK; proj.rotate([r[0] + e.dx * k * 1.2, Math.max(-85, Math.min(85, r[1] - e.dy * k * 1.2))]);
+      if (!dragRaf) dragRaf = requestAnimationFrame(() => { dragRaf = 0; redrawGeo(); }); })   // one redraw per frame, however many pointer events arrive
+    .on("end", () => { dragging = false; if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; } redrawGeo(); }));
   document.querySelectorAll("[data-maptype]").forEach(b => b.addEventListener("click", () => setMapType(b.dataset.maptype)));
   setMapType(mapType, true);
   S.mapReady = true; requestAnimationFrame(fitDeskMap);
@@ -2481,26 +2465,6 @@ function sizeApts() {
   gApts.selectAll("text").style("display", showCodes ? null : "none")
     .attr("font-size", 10.5).style("stroke-width", "3px")
     .attr("x", d => t.applyX(d.p[0])).attr("y", d => t.applyY(d.p[1]) - (d.r + 3.5));
-}
-function fitRoutes(animate) {
-  if (!svgSel) return;
-  if (mapView === "globo") {
-    const pts = filtered().flatMap(f => [f.from, f.to]).filter(validApt).map(a => [+a.lon, +a.lat]);
-    if (pts.length) { const c = d3.geoCentroid({ type:"MultiPoint", coordinates:pts }); proj.rotate([-c[0], -c[1]]); redrawGeo(); }
-    svgSel.call(zoom.transform, d3.zoomIdentity); return;
-  }
-  const pts = [];
-  for (const f of filtered()) for (const a of [f.from, f.to]) if (validApt(a)) pts.push(proj([+a.lon, +a.lat]));
-  let t = d3.zoomIdentity;
-  if (pts.length >= 2) {
-    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
-    let [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-    const pad = 60, w = Math.max(x1 - x0, 80), h = Math.max(y1 - y0, 60);
-    const k = Math.max(1, Math.min(8, 0.9 / Math.max(w / (W - pad), h / (H - pad))));
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    t = d3.zoomIdentity.translate(W/2 - k*cx, H/2 - k*cy).scale(k);
-  }
-  (animate ? svgSel.transition().duration(500) : svgSel).call(zoom.transform, t);
 }
 function focusSelection() {
   toMapDV();
@@ -2723,7 +2687,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610111200";
+const BUILD = "202610111244";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3272,15 +3236,6 @@ function buildTrips(list) {
   });
 }
 const CHEV = '<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>';
-function tripRow(t) {
-  if (t.legs.length === 1) return flightRow(t.first);
-  const a = t.first.from.city || t.first.from.iata, b = (t.round ? t.far : t.last.to);
-  const focus = S.focusTrip === t.id;
-  return `<div class="tripgrp${focus ? " focus" : ""}"><button class="triph" type="button" data-trip="${esc(t.id)}" aria-pressed="${focus}" title="Resaltar este viaje en el mapa">
-    <span class="tk">${t.round ? "Ida y vuelta" : "Viaje"}</span><span class="tt">${esc(a)} ${t.round ? "⇄" : "→"} ${esc(b.city || b.iata)}</span>
-    <span class="mm">${t.legs.length} vuelos · ${t.days} ${t.days === 1 ? "día" : "días"} · ${fmt(t.km)} km</span></button>
-    ${t.legs.map(flightRow).join("")}</div>`;
-}
 
 function renderPlacesList() {
   const el = $("#list");
@@ -3448,7 +3403,6 @@ function tripParentsRaw(tm) {
 }
 const tripChildren = (id, tm = tripMap()) => { const pm = tripParents(tm); return [...pm].filter(([, p]) => p === id).map(([c]) => c); };
 const tripsNamed = name => tripList().filter(t => norm(t.name) === norm(name)).sort((a, b) => a.legs[0].depT - b.legs[0].depT);
-const tripNames = () => tripList().map(t => t.id);
 const tripDates = legs => legs.length ? shortDate(legs[0]) + (legs.length > 1 && legs[legs.length - 1].date !== legs[0].date ? " – " + shortDate(legs[legs.length - 1]) : "") : "";
 const shortDate = f => f.date ? `${+f.date.slice(8, 10)} ${MONTHS[+f.date.slice(5, 7) - 1]} ${f.date.slice(0, 4)}` : "";
 /* which trip a flight with this name belongs to: the same-named trip it continues (or sits inside), else a new one */
@@ -5628,14 +5582,6 @@ function googleCalURL(f) {
   return "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text:ev.summary, dates, details:ev.desc, location:ev.location }).toString();
 }
 const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-function addToCalendar(id) {
-  const f = all().find(x => x.id === id); if (!f) return;
-  const ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>';
-  dialog({ title:"Agregar al calendario", body:`<p>${esc(f.num || "Vuelo")} · ${esc(f.from?.iata || "")} → ${esc(f.to?.iata || "")} · ${esc(niceDate(f.date))}</p>
-    <div class="calopts"><button type="button" class="calopt" data-calgo="ics">${ico}<span><b>${IS_IOS ? "Calendario del iPhone" : "Calendario"}</b><small>${IS_IOS ? "Apple Calendar, con avisos" : "Apple Calendar, Outlook… (archivo .ics)"}</small></span></button>
-    <button type="button" class="calopt" data-calgo="google">${ico}<span><b>Google Calendar</b><small>Se abre con todo completado</small></span></button></div>`, cancelText:"Cancelar", icon:ico.replace('stroke-width="2"', 'stroke-width="2.2"') });
-  document.querySelectorAll("#dialog-root [data-calgo]").forEach(b => b.onclick = () => { document.getElementById("dialog-root").innerHTML = ""; (b.dataset.calgo === "google" ? calGoogle : calICS)(f); });
-}
 function calGoogle(f) {
   const u = googleCalURL(f);
   const a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener"; document.body.append(a); a.click(); a.remove();
@@ -6402,7 +6348,10 @@ if (STANDALONE && "serviceWorker" in navigator && (location.protocol === "https:
   let reloaded = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => { if (!reloaded && !$(".scrim") && !$(".dlg-scrim")) { reloaded = true; location.reload(); } });
 }
-setInterval(() => { if (S.loaded && !$(".scrim")) render(); }, 60000);
+// once a minute (past/upcoming, countdowns) — not while the app is in the background; on return it catches up at once
+setInterval(() => { if (S.loaded && !document.hidden && !$(".scrim")) render(); }, 60000);
+let hiddenAt = 0;
+document.addEventListener("visibilitychange", () => { if (document.hidden) { hiddenAt = Date.now(); return; } if (hiddenAt && Date.now() - hiddenAt > 60000 && S.loaded && !$(".scrim")) render(); hiddenAt = 0; });
 /* offline: once the app is saved, quietly download what it shows so it also works without internet:
    every airline logo and flag, plane photos already looked up, and the world map pictures (satellite and night)
    at low zoom plus more detail around your airports. Only public pictures are requested, never your flights. */
