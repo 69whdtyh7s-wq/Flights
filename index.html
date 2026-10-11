@@ -915,7 +915,6 @@ button.rec2:hover .rk2{color:var(--accent-text)}
 .rec2 b small{font-size:12px;color:var(--muted);font-weight:500}
 .rec2 .chev-r{color:var(--muted)}
 .recs .rec2:last-child{border-bottom:0}
-.recsub{margin:18px 0 6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.recsub small{font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}
 .punct{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
 .pvic.big{width:110px;height:110px;background:transparent}
 .pvic.big b{font-family:var(--f-round);font-size:28px;font-weight:800}
@@ -2688,7 +2687,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610111253";
+const BUILD = "202610111255";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -4110,12 +4109,10 @@ function renderStats() {
     if (dl.length) {
       const onT = dl.filter(x => x.d < 15).length, late = dl.filter(x => x.d >= 15), worst = dl.reduce((a, b) => b.d > a.d ? b : a);
       const tot = late.reduce((s, x) => s + x.d, 0), avg = late.length ? Math.round(tot / late.length) : 0, pct = Math.round(onT / dl.length * 100);
-      punct = `<h4 class="recsub">Puntualidad<small>${dl.length} ${dl.length === 1 ? "vuelo" : "vuelos"} con horario real</small></h4><div class="punct"><div class="pvic big ${pct >= 80 ? "ontime" : pct >= 60 ? "warn-d" : "late"}">${ring(pct / 100)}<b>${pct}%</b></div><div class="recgrid">
-        ${rec("clock", "A tiempo", `${onT} de ${dl.length}`, "menos de 15 min tarde")}
+      punct = `${rec("clock", "Puntualidad", `<span class="${pct >= 80 ? "ontime" : pct >= 60 ? "warn-d" : "late"}">${pct}%</span>`, `${onT} de ${dl.length} vuelos a tiempo`)}
         ${late.length ? rec("clock", "Demora promedio", hm(avg), `en los ${late.length} ${late.length === 1 ? "vuelo demorado" : "vuelos demorados"}`) : ""}
         ${worst.d >= 15 ? rec("clock", "Mayor demora", `<span class="late">${hm(worst.d)}</span>`, `${route(worst.f)} · ${esc(shortDate(worst.f))}`, worst.f.id) : ""}
-        ${tot >= 60 ? rec("clock", "Tiempo total esperando", hm(tot)) : ""}
-      </div></div>`;
+        ${tot >= 60 ? rec("clock", "Tiempo total esperando", hm(tot)) : ""}`;
     } }
   const recCard = card("Récords", `<div class="recgrid">
     ${rec("ruler", "Vuelo más largo", route(lg), `${fmt(lg.km)} km · ${esc(shortDate(lg))}`, lg.id)}
@@ -4131,7 +4128,8 @@ function renderStats() {
     ${Sx && Sx.a.iata !== N.a.iata ? rec("compass", "Más al sur", esc(Sx.a.city || Sx.a.iata), `${esc(Sx.a.iata)} · ${fmt(Math.abs(Sx.a.lat), 1)}° ${Sx.a.lat >= 0 ? "N" : "S"}`, Sx.f.id) : ""}
     ${E ? rec("compass", "Más al este", esc(E.a.city || E.a.iata), `${esc(E.a.iata)} · ${fmt(Math.abs(E.a.lon), 1)}° ${E.a.lon >= 0 ? "E" : "O"}`, E.f.id) : ""}
     ${Wx && Wx.a.iata !== E.a.iata ? rec("compass", "Más al oeste", esc(Wx.a.city || Wx.a.iata), `${esc(Wx.a.iata)} · ${fmt(Math.abs(Wx.a.lon), 1)}° ${Wx.a.lon >= 0 ? "E" : "O"}`, Wx.f.id) : ""}
-  </div>${punct}`, "recside", "trophy");
+  ${punct}
+  </div>`, "recside", "trophy");
 
   /* ---- trips & places ---- */
   html += sec("Viajes y lugares");
