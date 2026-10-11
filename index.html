@@ -2457,7 +2457,7 @@ function sizeApts() {
   if (gPlc) {
     const u = u0, big = d => d.sel && (d.one || !isPhone());   // on an iPhone a group (a country, a continent) keeps the normal dot; only the open place grows
     gPlc.selectAll("circle").attr("cx", d => t.applyX(d.p[0])).attr("cy", d => t.applyY(d.p[1])).attr("r", d => (big(d) ? RS : R) * u).style("stroke-width", SW + "px");   // same dot as the airports
-    const lf = Math.min(1.7, 0.85 + 0.3 * Math.log2(Math.max(1, k / u)));   // names grow a little as you zoom in, so they stay easy to read
+    const lf = Math.min(1.7, 0.85 + 0.3 * Math.log2(Math.max(1, k / u))) * (S.placeSet && S.placeCont ? 0.75 : 1);   // a whole continent: smaller names   // names grow a little as you zoom in, so they stay easy to read
     gPlc.selectAll("text").style("font-size", 10.5 * lf * u + "px").style("stroke-width", 2.6 * lf * u + "px");
     gPlc.selectAll("circle").each(d => { d.r = (big(d) ? RS : R) * u; d.u = u; });
     // names: the selected one first, then the rest only where they do not overlap another name
@@ -2696,7 +2696,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610111322";
+const BUILD = "202610111326";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -3777,7 +3777,7 @@ function searchPick(k, v) {
     closeSheet(); if (S.year !== "all") S.year = "all";
     const toMap = !isPhone() && document.body.dataset.dv === "stats"; toMapDV();   // switch first, so resizing the map doesn't cut the zoom short
     const ids = k === "place" ? [v] : placesAll().filter(p => k === "placecountry" ? p.cc === v : continent(p.cc) === v).map(p => p.id);
-    S.openPlace = k === "place" ? v : null; S.placeSet = k === "place" ? null : new Set(ids);
+    S.openPlace = k === "place" ? v : null; S.placeSet = k === "place" ? null : new Set(ids); S.placeCont = k === "placecont";
     if (isPhone() && document.body.dataset.view !== "vuelos") setView("vuelos", false);
     render();
     if (phoneMap()) { sheetState = "peek"; layoutSheet(); }
