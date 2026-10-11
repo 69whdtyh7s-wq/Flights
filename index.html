@@ -2567,26 +2567,28 @@ function renderMap() {
   const shapes = new Map();
   const shape = r => {
     if (shapes.has(r.key)) return shapes.get(r.key);
-    const A = [+r.a.lon, +r.a.lat], B = [+r.b.lon, +r.b.lat], ip = d3.geoInterpolate(A, B), N = 64, pts = [];
+    const A = [+r.a.lon, +r.a.lat], B = [+r.b.lon, +r.b.lat], ip = d3.geoInterpolate(A, B), N = Math.max(48, Math.min(160, Math.round(d3.geoDistance(A, B) * 90))), pts = [];
     for (let j = 0; j <= N; j++) { const ll = ip(j / N); pts.push({ t:j / N, p:(!globe || isVisible(ll[0], ll[1])) ? proj(ll) : null }); }
     const sh = { pts, base:geoPath({ type:"LineString", coordinates:[A, B] }) };
     shapes.set(r.key, sh); return sh;
   };
+  // smooth curves (Catmull-Rom through densely sampled great-circle points), never visible straight pieces
+  const smooth = d3.line().curve(d3.curveCatmullRom.alpha(.5));
   const arcD = d => {
-    const sh = shape(d.r);
-    if (d.n === 1) return sh.base;
-    const P = sh.pts, a = P.find(q => q.p), b = [...P].reverse().find(q => q.p);
+    const sh = shape(d.r), P = sh.pts, a = P.find(q => q.p), b = [...P].reverse().find(q => q.p);
     const len = a && b ? Math.hypot(b.p[0] - a.p[0], b.p[1] - a.p[1]) : 0;
-    const gap = Math.min(1.1, Math.max(0.25, len * 0.012)), off = (d.i - (d.n - 1) / 2) * gap;
-    let out = "", prev = null;
+    const gap = Math.min(1.1, Math.max(0.25, len * 0.012)), off = d.n > 1 ? (d.i - (d.n - 1) / 2) * gap : 0;
+    const segs = []; let cur = [];
     for (let j = 0; j < P.length; j++) {
-      const q = P[j]; if (!q.p) { prev = null; continue; }
+      const q = P[j]; if (!q.p) { if (cur.length) segs.push(cur); cur = []; continue; }
       const nb = P[Math.min(P.length - 1, j + 1)].p || q.p, pb = P[Math.max(0, j - 1)].p || q.p;
       let dx = nb[0] - pb[0], dy = nb[1] - pb[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
-      const e = Math.sin(Math.PI * q.t) * off, x = q.p[0] - dy * e, y = q.p[1] + dx * e;
-      out += (prev && Math.abs(x - prev[0]) < W / 3 ? "L" : "M") + x.toFixed(2) + "," + y.toFixed(2); prev = [x, y];
+      const e = Math.sin(Math.PI * q.t) * off, pt = [q.p[0] - dy * e, q.p[1] + dx * e];
+      if (cur.length && Math.abs(pt[0] - cur[cur.length - 1][0]) > W / 3) { segs.push(cur); cur = []; }   // crossing the date line
+      cur.push(pt);
     }
-    return out;
+    if (cur.length) segs.push(cur);
+    return segs.filter(sg => sg.length > 1).map(sg => smooth(sg)).join("");
   };
   gArcs.selectAll("path").data(lines, d => d.key).join("path")
     .attr("class", d => "arc " + (d.r.past ? "past" : "up") + (selIds && !isSel(d.r) ? " dim" : ""))
@@ -2711,7 +2713,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610110246";
+const BUILD = "202610110249";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -5877,6 +5879,15 @@ function showCountryCard(cc, x, y) {
   else { let lx = x + 14, ty = y - 20; if (lx + w > vw - 10) lx = x - w - 14; lx = Math.max(10, Math.min(vw - w - 10, lx)); ty = Math.max(10, Math.min(vh - h - 10, ty)); el.style.left = lx + "px"; el.style.top = ty + "px"; }
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-ctryopen]"); if (!b) return; const cc = b.dataset.ctryopen; closeAptCard(); countryTap(cc); });
+/* a great-circle route as one smooth curve on the current map (dense samples through a Catmull-Rom spline) */
+function smoothGeo(A, B) {
+  const ip = d3.geoInterpolate(A, B), N = Math.max(48, Math.min(160, Math.round(d3.geoDistance(A, B) * 90))), line = d3.line().curve(d3.curveCatmullRom.alpha(.5)), globe = mapView === "globo";
+  const segs = []; let cur = [];
+  for (let j = 0; j <= N; j++) { const ll = ip(j / N); if (globe && !isVisible(ll[0], ll[1])) { if (cur.length) segs.push(cur); cur = []; continue; }
+    const p = proj(ll); if (!p) continue; if (cur.length && Math.abs(p[0] - cur[cur.length - 1][0]) > W / 3) { segs.push(cur); cur = []; } cur.push(p); }
+  if (cur.length) segs.push(cur);
+  return segs.filter(sg => sg.length > 1).map(sg => line(sg)).join("");
+}
 /* ---------- replay: your flights drawn on the map one after another, in the order you flew them ---------- */
 const ICON_PLAY = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>`;
 const ICON_STOP = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>`;
@@ -5924,7 +5935,7 @@ function startReplay() {
     const f = fl[i++]; km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
     const again = seen.has(f.from.iata + f.to.iata) || seen.has(f.to.iata + f.from.iata); seen.add(f.from.iata + f.to.iata);
     const p = g.append("path").attr("class", "arc past rp").attr("fill", "none").attr("stroke-width", LW * u0 / k)
-      .attr("d", geoPath({ type:"LineString", coordinates:[[+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]] }));
+      .attr("d", smoothGeo([+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]));
     const len = p.node().getTotalLength() || 1;
     p.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len)
       .transition().duration(Math.max(140, per * 1.6 / replay.sp)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0).on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null).attr("vector-effect", "non-scaling-stroke").attr("stroke-width", LW); });
