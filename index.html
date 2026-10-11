@@ -1473,7 +1473,7 @@ body.mapfull #filters .layerpill{background:var(--glass)!important;-webkit-backd
 .replayspd{position:absolute;left:14px;top:auto;bottom:calc(var(--rpfoot,56px) + 12px);z-index:3;background:var(--glass)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 14px rgba(0,0,0,.14)}
 .replayspd button{min-width:42px;justify-content:center;font-variant-numeric:tabular-nums}
 @media (max-width:699px){body[data-view="vuelos"] .replayspd{position:fixed;top:auto;bottom:var(--rpb,120px);left:12px}}
-.map .arc.rp{stroke:var(--route);opacity:.6}
+.map .arc.rp.past{stroke:var(--route)}
 #z-play svg{width:15px;height:15px}
 .fx-on{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
 .fxon{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 12px;border:0;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:13.5px;cursor:pointer;max-width:100%}
@@ -2713,7 +2713,7 @@ function alCode(f) {
 }
 let LOGOS = true; try { LOGOS = localStorage.getItem("flights-logos") !== "off"; } catch {}
 function setLogos(v) { LOGOS = v; try { localStorage.setItem("flights-logos", v ? "on" : "off"); } catch {} render(); }
-const BUILD = "202610111132";
+const BUILD = "202610111138";
 const LOGO_CODES = new Set(["NM","PU","1I","2J","2K","2L","2P","2Q","3K","3R","3U","4A","4B","4C","4D","4G","4H","4N","4U","5B","5C","5D","5G","5H","5J","5N","5Y","5Z","6B","6E","6H","6J","6R","7C","7E","7F","7G","7L","8E","8F","8P","8U","8V","9E","9K","9R","9S","9T","9U","A3","A9","AA","AB","AC","AD","AE","AF","AH","AI","AJ","AK","AM","AN","AQ","AR","AS","AT","AV","AX","AY","AZ","B2","B6","B7","B8","BA","BB","BC","BD","BE","BG","BI","BJ","BL","BP","BR","BT","BW","BX","BY","C2","C3","C5","CA","CC","CF","CG","CH","CI","CJ","CL","CM","CO","CU","CV","CX","CY","CZ","D3","D7","D8","DC","DD","DE","DG","DL","DT","DV","DX","DY","E5","EA","EC","ED","EF","EI","EJ","EK","EL","EN","EP","ET","EV","EW","EY","F9","FB","FD","FF","FG","FI","FJ","FL","FM","FO","FP","FR","FU","FV","FW","FX","FY","FZ","G3","G4","G7","G8","G9","GA","GF","GG","GL","GM","GO","GR","GT","GZ","H2","H5","H6","HA","HC","HD","HF","HM","HO","HP","HR","HU","HV","HX","HY","I2","IA","IB","IE","IG","IJ","IR","IW","IX","IY","IZ","J2","J3","J8","J9","JB","JF","JJ","JK","JL","JM","JQ","JR","JS","JT","JU","JV","JZ","KB","KC","KE","KL","KM","KO","KQ","KU","KX","L6","LA","LG","LH","LI","LJ","LM","LN","LO","LP","LR","LS","LT","LU","LX","LY","M5","M7","M8","M9","MB","MD","ME","MF","MH","MK","ML","MP","MQ","MS","MU","MW","MX","N8","NF","NG","NH","NI","NK","NP","NQ","NT","NU","NW","NX","NY","NZ","OA","OD","OI","OJ","OK","OM","ON","OO","OQ","OR","OS","OU","OY","OZ","P5","PC","PD","PG","PH","PI","PJ","PK","PM","PN","PR","PS","PW","PX","PY","PZ","Q5","QF","QH","QK","QO","QQ","QR","QS","QT","QV","QX","QZ","R3","R5","RA","RB","RC","RE","RJ","RK","RO","RQ","RS","RV","RW","S4","S7","SA","SB","SC","SD","SE","SG","SH","SJ","SK","SN","SP","SQ","SR","SS","SU","SV","SW","SY","T3","T5","T7","TB","TC","TE","TF","TG","TK","TL","TN","TO","TP","TR","TS","TT","TU","TW","TX","U2","U3","U6","UA","UB","UG","UJ","UK","UL","UM","UO","UP","US","UT","UU","UX","UZ","V0","V3","V7","V8","VA","VI","VJ","VN","VR","VS","VT","VW","VX","VY","W5","W6","WA","WB","WF","WK","WN","WR","WS","WX","WY","WZ","XA","XE","XK","XL","XQ","XT","XY","Y4","Y5","Y8","YL","YS","YV","YW","YX","Z8","ZE","ZH","ZL","ZW"]);
 const asset = p => (window.__ASSETS && window.__ASSETS[p]) || "";   // preview in Claude: logos and flags bundled in one file
 const hasLogo = code => !!code && LOGO_CODES.has(code);
@@ -5880,12 +5880,18 @@ function showCountryCard(cc, x, y) {
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-ctryopen]"); if (!b) return; const cc = b.dataset.ctryopen; closeAptCard(); countryTap(cc); });
 /* a great-circle route as one smooth curve on the current map (dense samples through a Catmull-Rom spline) */
-function smoothGeo(A, B) {
+function smoothGeo(A, B, off = 0) {
   const ip = d3.geoInterpolate(A, B), N = Math.max(48, Math.min(160, Math.round(d3.geoDistance(A, B) * 90))), line = d3.line().curve(d3.curveCatmullRom.alpha(.5)), globe = mapView === "globo";
   const segs = []; let cur = [];
   for (let j = 0; j <= N; j++) { const ll = ip(j / N); if (globe && !isVisible(ll[0], ll[1])) { if (cur.length) segs.push(cur); cur = []; continue; }
-    const p = proj(ll); if (!p) continue; if (cur.length && Math.abs(p[0] - cur[cur.length - 1][0]) > W / 3) { segs.push(cur); cur = []; } cur.push(p); }
+    const p = proj(ll); if (!p) continue; if (cur.length && Math.abs(p[0] - cur[cur.length - 1][0]) > W / 3) { segs.push(cur); cur = []; } cur.push([p[0], p[1], j / N]); }
   if (cur.length) segs.push(cur);
+  // fan offset (repeated routes): push each point sideways, most in the middle, none at the airports
+  if (off) for (let s2 = 0; s2 < segs.length; s2++) {
+    const o = segs[s2];
+    segs[s2] = o.map((q, j) => { const a = o[Math.max(0, j - 1)], b = o[Math.min(o.length - 1, j + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+      const e = Math.sin(Math.PI * q[2]) * off; return [q[0] - dy * e, q[1] + dx * e, q[2]]; });
+  }
   return segs.filter(sg => sg.length > 1).map(sg => line(sg)).join("");
 }
 /* ---------- replay: your flights drawn on the map one after another, in the order you flew them ---------- */
@@ -5895,7 +5901,7 @@ let replay = null;
 function stopReplay() {
   if (!replay) return;
   clearTimeout(replay.t); replay.g.interrupt().remove(); replay.g.selectAll("*").interrupt();
-  if (gArcs) gArcs.style("display", null);
+  if (gArcs) gArcs.interrupt().style("display", null).style("opacity", null);
   document.getElementById("replaylbl")?.remove(); document.getElementById("replayspd")?.remove(); document.getElementById("mapcard")?.classList.remove("replaying");
   const b = document.getElementById("z-play"); if (b) { b.innerHTML = ICON_PLAY; b.setAttribute("aria-label", "Repetir mis vuelos"); }
   replay = null;
@@ -5903,8 +5909,13 @@ function stopReplay() {
 function startReplay() {
   if (replay) return stopReplay();
   if (!S.mapReady || !gLayer) return;
-  const fl = filtered().filter(f => f.past && validApt(f.from) && validApt(f.to)).sort((a, b) => a.depT - b.depT);
-  if (!fl.length) return toast("No hay vuelos volados para repetir");
+  // every flight on the map (flown, then upcoming), drawn exactly as the map draws it, so the end matches the map
+  const fl = filtered().filter(f => validApt(f.from) && validApt(f.to)).sort((a, b) => a.depT - b.depT);
+  if (!fl.length) return toast("No hay vuelos para repetir");
+  const rkey = f => [f.from.iata, f.to.iata].sort().join("-") + (f.past ? "" : "|u"), rtot = new Map(), rnow = new Map();
+  const rorder = new Map();   // the map draws each route from the airports of the first flight it saw on it
+  for (const f of filtered()) if (validApt(f.from) && validApt(f.to) && !rorder.has(rkey(f))) rorder.set(rkey(f), [f.from, f.to]);
+  for (const f of fl) rtot.set(rkey(f), (rtot.get(rkey(f)) || 0) + 1);
   closeAptCard();
   if (isPlaces()) setLayer && setLayer("vuelos");
   gArcs.style("display", "none");
@@ -5933,14 +5944,24 @@ function startReplay() {
   replay = { g, t:0, sp };
   const step = () => {
     if (!replay) return;
-    if (i >= fl.length) { lbl.classList.add("done"); replay.t = setTimeout(stopReplay, 3500); return; }
-    const f = fl[i++]; km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
-    const again = seen.has(f.from.iata + f.to.iata) || seen.has(f.to.iata + f.from.iata); seen.add(f.from.iata + f.to.iata);
-    const p = g.append("path").attr("class", "arc past rp").attr("fill", "none").attr("stroke-width", LW * u0 / k)
-      .attr("d", smoothGeo([+f.from.lon, +f.from.lat], [+f.to.lon, +f.to.lat]));
-    const len = p.node().getTotalLength() || 1;
-    p.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len)
-      .transition().duration(Math.max(140, per * 1.6 / replay.sp)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0).on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null).attr("vector-effect", "non-scaling-stroke").attr("stroke-width", LW); });
+    if (i >= fl.length) {   // done: hand over to the normal map with a soft cross-fade (it looks the same)
+      lbl.classList.add("done");
+      replay.t = setTimeout(() => { if (!replay) return; gArcs.style("opacity", 0).style("display", null).transition().duration(500).style("opacity", 1); replay.g.transition().duration(500).style("opacity", 0); replay.t = setTimeout(stopReplay, 520); }, 3000);
+      return;
+    }
+    const f = fl[i++]; if (f.past) km += f.km; cc.add(f.from.cc); cc.add(f.to.cc);
+    const rk = rkey(f), n = f.past ? Math.min(rtot.get(rk), 14) : 1, ri = rnow.get(rk) || 0; rnow.set(rk, ri + 1);
+    if (ri < n) {
+      const [fa, fb] = rorder.get(rk) || [f.from, f.to], A = [+fa.lon, +fa.lat], B = [+fb.lon, +fb.lat], pa = proj(A), pb = proj(B), chord = pa && pb ? Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) : 0;
+      const gap = Math.min(1.1, Math.max(0.25, chord * 0.012)), off = n > 1 ? (ri - (n - 1) / 2) * gap : 0, lw = f.past ? (n > 1 ? 0.7 : 1.3) : 1.6, op = f.past ? (n > 1 ? 0.85 : 0.6) : 0.9;
+      const p = g.append("path").attr("class", "arc " + (f.past ? "past" : "up") + " rp").attr("fill", "none").attr("opacity", op).attr("d", smoothGeo(A, B, off));
+      if (f.past) {
+        const len = p.node().getTotalLength() || 1;
+        p.attr("stroke-width", lw * u0 / k).attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", fa.iata === f.from.iata ? len : -len)   // drawn from where it took off
+          .transition().duration(Math.max(140, per * 1.6 / replay.sp)).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+          .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null).attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw); });
+      } else p.attr("vector-effect", "non-scaling-stroke").attr("stroke-width", lw).attr("opacity", 0).transition().duration(400).attr("opacity", op);   // upcoming: dashed, fades in
+    }
     const m = f.date ? MONTH_FULL[+f.date.slice(5, 7) - 1] : "";
     lbl.innerHTML = `<b>${esc(m)} ${esc(f.year || "")}</b><span class="rt">${esc(f.from.city || f.from.iata)} → ${esc(f.to.city || f.to.iata)}</span><span class="nn">${i} ${i === 1 ? "vuelo" : "vuelos"} · ${fmt(km)} km · ${cc.size} ${cc.size === 1 ? "país" : "países"}</span>`;
     replay.t = setTimeout(step, per / replay.sp);
